@@ -466,7 +466,12 @@ async function changePwd(){
 if(localStorage.getItem('ab-admin-session')==='true'){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.addEventListener('DOMContentLoaded', initApp);
+  // DOM already loaded when this runs - call initApp directly
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -565,6 +570,7 @@ const phaseTextColors = {
 };
 
 function buildProgTable(){
+  if(!localProgramme) return;
   const filter = document.getElementById('phase-filter').value;
   const rows = localProgramme.filter(s => !filter || s.phaseClass === filter);
   const orig = programme;
@@ -997,6 +1003,7 @@ function filterSeances(val){
 }
 
 function buildSeancesGrid(){
+  if(!localNiveaux) return;
   const grid = document.getElementById('seances-grid');
   if(!grid) return;
   const nivColors = ['#3d8b5c','#2351a0','#c04040'];
