@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — AB Running Loisir</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F6FA; --surface: #fff; --border: rgba(30,60,120,.12);
+  --ab-blue: #1B3A6B; --ab-blue2: #2351A0; --ab-light: #4A7ACC;
+  --ab-sky: #7AAEE0; --text: #1A2540; --muted: #6B7A9A;
+  --mousse: #4A8A5A; --rouge: #C04040; --ocre: #D4893A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:14px;line-height:1.6;}
+
+/* ── LOGIN ── */
+#login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--ab-blue) 0%,var(--ab-blue2) 60%,var(--ab-light) 100%);
+}
+.login-box{background:#fff;border-radius:16px;padding:2.5rem;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--ab-blue);margin-bottom:.2rem;}
+.login-sub{font-family:'Syne',sans-serif;font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.8rem;}
+.login-label{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;color:var(--ab-blue);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.35rem;}
+.login-input{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;font-family:'Lora',serif;color:var(--text);background:#f8faff;outline:none;transition:border-color .15s;margin-bottom:1rem;}
+.login-input:focus{border-color:var(--ab-light);}
+.login-btn{width:100%;background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;padding:.75rem;border:none;border-radius:8px;cursor:pointer;letter-spacing:.05em;transition:background .15s;}
+.login-btn:hover{background:var(--ab-blue2);}
+.login-error{color:var(--rouge);font-family:'Syne',sans-serif;font-size:.72rem;margin-top:.6rem;display:none;}
+
+/* ── APP ── */
+#app{display:none;}
+.topbar{
+  background:var(--ab-blue);padding:.9rem 2rem;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(27,58,107,.25);
+}
+.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#fff;letter-spacing:.05em;}
+.topbar-subtitle{font-family:'Syne',sans-serif;font-size:.6rem;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;}
+.topbar-right{display:flex;align-items:center;gap:.8rem;}
+.publish-btn{
+  background:var(--mousse);color:#fff;font-family:'Syne',sans-serif;
+  font-size:.72rem;font-weight:700;padding:.55rem 1.2rem;border:none;
+  border-radius:8px;cursor:pointer;letter-spacing:.04em;transition:all .15s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.publish-btn:hover{background:#3a7548;}
+.publish-btn:disabled{background:var(--muted);cursor:not-allowed;}
+.logout-btn{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;cursor:pointer;}
+.status-bar{background:rgba(27,58,107,.06);border-bottom:1px solid var(--border);padding:.5rem 2rem;font-family:'Syne',sans-serif;font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--mousse);flex-shrink:0;}
+.status-dot.warn{background:var(--ocre);}
+.status-dot.error{background:var(--rouge);}
+
+/* ── TABS ── */
+.admin-tabs{display:flex;gap:0;background:var(--surface);border-bottom:2px solid var(--border);padding:0 2rem;}
+.admin-tab{
+  background:none;border:none;border-bottom:3px solid transparent;
+  font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;
+  color:var(--muted);padding:.9rem 1.2rem;cursor:pointer;letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:-2px;transition:all .15s;
+}
+.admin-tab.active{color:var(--ab-blue);border-bottom-color:var(--ab-blue);}
+.admin-tab:hover{color:var(--ab-blue);}
+
+/* ── CONTENT ── */
+.admin-page{display:none;padding:2rem;max-width:1200px;margin:0 auto;}
+.admin-page.active{display:block;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--ab-blue);margin-bottom:.3rem;}
+.section-sub{color:var(--muted);font-size:.82rem;margin-bottom:1.5rem;}
+
+/* ── PROGRAMME TABLE ── */
+.prog-admin-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.8rem;}
+.prog-admin-table th{
+  background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;
+  font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:.7rem 1rem;text-align:left;position:sticky;top:52px;z-index:5;
+}
+.prog-admin-table td{padding:.6rem 1rem;border-bottom:1px solid var(--border);background:var(--surface);vertical-align:middle;}
+.prog-admin-table tr:hover td{background:rgba(74,122,204,.04);}
+.prog-admin-table tr.decharge td{background:rgba(74,138,90,.03);}
+.sem-badge{font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:var(--ab-blue);}
+.phase-mini{font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;padding:.1rem .4rem;border-radius:3px;}
+.seance-cell{font-size:.78rem;color:var(--text);}
+.seance-terrain{font-family:'Syne',sans-serif;font-size:.58rem;color:var(--muted);margin-top:.15rem;}
+.modified-flag{color:var(--ab-light);font-size:.6rem;margin-left:.3rem;}
+.btn-edit-row{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.62rem;font-weight:700;padding:.25rem .6rem;border-radius:5px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.btn-edit-row:hover{border-color:var(--ab-light);color:var(--ab-blue);}
+
+/* ── EDIT PANEL ── */
+.edit-panel{
+  position:fixed;right:0;top:0;bottom:0;width:480px;background:var(--surface);
+  border-left:1px solid var(--border);box-shadow:-8px 0 40px rgba(27,58,107,.12);
+  z-index:200;display:flex;flex-direction:column;transform:translateX(100%);
+  transition:transform .25s ease;overflow:hidden;
+}
+.edit-panel.open{transform:translateX(0);}
+.edit-panel-head{
+  padding:1.2rem 1.5rem;background:var(--ab-blue);color:#fff;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.edit-panel-head h2{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.03em;}
+.edit-panel-body{flex:1;overflow-y:auto;padding:1.2rem 1.5rem;}
+.edit-panel-foot{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.6rem;background:var(--surface);flex-shrink:0;}
+.panel-close{background:rgba(255,255,255,.15);border:none;color:#fff;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;padding:.3rem .7rem;border-radius:5px;cursor:pointer;}
+
+.field-group{margin-bottom:1.1rem;}
+.field-label{font-family:'Syne',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ab-blue);display:block;margin-bottom:.3rem;}
+.field-input{width:100%;background:#f8faff;border:1.5px solid var(--border);border-radius:7px;padding:.55rem .8rem;font-family:'Lora',serif;font-size:.85rem;color:var(--text);outline:none;transition:border-color .15s;}
+.field-input:focus{border-color:var(--ab-light);}
+.field-textarea{width:100%;background:#f8faff;border:1.5px solid var(--border);border-radius:7px;padding:.55rem .8rem;font-family:'Lora',serif;font-size:.82rem;color:var(--text);outline:none;min-height:90px;resize:vertical;transition:border-color .15s;line-height:1.6;}
+.field-textarea:focus{border-color:var(--ab-light);}
+.field-select{width:100%;background:#f8faff;border:1.5px solid var(--border);border-radius:7px;padding:.5rem .8rem;font-family:'Syne',sans-serif;font-size:.78rem;color:var(--text);outline:none;cursor:pointer;}
+.field-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+
+.block-sep{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ab-blue);background:rgba(27,58,107,.05);border:1px solid rgba(27,58,107,.1);border-radius:6px;padding:.4rem .8rem;margin:1rem 0 .8rem;display:block;}
+
+.btn-save{background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.4rem;border-radius:7px;border:none;cursor:pointer;flex:1;}
+.btn-save:hover{background:var(--ab-blue2);}
+.btn-cancel-panel{background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.2rem;border-radius:7px;cursor:pointer;}
+.btn-reset{background:none;border:1.5px solid rgba(192,64,64,.25);color:var(--rouge);font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:7px;cursor:pointer;}
+
+/* ── CALENDRIER ADMIN ── */
+.cal-admin-list{display:flex;flex-direction:column;gap:.6rem;}
+.cal-admin-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:.9rem 1.1rem;display:flex;align-items:center;gap:1rem;
+}
+.cal-admin-date{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--ab-blue);min-width:38px;text-align:center;line-height:1;}
+.cal-admin-month{font-family:'Syne',sans-serif;font-size:.58rem;color:var(--muted);text-align:center;}
+.cal-admin-info{flex:1;}
+.cal-admin-titre{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;color:var(--text);}
+.cal-admin-desc{font-size:.74rem;color:var(--muted);margin-top:.1rem;}
+.cal-type-badge{font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;padding:.15rem .5rem;border-radius:20px;}
+.type-trail{background:rgba(74,138,90,.12);color:var(--mousse);}
+.type-route{background:rgba(74,122,204,.12);color:var(--ab-blue2);}
+.type-rando{background:rgba(212,137,58,.12);color:#8a5010;}
+.type-montagne{background:rgba(192,64,64,.12);color:var(--rouge);}
+.type-social{background:rgba(120,80,180,.12);color:#6030a0;}
+.btn-del-cal{background:none;border:1px solid rgba(192,64,64,.2);color:rgba(192,64,64,.5);font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.btn-del-cal:hover{background:rgba(192,64,64,.08);border-color:var(--rouge);color:var(--rouge);}
+.btn-edit-cal{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.btn-edit-cal:hover{border-color:var(--ab-light);color:var(--ab-blue);}
+.add-cal-box{background:var(--surface);border:1.5px dashed var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;}
+.add-cal-box h3{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:800;color:var(--ab-blue);margin-bottom:1rem;}
+.add-cal-row{display:flex;gap:.8rem;flex-wrap:wrap;align-items:flex-end;}
+
+/* ── CONFIG ── */
+.config-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin-bottom:1rem;}
+.config-card h3{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:800;color:var(--ab-blue);margin-bottom:.8rem;}
+.config-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem;}
+.config-key{font-family:'Syne',sans-serif;font-size:.72rem;color:var(--text);}
+.config-note{font-size:.72rem;color:var(--muted);margin-top:.4rem;line-height:1.5;}
+
+/* ── GITHUB MODAL ── */
+#gh-modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(20,35,70,.6);
+  backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;
+}
+#gh-modal-overlay.open{display:flex;}
+.gh-modal{background:#fff;border-radius:16px;padding:2rem;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.gh-modal h2{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--ab-blue);margin-bottom:.4rem;}
+.gh-modal p{font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;}
+.gh-steps{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.2rem;}
+.gh-step{display:flex;gap:.8rem;align-items:flex-start;}
+.gh-step-num{background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;}
+.gh-step-text{font-size:.8rem;color:var(--text);line-height:1.5;}
+.gh-step-text a{color:var(--ab-blue2);}
+.progress-bar{height:4px;background:rgba(27,58,107,.1);border-radius:2px;overflow:hidden;margin:1rem 0;}
+.progress-fill{height:100%;background:var(--mousse);border-radius:2px;width:0;transition:width .3s;}
+#publish-status{font-family:'Syne',sans-serif;font-size:.72rem;color:var(--muted);text-align:center;min-height:1.2rem;}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:2rem;right:2rem;background:var(--ab-blue);color:#fff;
+  font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;
+  padding:.7rem 1.3rem;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);
+  z-index:1000;transform:translateY(100px);opacity:0;transition:all .25s;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.success{background:var(--mousse);}
+#toast.error{background:var(--rouge);}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">AB Running Loisir</div>
+    <div class="login-sub">Interface Coach — Accès restreint</div>
+    <label class="login-label">Mot de passe coach</label>
+    <input type="password" class="login-input" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Accéder →</button>
+    <div class="login-error" id="login-error">Mot de passe incorrect.</div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">AB Running Loisir — Admin</div>
+      <div class="topbar-subtitle">Interface Coach</div>
+    </div>
+    <div class="topbar-right">
+      <button class="publish-btn" id="publish-btn" onclick="openPublishModal()">
+        📤 Publier les modifications
+      </button>
+      <button class="logout-btn" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="status-bar" id="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-msg">Prêt — aucune modification en attente</span>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="showTab('programme',this)">📅 Programme</button>
+    <button class="admin-tab" onclick="showTab('calendrier',this)">🗓 Calendrier</button>
+    <button class="admin-tab" onclick="showTab('config',this)">⚙️ Configuration</button>
+  </div>
+
+  <!-- ══ PROGRAMME ══ -->
+  <div class="admin-page active" id="tab-programme">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem">
+      <div>
+        <div class="section-title">Programme annuel</div>
+        <div class="section-sub">48 semaines · cliquez sur ✏️ pour modifier une semaine · les changements sont publiés via "Publier"</div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <span style="font-family:'Syne',sans-serif;font-size:.62rem;color:var(--muted)">Filtre :</span>
+        <select id="phase-filter" onchange="buildProgTable()" style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.35rem .6rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text)">
+          <option value="">Toutes les phases</option>
+          <option value="phase-reprise">Reprise</option>
+          <option value="phase-base">Base endurance</option>
+          <option value="phase-force">Force / D+</option>
+          <option value="phase-prepa">Prépa trail</option>
+          <option value="phase-precomp">Pré-compétition</option>
+          <option value="phase-montagne">Bloc montagne</option>
+        </select>
+      </div>
+    </div>
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(27,58,107,.07)">
+      <table class="prog-admin-table">
+        <thead>
+          <tr>
+            <th style="width:65px">Sem.</th>
+            <th style="width:130px">Phase</th>
+            <th>Mardi</th>
+            <th>Jeudi</th>
+            <th style="width:100px">Action</th>
+          </tr>
+        </thead>
+        <tbody id="prog-admin-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ CALENDRIER ══ -->
+  <div class="admin-page" id="tab-calendrier">
+    <div class="section-title">Calendrier des sorties</div>
+    <div class="section-sub">Gérez les sorties et événements — modifiez, ajoutez, supprimez</div>
+
+    <div class="add-cal-box">
+      <h3>➕ Ajouter un événement</h3>
+      <div class="add-cal-row">
+        <div style="flex:1;min-width:150px">
+          <label class="field-label">Date</label>
+          <input type="date" class="field-input" id="new-cal-date">
+        </div>
+        <div style="flex:1;min-width:150px">
+          <label class="field-label">Type</label>
+          <select class="field-select" id="new-cal-type">
+            <option value="trail">🌿 Trail</option>
+            <option value="route">🏃 Route</option>
+            <option value="rando">🥾 Rando</option>
+            <option value="montagne">🏔 Montagne</option>
+            <option value="social">🎉 Section</option>
+          </select>
+        </div>
+        <div style="flex:2;min-width:200px">
+          <label class="field-label">Titre</label>
+          <input type="text" class="field-input" id="new-cal-titre" placeholder="Ex: Sortie trail Ursuya">
+        </div>
+      </div>
+      <div style="margin-top:.7rem">
+        <label class="field-label">Description</label>
+        <textarea class="field-textarea" id="new-cal-desc" rows="2" placeholder="Détails, niveau requis, covoiturage..."></textarea>
+      </div>
+      <button onclick="addCalEvent()" style="margin-top:.7rem;background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.55rem 1.2rem;border:none;border-radius:7px;cursor:pointer;">Ajouter →</button>
+    </div>
+
+    <div id="cal-admin-list" class="cal-admin-list"></div>
+  </div>
+
+  <!-- ══ CONFIG ══ -->
+  <div class="admin-page" id="tab-config">
+    <div class="section-title">Configuration</div>
+    <div class="section-sub">Paramètres de connexion GitHub pour la publication automatique</div>
+
+    <div class="config-card">
+      <h3>🔗 Connexion GitHub</h3>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">
+        Pour publier les modifications directement sur votre site, renseignez vos informations GitHub. Ces données sont stockées uniquement dans votre navigateur.
+      </p>
+
+      <div class="field-group">
+        <label class="field-label">Pseudo GitHub</label>
+        <input type="text" class="field-input" id="cfg-owner" placeholder="ex: jeremydufau-bot">
+        <div class="field-sub">Votre nom d'utilisateur GitHub</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Nom du dépôt</label>
+        <input type="text" class="field-input" id="cfg-repo" placeholder="ex: ab-running">
+        <div class="field-sub">Le nom du dépôt GitHub (sans le /)</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Token GitHub (Personal Access Token)</label>
+        <input type="password" class="field-input" id="cfg-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <div class="field-sub">
+          Créez un token sur GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)<br>
+          Cochez la permission <strong>repo</strong> (accès complet aux dépôts). Ce token reste dans votre navigateur uniquement.
+        </div>
+      </div>
+      <button onclick="saveConfig()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.4rem;border:none;border-radius:7px;cursor:pointer;">💾 Enregistrer</button>
+      <button onclick="testConnection()" style="margin-left:.6rem;background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.58rem 1.2rem;border-radius:7px;cursor:pointer;">🔍 Tester la connexion</button>
+    </div>
+
+    <div class="config-card">
+      <h3>🔐 Mot de passe coach</h3>
+      <div class="field-group">
+        <label class="field-label">Nouveau mot de passe</label>
+        <input type="password" class="field-input" id="cfg-pwd-new" placeholder="Nouveau mot de passe">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Confirmer</label>
+        <input type="password" class="field-input" id="cfg-pwd-confirm" placeholder="Confirmer le mot de passe">
+      </div>
+      <button onclick="changePwd()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.4rem;border:none;border-radius:7px;cursor:pointer;">Changer le mot de passe</button>
+      <div class="config-note" style="margin-top:.8rem">⚠️ Le mot de passe est partagé entre les 3 coachs. Communiquez-le de vive voix ou par message privé.</div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ══ EDIT PANEL ══ -->
+<div class="edit-panel" id="edit-panel">
+  <div class="edit-panel-head">
+    <h2 id="panel-title">Modifier la semaine</h2>
+    <button class="panel-close" onclick="closePanel()">✕ Fermer</button>
+  </div>
+  <div class="edit-panel-body" id="panel-body"></div>
+  <div class="edit-panel-foot">
+    <button class="btn-save" onclick="saveWeek()">💾 Enregistrer</button>
+    <button class="btn-cancel-panel" onclick="closePanel()">Annuler</button>
+    <button class="btn-reset" id="btn-reset-week" onclick="resetWeek()" style="display:none">↺ Original</button>
+  </div>
+</div>
+<div id="panel-overlay" onclick="closePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.15);z-index:199;"></div>
+
+<!-- ══ PUBLISH MODAL ══ -->
+<div id="gh-modal-overlay">
+  <div class="gh-modal">
+    <h2>📤 Publier sur GitHub</h2>
+    <p>Cette action va mettre à jour <strong>data.js</strong> sur votre dépôt GitHub. Tous les membres verront les modifications dans 1-2 minutes.</p>
+    <div class="gh-steps" id="gh-steps-config" style="display:none">
+      <div class="gh-step">
+        <div class="gh-step-num">1</div>
+        <div class="gh-step-text">⚠️ Configurez d'abord vos informations GitHub dans l'onglet <strong>Configuration</strong></div>
+      </div>
+    </div>
+    <div class="progress-bar" id="progress-bar" style="display:none"><div class="progress-fill" id="progress-fill"></div></div>
+    <div id="publish-status"></div>
+    <div style="display:flex;gap:.8rem;margin-top:1.2rem;flex-wrap:wrap">
+      <button id="confirm-publish-btn" onclick="doPublish()" style="background:var(--mousse);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.65rem 1.5rem;border:none;border-radius:8px;cursor:pointer;flex:1">📤 Publier maintenant</button>
+      <button onclick="closePublishModal()" style="background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.63rem 1.2rem;border-radius:8px;cursor:pointer">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+// ════════════════════════════════════════════════
+// AUTHENTIFICATION
+// ════════════════════════════════════════════════
+const DEFAULT_PWD_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // "admin" - à changer !
+
+function sha256(str){
+  const encoder = new TextEncoder();
+  return crypto.subtle.digest('SHA-256', encoder.encode(str)).then(buf =>
+    Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')
+  );
+}
+
+async function doLogin(){
+  const pwd = document.getElementById('login-pwd').value;
+  const hash = await sha256(pwd);
+  const stored = localStorage.getItem('ab-admin-pwd-hash') || DEFAULT_PWD_HASH;
+  if(hash === stored){
+    localStorage.setItem('ab-admin-session', 'true');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    initApp();
+  } else {
+    document.getElementById('login-error').style.display='block';
+    document.getElementById('login-pwd').value='';
+    document.getElementById('login-pwd').focus();
+  }
+}
+
+function doLogout(){
+  localStorage.removeItem('ab-admin-session');
+  location.reload();
+}
+
+async function changePwd(){
+  const n = document.getElementById('cfg-pwd-new').value;
+  const c = document.getElementById('cfg-pwd-confirm').value;
+  if(!n){ toast('Entrez un nouveau mot de passe','error'); return; }
+  if(n!==c){ toast('Les mots de passe ne correspondent pas','error'); return; }
+  const hash = await sha256(n);
+  localStorage.setItem('ab-admin-pwd-hash', hash);
+  document.getElementById('cfg-pwd-new').value='';
+  document.getElementById('cfg-pwd-confirm').value='';
+  toast('Mot de passe mis à jour ✓','success');
+}
+
+// Check session on load
+if(localStorage.getItem('ab-admin-session')==='true'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.addEventListener('DOMContentLoaded', initApp);
+}
+
+// ════════════════════════════════════════════════
+// ÉTAT LOCAL — modifications en attente
+// ════════════════════════════════════════════════
+// On travaille sur une copie locale du programme et calFixed
+// Seul "Publier" écrit sur GitHub
+let localProgramme = null;   // copie de programme
+let localCalFixed = null;    // copie de calFixed
+let pendingChanges = false;
+
+function getLocal(){
+  const stored = localStorage.getItem('ab-admin-pending');
+  if(stored){
+    const d = JSON.parse(stored);
+    localProgramme = d.programme;
+    localCalFixed = d.calFixed;
+  } else {
+    localProgramme = JSON.parse(JSON.stringify(programme));
+    localCalFixed = JSON.parse(JSON.stringify(calFixed));
+  }
+}
+
+function saveLocal(){
+  localStorage.setItem('ab-admin-pending', JSON.stringify({
+    programme: localProgramme,
+    calFixed: localCalFixed,
+    savedAt: new Date().toISOString()
+  }));
+  pendingChanges = true;
+  updateStatusBar();
+}
+
+function updateStatusBar(){
+  const dot = document.getElementById('status-dot');
+  const msg = document.getElementById('status-msg');
+  if(pendingChanges){
+    dot.className = 'status-dot warn';
+    const saved = JSON.parse(localStorage.getItem('ab-admin-pending')||'{}').savedAt;
+    const t = saved ? new Date(saved).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '';
+    msg.textContent = `⚠️ Modifications non publiées${t?' — dernière sauvegarde à '+t:''}`;
+  } else {
+    dot.className = 'status-dot';
+    msg.textContent = 'Prêt — aucune modification en attente';
+  }
+}
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+function initApp(){
+  getLocal();
+  // Check if there are pending changes
+  const pending = localStorage.getItem('ab-admin-pending');
+  if(pending){
+    const d = JSON.parse(pending);
+    pendingChanges = (JSON.stringify(d.programme) !== JSON.stringify(programme) ||
+                      JSON.stringify(d.calFixed) !== JSON.stringify(calFixed));
+  }
+  buildProgTable();
+  buildCalList();
+  loadConfig();
+  updateStatusBar();
+}
+
+// ════════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════════
+function showTab(id, btn){
+  document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  closePanel();
+}
+
+// ════════════════════════════════════════════════
+// PROGRAMME — tableau
+// ════════════════════════════════════════════════
+const phaseColors = {
+  'phase-reprise':'#c5dcfa','phase-base':'rgba(74,122,204,.15)',
+  'phase-force':'rgba(212,137,58,.15)','phase-prepa':'rgba(74,122,204,.18)',
+  'phase-precomp':'rgba(160,90,180,.15)','phase-montagne':'rgba(192,64,64,.12)',
+  'phase-senpereko':'rgba(27,58,107,.15)','phase-euskal':'rgba(27,58,107,.15)',
+};
+const phaseTextColors = {
+  'phase-reprise':'#1a5080','phase-base':'#2351a0','phase-force':'#8a5010',
+  'phase-prepa':'#1b3a6b','phase-precomp':'#6a3080','phase-montagne':'#c04040',
+  'phase-senpereko':'#1b3a6b','phase-euskal':'#1b3a6b',
+};
+
+function buildProgTable(){
+  const filter = document.getElementById('phase-filter').value;
+  const rows = localProgramme.filter(s => !filter || s.phaseClass === filter);
+  const orig = programme;
+
+  document.getElementById('prog-admin-body').innerHTML = rows.map(s => {
+    const o = orig.find(x=>x.sem===s.sem) || s;
+    const mardiChanged = JSON.stringify(s.mardi) !== JSON.stringify(o.mardi);
+    const jeudiChanged = JSON.stringify(s.jeudi) !== JSON.stringify(o.jeudi);
+    const wkndChanged = (s.g0!==o.g0)||(s.g1!==o.g1)||(s.g2!==o.g2);
+    const anyChanged = mardiChanged||jeudiChanged||wkndChanged;
+    const bg = phaseColors[s.phaseClass]||'rgba(27,58,107,.08)';
+    const col = phaseTextColors[s.phaseClass]||'#1b3a6b';
+    return `<tr class="${s.decharge?'decharge':''}">
+      <td>
+        <div class="sem-badge">S${s.sem}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:.6rem;color:var(--muted)">${s.mois}</div>
+      </td>
+      <td>
+        <span class="phase-mini" style="background:${bg};color:${col}">${s.phase}</span>
+        ${s.decharge?'<div style="font-family:\'Syne\',sans-serif;font-size:.55rem;color:var(--mousse);margin-top:.2rem">🟢 Décharge</div>':''}
+      </td>
+      <td>
+        <div class="seance-cell">${s.mardi.titre}${mardiChanged?'<span class="modified-flag">✏️</span>':''}</div>
+        <div class="seance-terrain">${terrainLabel[s.mardi.terrain]?terrainLabel[s.mardi.terrain].icon+' '+terrainLabel[s.mardi.terrain].label:s.mardi.terrain}</div>
+      </td>
+      <td>
+        <div class="seance-cell">${s.jeudi.titre}${jeudiChanged?'<span class="modified-flag">✏️</span>':''}</div>
+        <div class="seance-terrain">${terrainLabel[s.jeudi.terrain]?terrainLabel[s.jeudi.terrain].icon+' '+terrainLabel[s.jeudi.terrain].label:s.jeudi.terrain}</div>
+      </td>
+      <td>
+        <button class="btn-edit-row" onclick="openPanel(${s.sem})">✏️ Modifier</button>
+        ${anyChanged?`<button class="btn-edit-row" style="margin-top:.3rem;color:var(--rouge);border-color:rgba(192,64,64,.3)" onclick="resetWeekById(${s.sem})">↺</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════
+// EDIT PANEL
+// ════════════════════════════════════════════════
+let editingSem = null;
+
+function openPanel(sem){
+  editingSem = sem;
+  const s = localProgramme.find(x=>x.sem===sem);
+  const orig = programme.find(x=>x.sem===sem) || s;
+  const anyChanged = JSON.stringify(s)!==JSON.stringify(orig);
+
+  document.getElementById('panel-title').textContent = `Semaine ${sem} — ${s.mois} · ${s.phase}`;
+  document.getElementById('btn-reset-week').style.display = anyChanged ? 'block' : 'none';
+
+  const terrainOpts = (sel) => Object.entries(terrainLabel).map(([k,v])=>
+    `<option value="${k}" ${sel===k?'selected':''}>${v.icon} ${v.label}</option>`
+  ).join('');
+
+  document.getElementById('panel-body').innerHTML = `
+    <span class="block-sep">📅 MARDI</span>
+    <div class="field-group">
+      <label class="field-label">Titre de la séance</label>
+      <input class="field-input" id="p-mardi-titre" value="${s.mardi.titre.replace(/"/g,'&quot;')}">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Terrain</label>
+      <select class="field-select" id="p-mardi-terrain">${terrainOpts(s.mardi.terrain)}</select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Description & PPG</label>
+      <textarea class="field-textarea" id="p-mardi-detail" rows="5">${s.mardi.detail}</textarea>
+    </div>
+
+    <span class="block-sep" style="background:rgba(74,138,90,.06);border-color:rgba(74,138,90,.15);color:var(--mousse)">📅 JEUDI</span>
+    <div class="field-group">
+      <label class="field-label">Titre de la séance</label>
+      <input class="field-input" id="p-jeudi-titre" value="${s.jeudi.titre.replace(/"/g,'&quot;')}">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Terrain</label>
+      <select class="field-select" id="p-jeudi-terrain">${terrainOpts(s.jeudi.terrain)}</select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Description & PPG</label>
+      <textarea class="field-textarea" id="p-jeudi-detail" rows="5">${s.jeudi.detail}</textarea>
+    </div>
+
+    <span class="block-sep" style="background:rgba(27,58,107,.04)">🏃 WEEKEND (par profil)</span>
+    <div class="field-group">
+      <label class="field-label">Route 🏃</label>
+      <input class="field-input" id="p-g0" value="${(s.g0||'').replace(/"/g,'&quot;')}">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Trail loisir 🌿</label>
+      <input class="field-input" id="p-g1" value="${(s.g1||'').replace(/"/g,'&quot;')}">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Trail montagne 🏔</label>
+      <input class="field-input" id="p-g2" value="${(s.g2||'').replace(/"/g,'&quot;')}">
+    </div>
+    <div class="field-group">
+      <label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+        <input type="checkbox" id="p-decharge" ${s.decharge?'checked':''}>
+        Semaine de décharge
+      </label>
+    </div>
+  `;
+
+  document.getElementById('edit-panel').classList.add('open');
+  document.getElementById('panel-overlay').style.display='block';
+}
+
+function closePanel(){
+  document.getElementById('edit-panel').classList.remove('open');
+  document.getElementById('panel-overlay').style.display='none';
+  editingSem = null;
+}
+
+function saveWeek(){
+  if(!editingSem) return;
+  const idx = localProgramme.findIndex(x=>x.sem===editingSem);
+  if(idx===-1) return;
+  localProgramme[idx].mardi.titre   = document.getElementById('p-mardi-titre').value.trim();
+  localProgramme[idx].mardi.terrain = document.getElementById('p-mardi-terrain').value;
+  localProgramme[idx].mardi.detail  = document.getElementById('p-mardi-detail').value.trim();
+  localProgramme[idx].jeudi.titre   = document.getElementById('p-jeudi-titre').value.trim();
+  localProgramme[idx].jeudi.terrain = document.getElementById('p-jeudi-terrain').value;
+  localProgramme[idx].jeudi.detail  = document.getElementById('p-jeudi-detail').value.trim();
+  localProgramme[idx].g0 = document.getElementById('p-g0').value.trim();
+  localProgramme[idx].g1 = document.getElementById('p-g1').value.trim();
+  localProgramme[idx].g2 = document.getElementById('p-g2').value.trim();
+  localProgramme[idx].decharge = document.getElementById('p-decharge').checked;
+  saveLocal();
+  buildProgTable();
+  closePanel();
+  toast('Semaine S'+editingSem+' mise à jour — pensez à Publier','success');
+}
+
+function resetWeek(){
+  if(!editingSem) return;
+  resetWeekById(editingSem);
+  closePanel();
+}
+
+function resetWeekById(sem){
+  const orig = programme.find(x=>x.sem===sem);
+  if(!orig) return;
+  const idx = localProgramme.findIndex(x=>x.sem===sem);
+  localProgramme[idx] = JSON.parse(JSON.stringify(orig));
+  saveLocal();
+  buildProgTable();
+  toast('Semaine S'+sem+' remise à l\'original','success');
+}
+
+// ════════════════════════════════════════════════
+// CALENDRIER — admin
+// ════════════════════════════════════════════════
+const typeInfo = {
+  trail:{label:'🌿 Trail',cls:'type-trail'},
+  route:{label:'🏃 Route',cls:'type-route'},
+  rando:{label:'🥾 Rando',cls:'type-rando'},
+  montagne:{label:'🏔 Montagne',cls:'type-montagne'},
+  social:{label:'🎉 Section',cls:'type-social'},
+};
+
+function buildCalList(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const sorted = [...localCalFixed].sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+  document.getElementById('cal-admin-list').innerHTML = sorted.map(e => {
+    const d = new Date(e.date+'T12:00:00');
+    const isPast = d < today;
+    const ti = typeInfo[e.type] || {label:e.type,cls:'type-social'};
+    const orig = calFixed.find(x=>x.id===e.id);
+    const isNew = !orig;
+    const isModified = orig && JSON.stringify(e)!==JSON.stringify(orig);
+    return `<div class="cal-admin-item" style="${isPast?'opacity:.5':''}">
+      <div>
+        <div class="cal-admin-date">${d.getDate()}</div>
+        <div class="cal-admin-month">${d.toLocaleDateString('fr-FR',{month:'short'}).replace('.','')}</div>
+      </div>
+      <div class="cal-admin-info">
+        <div class="cal-admin-titre">
+          ${e.titre}
+          ${isNew?'<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;color:var(--mousse);margin-left:.3rem">NEW</span>':''}
+          ${isModified?'<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;color:var(--ab-light);margin-left:.3rem">✏️</span>':''}
+        </div>
+        <div class="cal-admin-desc">${e.desc}</div>
+      </div>
+      <span class="cal-type-badge ${ti.cls}">${ti.label}</span>
+      <button class="btn-edit-cal" onclick="editCalEvent('${e.id}')">✏️</button>
+      <button class="btn-del-cal" onclick="deleteCalEvent('${e.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function addCalEvent(){
+  const date  = document.getElementById('new-cal-date').value;
+  const type  = document.getElementById('new-cal-type').value;
+  const titre = document.getElementById('new-cal-titre').value.trim();
+  const desc  = document.getElementById('new-cal-desc').value.trim();
+  if(!date||!titre){ toast('Date et titre obligatoires','error'); return; }
+  const id = 'u'+Date.now();
+  localCalFixed.push({id, date, type, titre, desc});
+  document.getElementById('new-cal-date').value='';
+  document.getElementById('new-cal-titre').value='';
+  document.getElementById('new-cal-desc').value='';
+  saveLocal();
+  buildCalList();
+  toast('Événement ajouté','success');
+}
+
+function deleteCalEvent(id){
+  if(!confirm('Supprimer cet événement ?')) return;
+  localCalFixed = localCalFixed.filter(e=>e.id!==id);
+  saveLocal();
+  buildCalList();
+  toast('Événement supprimé','success');
+}
+
+function editCalEvent(id){
+  const e = localCalFixed.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('new-cal-date').value = e.date;
+  document.getElementById('new-cal-type').value = e.type;
+  document.getElementById('new-cal-titre').value = e.titre;
+  document.getElementById('new-cal-desc').value = e.desc;
+  // Remove old and user will re-add
+  localCalFixed = localCalFixed.filter(x=>x.id!==id);
+  saveLocal();
+  buildCalList();
+  toast('Événement chargé dans le formulaire — modifiez et cliquez Ajouter','success');
+}
+
+// ════════════════════════════════════════════════
+// CONFIG GITHUB
+// ════════════════════════════════════════════════
+function loadConfig(){
+  const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
+  if(cfg.owner) document.getElementById('cfg-owner').value = cfg.owner;
+  if(cfg.repo)  document.getElementById('cfg-repo').value  = cfg.repo;
+  if(cfg.token) document.getElementById('cfg-token').value = cfg.token;
+}
+
+function saveConfig(){
+  const cfg = {
+    owner: document.getElementById('cfg-owner').value.trim(),
+    repo:  document.getElementById('cfg-repo').value.trim(),
+    token: document.getElementById('cfg-token').value.trim(),
+  };
+  localStorage.setItem('ab-admin-github', JSON.stringify(cfg));
+  toast('Configuration enregistrée ✓','success');
+}
+
+async function testConnection(){
+  const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
+  if(!cfg.owner||!cfg.repo||!cfg.token){ toast('Configurez GitHub d\'abord','error'); return; }
+  try {
+    const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}`, {
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(r.ok) toast('✓ Connexion GitHub réussie !','success');
+    else toast('Erreur GitHub : '+r.status+' — vérifiez token et dépôt','error');
+  } catch(e){ toast('Erreur réseau : '+e.message,'error'); }
+}
+
+// ════════════════════════════════════════════════
+// PUBLICATION GITHUB
+// ════════════════════════════════════════════════
+function openPublishModal(){
+  const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
+  document.getElementById('gh-steps-config').style.display = (cfg.owner&&cfg.repo&&cfg.token)?'none':'block';
+  document.getElementById('progress-bar').style.display='none';
+  document.getElementById('publish-status').textContent='';
+  document.getElementById('confirm-publish-btn').disabled=false;
+  document.getElementById('gh-modal-overlay').classList.add('open');
+}
+
+function closePublishModal(){
+  document.getElementById('gh-modal-overlay').classList.remove('open');
+}
+
+function setProgress(pct, msg){
+  document.getElementById('progress-bar').style.display='block';
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('publish-status').textContent=msg;
+}
+
+// Génère le contenu de data.js à partir des données locales modifiées
+function generateDataJs(){
+  // On prend le data.js original et on remplace les sections programme et calFixed
+  const progJson = JSON.stringify(localProgramme, null, 2);
+  const calJson  = JSON.stringify(localCalFixed, null, 2);
+
+  // Reconstruct data.js with updated values
+  // We'll fetch the current data.js content and replace the arrays
+  return null; // handled async in doPublish
+}
+
+async function doPublish(){
+  const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
+  if(!cfg.owner||!cfg.repo||!cfg.token){
+    toast('Configurez GitHub dans l\'onglet Configuration','error');
+    closePublishModal();
+    return;
+  }
+
+  document.getElementById('confirm-publish-btn').disabled=true;
+
+  try {
+    // Step 1: Get current data.js from GitHub
+    setProgress(15, '📥 Récupération de data.js depuis GitHub...');
+    const fileUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.js`;
+    const headers = {
+      'Authorization':'token '+cfg.token,
+      'Accept':'application/vnd.github.v3+json',
+      'Content-Type':'application/json'
+    };
+    const getResp = await fetch(fileUrl, {headers});
+    if(!getResp.ok) throw new Error(`Impossible de récupérer data.js (${getResp.status})`);
+    const fileData = await getResp.json();
+    const sha = fileData.sha;
+    let currentContent = atob(fileData.content.replace(/\n/g,''));
+
+    setProgress(40, '✏️ Application des modifications...');
+
+    // Replace programme array in data.js
+    currentContent = replaceJsConst(currentContent, 'programme', JSON.stringify(localProgramme, null, 2));
+    // Replace calFixed array in data.js
+    currentContent = replaceJsConst(currentContent, 'calFixed', JSON.stringify(localCalFixed, null, 2));
+
+    setProgress(65, '📤 Envoi vers GitHub...');
+
+    // Step 2: Push updated data.js
+    const now = new Date().toLocaleString('fr-FR');
+    const pushResp = await fetch(fileUrl, {
+      method:'PUT',
+      headers,
+      body: JSON.stringify({
+        message: `[Admin] Mise à jour programme & calendrier — ${now}`,
+        content: btoa(unescape(encodeURIComponent(currentContent))),
+        sha: sha
+      })
+    });
+
+    if(!pushResp.ok){
+      const err = await pushResp.json();
+      throw new Error(err.message || pushResp.status);
+    }
+
+    setProgress(100, '✅ Publié avec succès ! Le site sera mis à jour dans 1-2 minutes.');
+
+    // Clear pending
+    localStorage.removeItem('ab-admin-pending');
+    pendingChanges = false;
+    // Sync local copies to match what we just published
+    localProgramme = JSON.parse(JSON.stringify(localProgramme));
+    localCalFixed  = JSON.parse(JSON.stringify(localCalFixed));
+    updateStatusBar();
+    buildProgTable();
+    buildCalList();
+
+    setTimeout(closePublishModal, 3000);
+
+  } catch(e){
+    setProgress(0, '');
+    document.getElementById('publish-status').textContent = '❌ Erreur : '+e.message;
+    document.getElementById('publish-status').style.color='var(--rouge)';
+    document.getElementById('confirm-publish-btn').disabled=false;
+    console.error(e);
+  }
+}
+
+// Replace a JS const array/object in source text
+function replaceJsConst(source, name, newValue){
+  // Find "const name = " then find the matching bracket
+  const marker = `const ${name} = `;
+  const startIdx = source.indexOf(marker);
+  if(startIdx === -1) return source;
+  const valueStart = startIdx + marker.length;
+  const openCh = source[valueStart];
+  const closeCh = openCh === '[' ? ']' : '}';
+  let depth = 0, i = valueStart;
+  while(i < source.length){
+    if(source[i]===openCh) depth++;
+    else if(source[i]===closeCh){ depth--; if(depth===0){i++;break;} }
+    i++;
+  }
+  // Skip semicolon
+  if(source[i]===';') i++;
+  return source.slice(0, startIdx) + marker + newValue + ';\n' + source.slice(i);
+}
+
+// ════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════
+let toastTimer;
+function toast(msg, type='success'){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show '+type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.className='', 3500);
+}
+</script>
+</body>
+</html>
