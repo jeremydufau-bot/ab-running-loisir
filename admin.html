@@ -420,22 +420,20 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 <script src="data.js"></script>
 <script>
 // ════════════════════════════════════════════════
-// AUTHENTIFICATION
+// AUTHENTIFICATION — simple et fiable
 // ════════════════════════════════════════════════
-const DEFAULT_PWD_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // "admin" - à changer !
 
-function sha256(str){
-  const encoder = new TextEncoder();
-  return crypto.subtle.digest('SHA-256', encoder.encode(str)).then(buf =>
-    Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')
-  );
-}
+// Mot de passe stocké en clair (encodé base64 pour ne pas être visible à l'oeil)
+// "admin" en base64 = "YWRtaW4="
+// Pour changer: encoder votre mot de passe sur https://www.base64encode.org
+const DEFAULT_PWD_B64 = 'YWRtaW4='; // = "admin"
 
-async function doLogin(){
+function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
+
+function doLogin(){
   const pwd = document.getElementById('login-pwd').value;
-  const hash = await sha256(pwd);
-  const stored = localStorage.getItem('ab-admin-pwd-hash') || DEFAULT_PWD_HASH;
-  if(hash === stored){
+  const stored = localStorage.getItem('ab-admin-pwd-b64') || DEFAULT_PWD_B64;
+  if(b64(pwd) === stored){
     localStorage.setItem('ab-admin-session', 'true');
     document.getElementById('login-screen').style.display='none';
     document.getElementById('app').style.display='block';
@@ -452,13 +450,12 @@ function doLogout(){
   location.reload();
 }
 
-async function changePwd(){
+function changePwd(){
   const n = document.getElementById('cfg-pwd-new').value;
   const c = document.getElementById('cfg-pwd-confirm').value;
   if(!n){ toast('Entrez un nouveau mot de passe','error'); return; }
   if(n!==c){ toast('Les mots de passe ne correspondent pas','error'); return; }
-  const hash = await sha256(n);
-  localStorage.setItem('ab-admin-pwd-hash', hash);
+  localStorage.setItem('ab-admin-pwd-b64', b64(n));
   document.getElementById('cfg-pwd-new').value='';
   document.getElementById('cfg-pwd-confirm').value='';
   toast('Mot de passe mis à jour ✓','success');
@@ -468,7 +465,6 @@ async function changePwd(){
 if(localStorage.getItem('ab-admin-session')==='true'){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  // DOM peut déjà être chargé si session auto-login
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', initApp);
   } else {
