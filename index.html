@@ -356,27 +356,7 @@ nav button.active{color:#fff;border-bottom-color:var(--ab-sky);}
 .niv-1{background:rgba(27,58,107,.08);color:var(--ab-blue2);}
 .niv-2{background:rgba(192,64,64,.1);color:var(--rouge);}
 
-/* ── EDIT BTN ── */
-.edit-btn {
-  display:inline-flex;align-items:center;gap:.25rem;
-  background:none;border:1px solid var(--border);
-  color:var(--muted);font-family:'Syne',sans-serif;font-size:.62rem;font-weight:700;
-  padding:.25rem .6rem;border-radius:5px;cursor:pointer;transition:all .15s;
-  white-space:nowrap;
-}
-.edit-btn:hover{background:rgba(27,58,107,.07);border-color:var(--ab-light);color:var(--ab-blue);}
 
-/* ── MODAL EDIT ── */
-.modal-edit-grid{display:grid;gap:.8rem;}
-.modal-label{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ab-blue);margin-bottom:.25rem;display:block;}
-.modal-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.6rem .8rem;font-family:'Lora',serif;font-size:.88rem;color:var(--text);outline:none;transition:border-color .15s;}
-.modal-input:focus{border-color:var(--ab-light);}
-.modal-textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.6rem .8rem;font-family:'Lora',serif;font-size:.85rem;color:var(--text);outline:none;min-height:80px;resize:vertical;transition:border-color .15s;}
-.modal-textarea:focus{border-color:var(--ab-light);}
-.modal-select{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.5rem .8rem;font-family:'Syne',sans-serif;font-size:.78rem;color:var(--text);outline:none;cursor:pointer;width:100%;}
-.btn-save{background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.4rem;border-radius:7px;border:none;cursor:pointer;transition:background .15s;}
-.btn-save:hover{background:var(--ab-blue2);}
-.btn-cancel{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.2rem;border-radius:7px;cursor:pointer;}
 
 /* ── CAL DELETE BTN ── */
 .cal-del-btn{
@@ -1143,9 +1123,7 @@ let currentLevel = 0;
 let currentPhase = '';
 let currentNiveau = 0; // 0=débutant 1=intermédiaire 2=confirmé
 
-// Overrides locaux : { semId_jour : { titre, detail, niveaux:[...] } }
-function getOverrides(){ return JSON.parse(localStorage.getItem('ab-prog-overrides')||'{}'); }
-function saveOverrides(o){ localStorage.setItem('ab-prog-overrides', JSON.stringify(o)); }
+
 
 function setLevel(lvl, btn){
   currentLevel = lvl;
@@ -1197,7 +1175,6 @@ function getNiveauBlock(titre){
 function buildTable(){
   const tbody = document.getElementById('progBody');
   const gKeys = ['g0','g1','g2'];
-  const overrides = getOverrides();
   const rows = programme.filter(s => !currentPhase || s.phaseClass === currentPhase);
   const nLabels = ['🟢 Débutant','🔵 Intermédiaire','🔴 Confirmé'];
 
@@ -1207,11 +1184,10 @@ function buildTable(){
     const isEvent = s.event;
     const dc = s.decharge;
 
-    // Apply overrides
     const mardiKey = `${s.sem}_mardi`;
     const jeudiKey = `${s.sem}_jeudi`;
-    const mardi = overrides[mardiKey] ? {...s.mardi, ...overrides[mardiKey]} : s.mardi;
-    const jeudi = overrides[jeudiKey] ? {...s.jeudi, ...overrides[jeudiKey]} : s.jeudi;
+    const mardi = s.mardi;
+    const jeudi = s.jeudi;
 
     // Niveau detail for current session type
     const niv = niveauxData['cote']; // placeholder, shown in detail
@@ -1228,19 +1204,16 @@ function buildTable(){
         ${isEvent?`<div style="font-size:.68rem;color:var(--ab-blue2);font-weight:600;margin-top:.2rem">📌 ${s.event}</div>`:''}
       </td>
       <td>
-        <div class="seance-titre">${mardi.titre}${overrides[mardiKey]?'<span style="color:var(--ab-light);font-size:.6rem;margin-left:.3rem">✏️</span>':''}</div>
+        <div class="seance-titre">${mardi.titre}</div>
         ${terrainTag(mardi.terrain)}
         ${mardi.detail && mardi.detail.includes('🏋 PPG') ? '<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--ab-blue2);background:rgba(27,58,107,.06);padding:.1rem .35rem;border-radius:3px;margin-left:.2rem">🏋 PPG</span>' : ''}
       </td>
       <td>
-        <div class="seance-titre">${jeudi.titre}${overrides[jeudiKey]?'<span style="color:var(--ab-light);font-size:.6rem;margin-left:.3rem">✏️</span>':''}</div>
+        <div class="seance-titre">${jeudi.titre}</div>
         ${terrainTag(jeudi.terrain)}
         ${jeudi.detail && jeudi.detail.includes('🏋 PPG') ? '<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--ab-blue2);background:rgba(27,58,107,.06);padding:.1rem .35rem;border-radius:3px;margin-left:.2rem">🏋 PPG</span>' : ''}
       </td>
       <td style="color:var(--muted);font-size:.78rem;line-height:1.5">${wknd}</td>
-      <td onclick="event.stopPropagation()">
-        <button class="edit-btn" onclick="openEdit(${s.sem})">✏️ Modifier</button>
-      </td>
     </tr>`;
   }).join('');
 }
@@ -1327,7 +1300,6 @@ function renderAccueilInit(){
 
 function renderAccueilGrid(){
   const { semNum, lundiAuj } = getSemaineSaison();
-  const overrides = getOverrides();
   const gKeys = ['g0','g1','g2'];
   const gLabels = ['Route 🏃','Trail loisir 🌿','Trail montagne 🏔'];
   const weekLabels = ['Cette semaine','Semaine prochaine','Dans 2 semaines'];
@@ -1352,9 +1324,9 @@ function renderAccueilGrid(){
     }
 
     // Apply overrides (same as programme page)
-    const s_mardi = overrides[`${sn}_mardi`] ? {...base.mardi,...overrides[`${sn}_mardi`]} : base.mardi;
-    const s_jeudi = overrides[`${sn}_jeudi`] ? {...base.jeudi,...overrides[`${sn}_jeudi`]} : base.jeudi;
-    const wkndVal = overrides[`${sn}_${gKeys[accLevel]}`] || base[gKeys[accLevel]] || '—';
+    const s_mardi = base.mardi;
+    const s_jeudi = base.jeudi;
+    const wkndVal = base[gKeys[accLevel]] || '—';
 
     const ph = phaseLabels[base.phaseClass] || {label:base.phase,cls:'phase-base'};
     const tM = terrainLabel[s_mardi.terrain] || {icon:'📍',label:s_mardi.terrain};
@@ -1366,8 +1338,8 @@ function renderAccueilGrid(){
     const detJ = mainDetail(s_jeudi.detail);
     const ppgM = ppgForLevel(s_mardi.detail, accNiveau);
     const ppgJ = ppgForLevel(s_jeudi.detail, accNiveau);
-    const modM = overrides[`${sn}_mardi`] ? '<span style="color:var(--ab-light);font-size:.58rem"> ✏️</span>' : '';
-    const modJ = overrides[`${sn}_jeudi`] ? '<span style="color:var(--ab-light);font-size:.58rem"> ✏️</span>' : '';
+    const modM = '';
+    const modJ = '';
 
     const hdrBg = isCur ? 'var(--ab-blue)' : 'var(--surface2)';
     const snCol = isCur ? 'var(--ab-sky)' : 'var(--ab-blue)';
@@ -1526,11 +1498,10 @@ function formatDetailAndPPG(text, nLvl){
 function openDetail(sem){
   const s = programme.find(x=>x.sem===sem);
   if(!s) return;
-  const overrides = getOverrides();
   const gKeys = ['g0','g1','g2'];
-  const wknd = s[gKeys[currentLevel]] || '\u{2014}';
-  const mardi = overrides[`${sem}_mardi`] ? {...s.mardi,...overrides[`${sem}_mardi`]} : s.mardi;
-  const jeudi = overrides[`${sem}_jeudi`] ? {...s.jeudi,...overrides[`${sem}_jeudi`]} : s.jeudi;
+  const wknd = s[gKeys[currentLevel]] || '—';
+  const mardi = s.mardi;
+  const jeudi = s.jeudi;
   const nLvl = currentNiveau;
 
   function niveauSection(seance){
@@ -1576,9 +1547,6 @@ function openDetail(sem){
     ${niveauSection(jeudi)}
     <h4 style="margin-top:1.2rem">\u{1F3C3} Weekend \u{2014} ${['Route \u{1F3C3}','Trail loisir \u{1F33F}','Trail montagne \u{1F3D4}'][currentLevel]}</h4>
     <p style="font-size:.85rem;color:var(--muted)">${wknd}</p>
-    <div style="margin-top:1.2rem;padding-top:.8rem;border-top:1px solid var(--border)">
-      <button class="edit-btn" onclick="closeModal();openEdit(${sem})">\u{270F}\u{FE0F} Modifier cette semaine</button>
-    </div>
   `;
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1590,101 +1558,6 @@ function switchNivTab(n, btn){
   modal.querySelectorAll('.niveau-block').forEach(b=>b.classList.toggle('active',+b.dataset.niv===n));
 }
 
-// ── EDITOR MODAL ──
-let editingModal = null; // track which overlay is open
-
-function openEdit(sem){
-  const s = programme.find(x=>x.sem===sem);
-  if(!s) return;
-  const overrides = getOverrides();
-  const mardi = overrides[`${sem}_mardi`] ? {...s.mardi,...overrides[`${sem}_mardi`]} : s.mardi;
-  const jeudi = overrides[`${sem}_jeudi`] ? {...s.jeudi,...overrides[`${sem}_jeudi`]} : s.jeudi;
-  const gKeys = ['g0','g1','g2'];
-
-  const terrainOptions = Object.entries(terrainLabel).map(([k,v])=>
-    `<option value="${k}" ${mardi.terrain===k?'selected':''}>${v.icon} ${v.label}</option>`
-  ).join('');
-  const terrainOptionsJ = Object.entries(terrainLabel).map(([k,v])=>
-    `<option value="${k}" ${jeudi.terrain===k?'selected':''}>${v.icon} ${v.label}</option>`
-  ).join('');
-
-  document.getElementById('mTitle').innerHTML = `✏️ Modifier semaine ${sem} — ${s.mois}`;
-  document.getElementById('mBody').innerHTML = `
-    <div class="modal-edit-grid">
-      <div style="background:rgba(27,58,107,.05);border-radius:8px;padding:1rem">
-        <div style="font-family:'Syne',sans-serif;font-size:.72rem;font-weight:800;color:var(--ab-blue);margin-bottom:.8rem">📅 MARDI</div>
-        <label class="modal-label">Titre de la séance</label>
-        <input class="modal-input" id="edit-mardi-titre" value="${mardi.titre.replace(/"/g,'&quot;')}">
-        <label class="modal-label" style="margin-top:.6rem">Terrain</label>
-        <select class="modal-select" id="edit-mardi-terrain">${terrainOptions}</select>
-        <label class="modal-label" style="margin-top:.6rem">Description complète</label>
-        <textarea class="modal-textarea" id="edit-mardi-detail" rows="4">${mardi.detail}</textarea>
-      </div>
-      <div style="background:rgba(74,138,90,.05);border-radius:8px;padding:1rem">
-        <div style="font-family:'Syne',sans-serif;font-size:.72rem;font-weight:800;color:var(--mousse);margin-bottom:.8rem">📅 JEUDI</div>
-        <label class="modal-label">Titre de la séance</label>
-        <input class="modal-input" id="edit-jeudi-titre" value="${jeudi.titre.replace(/"/g,'&quot;')}">
-        <label class="modal-label" style="margin-top:.6rem">Terrain</label>
-        <select class="modal-select" id="edit-jeudi-terrain">${terrainOptionsJ}</select>
-        <label class="modal-label" style="margin-top:.6rem">Description complète</label>
-        <textarea class="modal-textarea" id="edit-jeudi-detail" rows="4">${jeudi.detail}</textarea>
-      </div>
-      <div style="background:rgba(27,58,107,.03);border-radius:8px;padding:1rem">
-        <div style="font-family:'Syne',sans-serif;font-size:.72rem;font-weight:800;color:var(--ab-blue);margin-bottom:.8rem">🏃 WEEKEND</div>
-        <label class="modal-label">Route 🏃</label>
-        <input class="modal-input" id="edit-g0" value="${(overrides[`${sem}_g0`]||s.g0||'').replace(/"/g,'&quot;')}">
-        <label class="modal-label" style="margin-top:.6rem">Trail loisir 🌿</label>
-        <input class="modal-input" id="edit-g1" value="${(overrides[`${sem}_g1`]||s.g1||'').replace(/"/g,'&quot;')}">
-        <label class="modal-label" style="margin-top:.6rem">Trail montagne 🏔</label>
-        <input class="modal-input" id="edit-g2" value="${(overrides[`${sem}_g2`]||s.g2||'').replace(/"/g,'&quot;')}">
-      </div>
-      <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.5rem">
-        <button class="btn-save" onclick="saveEdit(${sem})">💾 Enregistrer</button>
-        <button class="btn-cancel" onclick="closeModal()">Annuler</button>
-        ${(overrides[`${sem}_mardi`]||overrides[`${sem}_jeudi`])?`<button class="btn-cancel" style="color:var(--rouge);border-color:rgba(192,64,64,.3)" onclick="resetEdit(${sem})">↺ Remettre l'original</button>`:''}
-      </div>
-    </div>
-  `;
-  document.getElementById('overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function saveEdit(sem){
-  const overrides = getOverrides();
-  overrides[`${sem}_mardi`] = {
-    titre: document.getElementById('edit-mardi-titre').value.trim(),
-    terrain: document.getElementById('edit-mardi-terrain').value,
-    detail: document.getElementById('edit-mardi-detail').value.trim(),
-  };
-  overrides[`${sem}_jeudi`] = {
-    titre: document.getElementById('edit-jeudi-titre').value.trim(),
-    terrain: document.getElementById('edit-jeudi-terrain').value,
-    detail: document.getElementById('edit-jeudi-detail').value.trim(),
-  };
-  const g0 = document.getElementById('edit-g0').value.trim();
-  const g1 = document.getElementById('edit-g1').value.trim();
-  const g2 = document.getElementById('edit-g2').value.trim();
-  if(g0) overrides[`${sem}_g0`] = g0;
-  if(g1) overrides[`${sem}_g1`] = g1;
-  if(g2) overrides[`${sem}_g2`] = g2;
-  saveOverrides(overrides);
-  closeModal();
-  buildTable();
-  renderAccueilGrid(); // sync accueil
-}
-
-function resetEdit(sem){
-  const overrides = getOverrides();
-  delete overrides[`${sem}_mardi`];
-  delete overrides[`${sem}_jeudi`];
-  delete overrides[`${sem}_g0`];
-  delete overrides[`${sem}_g1`];
-  delete overrides[`${sem}_g2`];
-  saveOverrides(overrides);
-  closeModal();
-  buildTable();
-  renderAccueilGrid(); // sync accueil
-}
 
 // ══════════════════════════════════════════════
 // CALENDRIER — unifié avec sorties des membres

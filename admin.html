@@ -221,8 +221,19 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 
   <div class="admin-tabs">
     <button class="admin-tab active" onclick="showTab('programme',this)">📅 Programme</button>
+    <button class="admin-tab" onclick="showTab('niveaux',this)">📊 Niveaux</button>
     <button class="admin-tab" onclick="showTab('calendrier',this)">🗓 Calendrier</button>
     <button class="admin-tab" onclick="showTab('config',this)">⚙️ Configuration</button>
+  </div>
+
+  <!-- ══ NIVEAUX ══ -->
+  <div class="admin-page" id="tab-niveaux">
+    <div class="section-title">Niveaux de séance</div>
+    <div class="section-sub">Reps, récupération et allure pour chaque type de séance et chaque niveau — s'affichent dans la fiche détail sur le site des membres</div>
+    <div id="niveaux-grid" style="display:flex;flex-direction:column;gap:1rem;max-width:900px"></div>
+    <div style="margin-top:1.2rem">
+      <button onclick="saveNiveaux()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.65rem 1.5rem;border:none;border-radius:8px;cursor:pointer">💾 Enregistrer les niveaux</button>
+    </div>
   </div>
 
   <!-- ══ PROGRAMME ══ -->
@@ -445,8 +456,9 @@ if(localStorage.getItem('ab-admin-session')==='true'){
 // ════════════════════════════════════════════════
 // On travaille sur une copie locale du programme et calFixed
 // Seul "Publier" écrit sur GitHub
-let localProgramme = null;   // copie de programme
-let localCalFixed = null;    // copie de calFixed
+let localProgramme = null;
+let localCalFixed = null;
+let localNiveaux = null;
 let pendingChanges = false;
 
 function getLocal(){
@@ -455,9 +467,11 @@ function getLocal(){
     const d = JSON.parse(stored);
     localProgramme = d.programme;
     localCalFixed = d.calFixed;
+    localNiveaux = d.niveaux || JSON.parse(JSON.stringify(niveauxData));
   } else {
     localProgramme = JSON.parse(JSON.stringify(programme));
     localCalFixed = JSON.parse(JSON.stringify(calFixed));
+    localNiveaux = JSON.parse(JSON.stringify(niveauxData));
   }
 }
 
@@ -465,6 +479,7 @@ function saveLocal(){
   localStorage.setItem('ab-admin-pending', JSON.stringify({
     programme: localProgramme,
     calFixed: localCalFixed,
+    niveaux: localNiveaux,
     savedAt: new Date().toISOString()
   }));
   pendingChanges = true;
@@ -495,7 +510,8 @@ function initApp(){
   if(pending){
     const d = JSON.parse(pending);
     pendingChanges = (JSON.stringify(d.programme) !== JSON.stringify(programme) ||
-                      JSON.stringify(d.calFixed) !== JSON.stringify(calFixed));
+                      JSON.stringify(d.calFixed) !== JSON.stringify(calFixed) ||
+                      JSON.stringify(d.niveaux) !== JSON.stringify(niveauxData));
   }
   buildProgTable();
   buildCalList();
@@ -512,6 +528,7 @@ function showTab(id, btn){
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
   closePanel();
+  if(id==='niveaux') buildNiveauxGrid();
 }
 
 // ════════════════════════════════════════════════
@@ -633,6 +650,9 @@ function openPanel(sem){
         Semaine de décharge
       </label>
     </div>
+    <p style="font-size:.72rem;color:var(--muted);margin-top:.5rem;font-style:italic">
+      💡 Pour modifier les niveaux (reps/récup/allure), utilisez l'onglet <strong>📊 Niveaux</strong>.
+    </p>
   `;
 
   document.getElementById('edit-panel').classList.add('open');
@@ -662,7 +682,7 @@ function saveWeek(){
   saveLocal();
   buildProgTable();
   closePanel();
-  toast('Semaine S'+editingSem+' mise à jour — pensez à Publier','success');
+  toast('Semaine S'+editingSem+' mise à jour — pensez à Publier ✓','success');
 }
 
 function resetWeek(){
@@ -762,6 +782,66 @@ function editCalEvent(id){
 }
 
 // ════════════════════════════════════════════════
+// NIVEAUX DE SÉANCE
+// ════════════════════════════════════════════════
+const niveauTypeLabels = {
+  '30s':'Efforts 30 secondes','1min':'Efforts 1 minute','1min30':'Efforts 1min30',
+  '2min':'Efforts 2 minutes','3min':'Efforts 3 minutes','5min':'Efforts 5 minutes',
+  '6min':'Efforts 6 minutes','8min':'Efforts 8 minutes','10min':'Efforts 10 minutes',
+  '12min':'Efforts 12 minutes','15min':'Efforts 15 minutes','20min':'Efforts 20 minutes',
+  'cote':'Côtes (montée)','fartlek':'Fartlek','3030':'30"/30"',
+};
+
+function buildNiveauxGrid(){
+  const grid = document.getElementById('niveaux-grid');
+  if(!grid) return;
+  const nivColors = ['#3d8b5c','#2351a0','#c04040'];
+  const nivLabels = ['🟢 Débutant','🔵 Intermédiaire','🔴 Confirmé'];
+
+  grid.innerHTML = Object.entries(localNiveaux).map(([key, niv]) => `
+    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(27,58,107,.05)">
+      <div style="background:var(--surface2);padding:.7rem 1.2rem;border-bottom:1px solid var(--border)">
+        <span style="font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:var(--ab-blue)">${niveauTypeLabels[key]||key}</span>
+        <span style="font-family:'Syne',sans-serif;font-size:.6rem;color:var(--muted);margin-left:.5rem">clé : ${key}</span>
+      </div>
+      <div style="padding:.9rem 1.2rem">
+        <div style="display:grid;grid-template-columns:120px 1fr 1fr 2fr;gap:.5rem;margin-bottom:.4rem">
+          <div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Répétitions</div>
+          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Récupération</div>
+          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Allure / Intensité</div>
+        </div>
+        ${[0,1,2].map(i => `
+        <div style="display:grid;grid-template-columns:120px 1fr 1fr 2fr;gap:.5rem;margin-bottom:.4rem;align-items:center">
+          <div style="font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;color:${nivColors[i]}">${nivLabels[i]}</div>
+          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
+            id="ng_${key}_reps_${i}" value="${niv.reps[i]}">
+          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
+            id="ng_${key}_recup_${i}" value="${niv.recup[i]}">
+          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
+            id="ng_${key}_allure_${i}" value="${niv.allure[i]}">
+        </div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function saveNiveaux(){
+  Object.keys(localNiveaux).forEach(key => {
+    for(let i=0;i<3;i++){
+      const r = document.getElementById(`ng_${key}_reps_${i}`);
+      const c = document.getElementById(`ng_${key}_recup_${i}`);
+      const a = document.getElementById(`ng_${key}_allure_${i}`);
+      if(r){ localNiveaux[key].reps[i]=r.value.trim(); }
+      if(c){ localNiveaux[key].recup[i]=c.value.trim(); }
+      if(a){ localNiveaux[key].allure[i]=a.value.trim(); }
+    }
+  });
+  saveLocal();
+  toast('Niveaux enregistrés — pensez à Publier ✓','success');
+}
+
+// ════════════════════════════════════════════════
 // CONFIG GITHUB
 // ════════════════════════════════════════════════
 function loadConfig(){
@@ -857,6 +937,8 @@ async function doPublish(){
     currentContent = replaceJsConst(currentContent, 'programme', JSON.stringify(localProgramme, null, 2));
     // Replace calFixed array in data.js
     currentContent = replaceJsConst(currentContent, 'calFixed', JSON.stringify(localCalFixed, null, 2));
+    // Replace niveauxData in data.js
+    currentContent = replaceJsConst(currentContent, 'niveauxData', JSON.stringify(localNiveaux, null, 2));
 
     setProgress(65, '📤 Envoi vers GitHub...');
 
@@ -882,12 +964,13 @@ async function doPublish(){
     // Clear pending
     localStorage.removeItem('ab-admin-pending');
     pendingChanges = false;
-    // Sync local copies to match what we just published
     localProgramme = JSON.parse(JSON.stringify(localProgramme));
     localCalFixed  = JSON.parse(JSON.stringify(localCalFixed));
+    localNiveaux   = JSON.parse(JSON.stringify(localNiveaux));
     updateStatusBar();
     buildProgTable();
     buildCalList();
+    if(document.getElementById('tab-niveaux').classList.contains('active')) buildNiveauxGrid();
 
     setTimeout(closePublishModal, 3000);
 
