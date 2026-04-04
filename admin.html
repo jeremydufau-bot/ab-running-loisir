@@ -221,19 +221,39 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 
   <div class="admin-tabs">
     <button class="admin-tab active" onclick="showTab('programme',this)">📅 Programme</button>
-    <button class="admin-tab" onclick="showTab('niveaux',this)">📊 Niveaux</button>
+    <button class="admin-tab" onclick="showTab('seances',this)">📋 Séances</button>
     <button class="admin-tab" onclick="showTab('calendrier',this)">🗓 Calendrier</button>
     <button class="admin-tab" onclick="showTab('config',this)">⚙️ Configuration</button>
   </div>
 
-  <!-- ══ NIVEAUX ══ -->
-  <div class="admin-page" id="tab-niveaux">
-    <div class="section-title">Niveaux de séance</div>
-    <div class="section-sub">Reps, récupération et allure pour chaque type de séance et chaque niveau — s'affichent dans la fiche détail sur le site des membres</div>
-    <div id="niveaux-grid" style="display:flex;flex-direction:column;gap:1rem;max-width:900px"></div>
-    <div style="margin-top:1.2rem">
-      <button onclick="saveNiveaux()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.65rem 1.5rem;border:none;border-radius:8px;cursor:pointer">💾 Enregistrer les niveaux</button>
+  <!-- ══ SÉANCES ══ -->
+  <div class="admin-page" id="tab-seances">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem">
+      <div>
+        <div class="section-title">Bibliothèque de séances</div>
+        <div class="section-sub">Toutes les séances disponibles — modifiez les détails. Dans l'onglet Programme, sélectionnez une séance pour éviter la re-saisie.</div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <input type="text" id="seance-search" placeholder="Rechercher…"
+          oninput="filterSeances(this.value)"
+          style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.38rem .8rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);width:180px">
+        <select id="seance-cat" onchange="filterSeances()"
+          style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.38rem .6rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text)">
+          <option value="">Toutes catégories</option>
+          <option value="cote">⛰️ Côtes</option>
+          <option value="fartlek">🌀 Fartlek</option>
+          <option value="pyramid">📐 Pyramides</option>
+          <option value="piste">🏟 Piste</option>
+          <option value="vitesse">💨 Vitesse</option>
+          <option value="seuil">⚡ Seuil</option>
+          <option value="vma">🔥 VMA / 30-30</option>
+          <option value="sortie">🏃 Sortie</option>
+        </select>
+        <button onclick="openNewSeance()"
+          style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.4rem 1rem;border:none;border-radius:7px;cursor:pointer">+ Nouvelle séance</button>
+      </div>
     </div>
+    <div id="seances-list" style="display:flex;flex-direction:column;gap:.7rem;max-width:1000px"></div>
   </div>
 
   <!-- ══ PROGRAMME ══ -->
@@ -367,7 +387,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
   </div>
   <div class="edit-panel-body" id="panel-body"></div>
   <div class="edit-panel-foot">
-    <button class="btn-save" onclick="saveWeek()">💾 Enregistrer</button>
+    <button class="btn-save" onclick="editingSeanceKey ? saveSeance() : saveWeek()">💾 Enregistrer</button>
     <button class="btn-cancel-panel" onclick="closePanel()">Annuler</button>
     <button class="btn-reset" id="btn-reset-week" onclick="resetWeek()" style="display:none">↺ Original</button>
   </div>
@@ -448,7 +468,12 @@ async function changePwd(){
 if(localStorage.getItem('ab-admin-session')==='true'){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.addEventListener('DOMContentLoaded', initApp);
+  // DOM peut déjà être chargé si session auto-login
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -528,7 +553,7 @@ function showTab(id, btn){
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
   closePanel();
-  if(id==='niveaux') buildNiveauxGrid();
+  if(id==='seances') buildSeancesGrid();
 }
 
 // ════════════════════════════════════════════════
@@ -589,71 +614,114 @@ function buildProgTable(){
 // ════════════════════════════════════════════════
 let editingSem = null;
 
+function seancePicker(seanceId, jourid){
+  const cats = [
+    {label:'\u26F0\uFE0F C\u00F4tes', fn: k => k.startsWith('cote') || k==='circuit_douves' || k==='escaliers' || k.includes('vvf')},
+    {label:'\uD83C\uDF00 Fartlek', fn: k => k.startsWith('fartlek') || k.includes('fartlek')},
+    {label:'\uD83D\uDCD0 Pyramides', fn: k => k.startsWith('pyramid')},
+    {label:'\u26A1 Seuil', fn: k => ['3x15_r5','3x7_r130','3x8_r1','8x3_r130','5x1000_halage','4x2000_r2'].includes(k) || /^\d+min$/.test(k)},
+    {label:'\uD83D\uDD25 VMA', fn: k => k.includes('3030') || k.includes('30_30') || k.includes('2020') || k==='8x50s_vma' || k.includes('decrements') || k.includes('interval')},
+    {label:'\uD83D\uDCA8 Vitesse', fn: k => k.startsWith('vitesse') || k.startsWith('piste')},
+    {label:'\uD83C\uDFC3 Sortie', fn: k => ['sortie_longue','sortie_recup','allure_marathon','allure_semi','ppg_seance'].includes(k)},
+    {label:'\uD83D\uDCE6 Autres', fn: k => true},
+  ];
+  const keys = Object.keys(localNiveaux);
+  const used = new Set();
+  let html = '<option value="">\u2014 Choisir depuis la biblioth\u00E8que \u2014</option>';
+  for(const cat of cats){
+    const grp = keys.filter(k => !used.has(k) && cat.fn(k));
+    if(!grp.length) continue;
+    html += '<optgroup label="'+cat.label+'">';
+    grp.forEach(k => {
+      used.add(k);
+      const lbl = (localNiveaux[k].label || k).substring(0,60);
+      html += '<option value="'+k+'">'+lbl+'</option>';
+    });
+    html += '</optgroup>';
+  }
+  return '<select class="field-select" id="'+seanceId+'" onchange="applySeancePicker(\''+jourid+'\',\''+seanceId+'\')">'+html+'</select>';
+}
+
+function applySeancePicker(jourid, seanceId){
+  const key = document.getElementById(seanceId).value;
+  if(!key) return;
+  const niv = localNiveaux[key];
+  if(!niv) return;
+  document.getElementById('p-'+jourid+'-titre').value = niv.label || key;
+  const lines = [
+    '\uD83D\uDFE2 D\u00E9butant : '+niv.reps[0]+' r\u00E9p \u00B7 R='+niv.recup[0]+' \u00B7 '+niv.allure[0],
+    '\uD83D\uDD35 Interm\u00E9diaire : '+niv.reps[1]+' r\u00E9p \u00B7 R='+niv.recup[1]+' \u00B7 '+niv.allure[1],
+    '\uD83D\uDD34 Confirm\u00E9 : '+niv.reps[2]+' r\u00E9p \u00B7 R='+niv.recup[2]+' \u00B7 '+niv.allure[2],
+  ];
+  if(niv.notes) lines.push('\uD83D\uDCA1 '+niv.notes);
+  document.getElementById('p-'+jourid+'-detail').value = lines.join('\n');
+  showNivPreview(jourid, key);
+}
+
+function showNivPreview(jourid, key){
+  const el = document.getElementById('niv-preview-'+jourid);
+  if(!el || !localNiveaux[key]) return;
+  const niv = localNiveaux[key];
+  const cols = ['#3d8b5c','#2351a0','#c04040'];
+  const lbls = ['\uD83D\uDFE2 D\u00E9b','\uD83D\uDD35 Inter','\uD83D\uDD34 Conf'];
+  el.innerHTML = '<div style="background:rgba(27,58,107,.04);border:1px solid rgba(27,58,107,.1);border-radius:8px;padding:.6rem .9rem;margin-bottom:.6rem">'
+    +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ab-blue);margin-bottom:.4rem">Niveaux</div>'
+    +[0,1,2].map(i => '<div style="display:flex;gap:.5rem;font-size:.74rem;margin-bottom:.15rem">'
+      +'<span style="font-family:\'Syne\',sans-serif;font-size:.63rem;font-weight:700;color:'+cols[i]+';min-width:65px">'+lbls[i]+'</span>'
+      +'<span>'+niv.reps[i]+'</span>'
+      +'<span style="color:var(--muted)">\u00B7 R='+niv.recup[i]+'</span>'
+      +'<span style="color:var(--muted);font-size:.68rem">\u00B7 '+niv.allure[i]+'</span>'
+      +'</div>').join('')
+    +'</div>';
+}
+
 function openPanel(sem){
   editingSem = sem;
   const s = localProgramme.find(x=>x.sem===sem);
   const orig = programme.find(x=>x.sem===sem) || s;
   const anyChanged = JSON.stringify(s)!==JSON.stringify(orig);
 
-  document.getElementById('panel-title').textContent = `Semaine ${sem} — ${s.mois} · ${s.phase}`;
+  document.getElementById('panel-title').textContent = 'Semaine '+sem+' \u2014 '+s.mois+' \u00B7 '+s.phase;
   document.getElementById('btn-reset-week').style.display = anyChanged ? 'block' : 'none';
 
   const terrainOpts = (sel) => Object.entries(terrainLabel).map(([k,v])=>
-    `<option value="${k}" ${sel===k?'selected':''}>${v.icon} ${v.label}</option>`
+    '<option value="'+k+'" '+(sel===k?'selected':'')+'>'+v.icon+' '+v.label+'</option>'
   ).join('');
 
-  document.getElementById('panel-body').innerHTML = `
-    <span class="block-sep">📅 MARDI</span>
-    <div class="field-group">
-      <label class="field-label">Titre de la séance</label>
-      <input class="field-input" id="p-mardi-titre" value="${s.mardi.titre.replace(/"/g,'&quot;')}">
-    </div>
-    <div class="field-group">
-      <label class="field-label">Terrain</label>
-      <select class="field-select" id="p-mardi-terrain">${terrainOpts(s.mardi.terrain)}</select>
-    </div>
-    <div class="field-group">
-      <label class="field-label">Description & PPG</label>
-      <textarea class="field-textarea" id="p-mardi-detail" rows="5">${s.mardi.detail}</textarea>
-    </div>
-
-    <span class="block-sep" style="background:rgba(74,138,90,.06);border-color:rgba(74,138,90,.15);color:var(--mousse)">📅 JEUDI</span>
-    <div class="field-group">
-      <label class="field-label">Titre de la séance</label>
-      <input class="field-input" id="p-jeudi-titre" value="${s.jeudi.titre.replace(/"/g,'&quot;')}">
-    </div>
-    <div class="field-group">
-      <label class="field-label">Terrain</label>
-      <select class="field-select" id="p-jeudi-terrain">${terrainOpts(s.jeudi.terrain)}</select>
-    </div>
-    <div class="field-group">
-      <label class="field-label">Description & PPG</label>
-      <textarea class="field-textarea" id="p-jeudi-detail" rows="5">${s.jeudi.detail}</textarea>
-    </div>
-
-    <span class="block-sep" style="background:rgba(27,58,107,.04)">🏃 WEEKEND (par profil)</span>
-    <div class="field-group">
-      <label class="field-label">Route 🏃</label>
-      <input class="field-input" id="p-g0" value="${(s.g0||'').replace(/"/g,'&quot;')}">
-    </div>
-    <div class="field-group">
-      <label class="field-label">Trail loisir 🌿</label>
-      <input class="field-input" id="p-g1" value="${(s.g1||'').replace(/"/g,'&quot;')}">
-    </div>
-    <div class="field-group">
-      <label class="field-label">Trail montagne 🏔</label>
-      <input class="field-input" id="p-g2" value="${(s.g2||'').replace(/"/g,'&quot;')}">
-    </div>
-    <div class="field-group">
-      <label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
-        <input type="checkbox" id="p-decharge" ${s.decharge?'checked':''}>
-        Semaine de décharge
-      </label>
-    </div>
-    <p style="font-size:.72rem;color:var(--muted);margin-top:.5rem;font-style:italic">
-      💡 Pour modifier les niveaux (reps/récup/allure), utilisez l'onglet <strong>📊 Niveaux</strong>.
-    </p>
-  `;
+  document.getElementById('panel-body').innerHTML =
+    '<span class="block-sep">\uD83D\uDCC5 MARDI</span>'
+    +'<div class="field-group">'
+    +'<label class="field-label">S\u00E9ance depuis la biblioth\u00E8que <span style="font-weight:400;color:var(--muted)">(remplit le titre et la description)</span></label>'
+    +seancePicker('p-mardi-bib','mardi')
+    +'</div>'
+    +'<div id="niv-preview-mardi"></div>'
+    +'<div class="field-group"><label class="field-label">Titre <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
+    +'<input class="field-input" id="p-mardi-titre" value="'+s.mardi.titre.replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="field-group"><label class="field-label">Terrain</label>'
+    +'<select class="field-select" id="p-mardi-terrain">'+terrainOpts(s.mardi.terrain)+'</select></div>'
+    +'<div class="field-group"><label class="field-label">Description <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
+    +'<textarea class="field-textarea" id="p-mardi-detail" rows="4">'+s.mardi.detail+'</textarea></div>'
+    +'<span class="block-sep" style="background:rgba(74,138,90,.06);border-color:rgba(74,138,90,.15);color:var(--mousse)">\uD83D\uDCC5 JEUDI</span>'
+    +'<div class="field-group">'
+    +'<label class="field-label">S\u00E9ance depuis la biblioth\u00E8que <span style="font-weight:400;color:var(--muted)">(remplit le titre et la description)</span></label>'
+    +seancePicker('p-jeudi-bib','jeudi')
+    +'</div>'
+    +'<div id="niv-preview-jeudi"></div>'
+    +'<div class="field-group"><label class="field-label">Titre <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
+    +'<input class="field-input" id="p-jeudi-titre" value="'+s.jeudi.titre.replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="field-group"><label class="field-label">Terrain</label>'
+    +'<select class="field-select" id="p-jeudi-terrain">'+terrainOpts(s.jeudi.terrain)+'</select></div>'
+    +'<div class="field-group"><label class="field-label">Description <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
+    +'<textarea class="field-textarea" id="p-jeudi-detail" rows="4">'+s.jeudi.detail+'</textarea></div>'
+    +'<span class="block-sep" style="background:rgba(27,58,107,.04)">\uD83C\uDFC3 WEEKEND (par profil)</span>'
+    +'<div class="field-group"><label class="field-label">Route \uD83C\uDFC3</label>'
+    +'<input class="field-input" id="p-g0" value="'+(s.g0||'').replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="field-group"><label class="field-label">Trail loisir \uD83C\uDF3F</label>'
+    +'<input class="field-input" id="p-g1" value="'+(s.g1||'').replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="field-group"><label class="field-label">Trail montagne \uD83C\uDFD4</label>'
+    +'<input class="field-input" id="p-g2" value="'+(s.g2||'').replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="field-group"><label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer">'
+    +'<input type="checkbox" id="p-decharge" '+(s.decharge?'checked':'')+'>Semaine de d\u00E9charge</label></div>';
 
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
@@ -663,6 +731,7 @@ function closePanel(){
   document.getElementById('edit-panel').classList.remove('open');
   document.getElementById('panel-overlay').style.display='none';
   editingSem = null;
+  editingSeanceKey = null;
 }
 
 function saveWeek(){
@@ -781,67 +850,150 @@ function editCalEvent(id){
   toast('Événement chargé dans le formulaire — modifiez et cliquez Ajouter','success');
 }
 
-// ════════════════════════════════════════════════
-// NIVEAUX DE SÉANCE
-// ════════════════════════════════════════════════
-const niveauTypeLabels = {
-  '30s':'Efforts 30 secondes','1min':'Efforts 1 minute','1min30':'Efforts 1min30',
-  '2min':'Efforts 2 minutes','3min':'Efforts 3 minutes','5min':'Efforts 5 minutes',
-  '6min':'Efforts 6 minutes','8min':'Efforts 8 minutes','10min':'Efforts 10 minutes',
-  '12min':'Efforts 12 minutes','15min':'Efforts 15 minutes','20min':'Efforts 20 minutes',
-  'cote':'Côtes (montée)','fartlek':'Fartlek','3030':'30"/30"',
-};
+// ══════════════════════// SEANCES - bibliotheque
+let editingSeanceKey = null;
 
-function buildNiveauxGrid(){
-  const grid = document.getElementById('niveaux-grid');
-  if(!grid) return;
-  const nivColors = ['#3d8b5c','#2351a0','#c04040'];
-  const nivLabels = ['🟢 Débutant','🔵 Intermédiaire','🔴 Confirmé'];
-
-  grid.innerHTML = Object.entries(localNiveaux).map(([key, niv]) => `
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(27,58,107,.05)">
-      <div style="background:var(--surface2);padding:.7rem 1.2rem;border-bottom:1px solid var(--border)">
-        <span style="font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:var(--ab-blue)">${niveauTypeLabels[key]||key}</span>
-        <span style="font-family:'Syne',sans-serif;font-size:.6rem;color:var(--muted);margin-left:.5rem">clé : ${key}</span>
-      </div>
-      <div style="padding:.9rem 1.2rem">
-        <div style="display:grid;grid-template-columns:120px 1fr 1fr 2fr;gap:.5rem;margin-bottom:.4rem">
-          <div></div>
-          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Répétitions</div>
-          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Récupération</div>
-          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Allure / Intensité</div>
-        </div>
-        ${[0,1,2].map(i => `
-        <div style="display:grid;grid-template-columns:120px 1fr 1fr 2fr;gap:.5rem;margin-bottom:.4rem;align-items:center">
-          <div style="font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;color:${nivColors[i]}">${nivLabels[i]}</div>
-          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
-            id="ng_${key}_reps_${i}" value="${niv.reps[i]}">
-          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
-            id="ng_${key}_recup_${i}" value="${niv.recup[i]}">
-          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
-            id="ng_${key}_allure_${i}" value="${niv.allure[i]}">
-        </div>`).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-function saveNiveaux(){
-  Object.keys(localNiveaux).forEach(key => {
-    for(let i=0;i<3;i++){
-      const r = document.getElementById(`ng_${key}_reps_${i}`);
-      const c = document.getElementById(`ng_${key}_recup_${i}`);
-      const a = document.getElementById(`ng_${key}_allure_${i}`);
-      if(r){ localNiveaux[key].reps[i]=r.value.trim(); }
-      if(c){ localNiveaux[key].recup[i]=c.value.trim(); }
-      if(a){ localNiveaux[key].allure[i]=a.value.trim(); }
-    }
+function filterSeances(val){
+  const search = (typeof val === 'string' ? val : (document.getElementById('seance-search')||{}).value||'').toLowerCase();
+  const cat = (document.getElementById('seance-cat')||{}).value||'';
+  document.querySelectorAll('.seance-lib-card').forEach(card => {
+    const key = card.dataset.key||'';
+    const lbl = (card.dataset.label||'').toLowerCase();
+    const okSearch = !search || key.includes(search) || lbl.includes(search);
+    const okCat = !cat || key.includes(cat);
+    card.style.display = (okSearch && okCat) ? '' : 'none';
   });
-  saveLocal();
-  toast('Niveaux enregistrés — pensez à Publier ✓','success');
 }
 
-// ════════════════════════════════════════════════
+function buildSeancesGrid(){
+  if(!localNiveaux) return;
+  const list = document.getElementById('seances-list');
+  if(!list) return;
+  const cols = ['#3d8b5c','#2351a0','#c04040'];
+  const lbls = ['Debutant','Intermediaire','Confirme'];
+  const emojis = ['Green','Blue','Red'];
+
+  list.innerHTML = Object.entries(localNiveaux).map(([key, niv]) => {
+    const label = niv.label || key;
+    const notes = niv.notes || '';
+    return '<div class="seance-lib-card" data-key="'+key+'" data-label="'+label.replace(/"/g,"'")+'" style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.4rem">'
+      +'<div style="background:var(--surface2);padding:.6rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap">'
+      +'<div><span style="font-family:\'Syne\',sans-serif;font-size:.78rem;font-weight:800;color:var(--ab-blue)">'+label+'</span>'
+      +'<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;color:var(--muted);margin-left:.5rem;background:rgba(27,58,107,.07);padding:.1rem .4rem;border-radius:3px">'+key+'</span></div>'
+      +'<button class="btn-edit-row" onclick="openSeanceEdit(\''+key+'\')">&#x270F;&#xFE0F; Modifier</button>'
+      +'</div>'
+      +'<div style="padding:.65rem 1rem">'
+      +'<div style="display:grid;grid-template-columns:115px 1fr 1fr 2fr;gap:.3rem;margin-bottom:.25rem">'
+      +'<div></div>'
+      +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase">R&#233;p.</div>'
+      +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase">R&#233;cup</div>'
+      +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase">Allure</div>'
+      +'</div>'
+      +[0,1,2].map(i =>
+        '<div style="display:grid;grid-template-columns:115px 1fr 1fr 2fr;gap:.3rem;margin-bottom:.2rem;align-items:baseline">'
+        +'<span style="font-family:\'Syne\',sans-serif;font-size:.65rem;font-weight:700;color:'+cols[i]+'">'+lbls[i]+'</span>'
+        +'<span style="font-size:.77rem">'+(niv.reps[i]||'&mdash;')+'</span>'
+        +'<span style="font-size:.77rem;color:var(--muted)">'+(niv.recup[i]||'&mdash;')+'</span>'
+        +'<span style="font-size:.74rem;color:var(--muted)">'+(niv.allure[i]||'&mdash;')+'</span>'
+        +'</div>'
+      ).join('')
+      +(notes?'<div style="margin-top:.4rem;padding:.3rem .6rem;background:rgba(212,137,58,.06);border-left:3px solid var(--ocre);font-size:.72rem;color:var(--muted)">'+notes+'</div>':'')
+      +'</div></div>';
+  }).join('');
+}
+
+function openSeanceEdit(key){
+  editingSeanceKey = key;
+  const niv = localNiveaux[key];
+  if(!niv) return;
+  const label = niv.label || key;
+  const cols = ['#3d8b5c','#2351a0','#c04040'];
+  const seps = ['rgba(74,138,90,.06)','rgba(27,58,107,.05)','rgba(192,64,64,.05)'];
+  const sepB = ['rgba(74,138,90,.2)','rgba(27,58,107,.12)','rgba(192,64,64,.15)'];
+  const nivN = ['&#x1F7E2; D&#233;butant','&#x1F535; Interm&#233;diaire','&#x1F534; Confirm&#233;'];
+  document.getElementById('panel-title').textContent = label.substring(0,45);
+  document.getElementById('btn-reset-week').style.display = 'none';
+  document.getElementById('panel-body').innerHTML =
+    '<div class="field-group"><label class="field-label">Cl&#233;</label>'
+    +'<div style="font-family:\'Syne\',sans-serif;font-size:.75rem;font-weight:700;color:var(--ab-blue);background:rgba(27,58,107,.06);padding:.4rem .7rem;border-radius:6px">'+key+'</div></div>'
+    +'<div class="field-group"><label class="field-label">Label (nom affich&#233;)</label>'
+    +'<input class="field-input" id="es-label" value="'+(niv.label||label).replace(/"/g,'&quot;')+'"></div>'
+    +[0,1,2].map(i =>
+      '<span class="block-sep" style="background:'+seps[i]+';border-color:'+sepB[i]+';color:'+cols[i]+'">'+nivN[i]+'</span>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">'
+      +'<div class="field-group"><label class="field-label">R&#233;p&#233;titions</label>'
+      +'<input class="field-input" id="es-reps-'+i+'" value="'+(niv.reps[i]||'').replace(/"/g,'&quot;')+'"></div>'
+      +'<div class="field-group"><label class="field-label">R&#233;cup&#233;ration</label>'
+      +'<input class="field-input" id="es-recup-'+i+'" value="'+(niv.recup[i]||'').replace(/"/g,'&quot;')+'"></div></div>'
+      +'<div class="field-group"><label class="field-label">Allure / Intensit&#233;</label>'
+      +'<input class="field-input" id="es-allure-'+i+'" value="'+(niv.allure[i]||'').replace(/"/g,'&quot;')+'"></div>'
+    ).join('')
+    +'<div class="field-group"><label class="field-label">Notes coach</label>'
+    +'<textarea class="field-textarea" id="es-notes" rows="3">'+(niv.notes||'')+'</textarea></div>';
+  document.getElementById('edit-panel').classList.add('open');
+  document.getElementById('panel-overlay').style.display='block';
+}
+
+function openNewSeance(){
+  editingSeanceKey = '__new__';
+  const cols = ['#3d8b5c','#2351a0','#c04040'];
+  const seps = ['rgba(74,138,90,.06)','rgba(27,58,107,.05)','rgba(192,64,64,.05)'];
+  const sepB = ['rgba(74,138,90,.2)','rgba(27,58,107,.12)','rgba(192,64,64,.15)'];
+  const nivN = ['&#x1F7E2; D&#233;butant','&#x1F535; Interm&#233;diaire','&#x1F534; Confirm&#233;'];
+  document.getElementById('panel-title').textContent = 'Nouvelle s\u00E9ance';
+  document.getElementById('btn-reset-week').style.display = 'none';
+  document.getElementById('panel-body').innerHTML =
+    '<div class="field-group"><label class="field-label">Cl&#233; (sans espaces)</label>'
+    +'<input class="field-input" id="es-new-key" placeholder="ma_seance"></div>'
+    +'<div class="field-group"><label class="field-label">Label (nom affich&#233;)</label>'
+    +'<input class="field-input" id="es-label" placeholder="ex: 6x1000m Halage R=2min"></div>'
+    +[0,1,2].map(i =>
+      '<span class="block-sep" style="background:'+seps[i]+';border-color:'+sepB[i]+';color:'+cols[i]+'">'+nivN[i]+'</span>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">'
+      +'<div class="field-group"><label class="field-label">R&#233;p&#233;titions</label>'
+      +'<input class="field-input" id="es-reps-'+i+'" placeholder="ex: 4x"></div>'
+      +'<div class="field-group"><label class="field-label">R&#233;cup&#233;ration</label>'
+      +'<input class="field-input" id="es-recup-'+i+'" placeholder="ex: 2min"></div></div>'
+      +'<div class="field-group"><label class="field-label">Allure / Intensit&#233;</label>'
+      +'<input class="field-input" id="es-allure-'+i+'" placeholder="ex: allure seuil"></div>'
+    ).join('')
+    +'<div class="field-group"><label class="field-label">Notes coach</label>'
+    +'<textarea class="field-textarea" id="es-notes" rows="3"></textarea></div>';
+  document.getElementById('edit-panel').classList.add('open');
+  document.getElementById('panel-overlay').style.display='block';
+}
+
+function saveSeance(){
+  if(!editingSeanceKey) return;
+  if(editingSeanceKey === '__new__'){
+    const key = (document.getElementById('es-new-key').value||'').trim().replace(/\s+/g,'_');
+    if(!key){ toast('La cl\u00E9 est obligatoire','error'); return; }
+    if(localNiveaux[key]){ toast('Cette cl\u00E9 existe d\u00E9j\u00E0','error'); return; }
+    localNiveaux[key] = {
+      label: document.getElementById('es-label').value.trim(),
+      reps:  [0,1,2].map(i=>document.getElementById('es-reps-'+i).value.trim()),
+      recup: [0,1,2].map(i=>document.getElementById('es-recup-'+i).value.trim()),
+      allure:[0,1,2].map(i=>document.getElementById('es-allure-'+i).value.trim()),
+      notes: document.getElementById('es-notes').value.trim(),
+    };
+  } else {
+    const key = editingSeanceKey;
+    localNiveaux[key].label = document.getElementById('es-label').value.trim();
+    localNiveaux[key].notes = document.getElementById('es-notes').value.trim();
+    for(let i=0;i<3;i++){
+      localNiveaux[key].reps[i]   = document.getElementById('es-reps-'+i).value.trim();
+      localNiveaux[key].recup[i]  = document.getElementById('es-recup-'+i).value.trim();
+      localNiveaux[key].allure[i] = document.getElementById('es-allure-'+i).value.trim();
+    }
+  }
+  editingSeanceKey = null;
+  saveLocal();
+  buildSeancesGrid();
+  closePanel();
+  toast('S\u00E9ance mise \u00E0 jour \u2014 pensez \u00E0 Publier \u2713','success');
+}
+
+══════════════════════════
 // CONFIG GITHUB
 // ════════════════════════════════════════════════
 function loadConfig(){
@@ -970,7 +1122,7 @@ async function doPublish(){
     updateStatusBar();
     buildProgTable();
     buildCalList();
-    if(document.getElementById('tab-niveaux').classList.contains('active')) buildNiveauxGrid();
+    if(document.getElementById('tab-seances').classList.contains('active')) buildSeancesGrid();
 
     setTimeout(closePublishModal, 3000);
 
