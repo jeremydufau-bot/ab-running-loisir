@@ -38,7 +38,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
   background:linear-gradient(135deg,var(--ab-blue) 0%,var(--ab-blue2) 55%,var(--ab-light) 100%);
 }
 .hero::before{
-  content:'';position:absolute;inset:0;
+  content:'';position:absolute;inset:0;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E");
 }
 .hero-badge{
@@ -420,7 +420,7 @@ nav button.active{color:#fff;border-bottom-color:var(--ab-sky);}
 
 <!-- HERO -->
 <div class="hero">
-  <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:0">
+  <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:0;position:relative;z-index:2">
     <div class="hero-badge" style="margin-bottom:0">🏃 Aviron Bayonnais Athlétisme</div>
     <a href="admin.html" style="display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:.35rem 1rem;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,0.18)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,.7)'">🔑 Coach</a>
   </div>
