@@ -221,19 +221,37 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 
   <div class="admin-tabs">
     <button class="admin-tab active" onclick="showTab('programme',this)">📅 Programme</button>
-    <button class="admin-tab" onclick="showTab('niveaux',this)">📊 Niveaux</button>
+    <button class="admin-tab" onclick="showTab('seances',this)">📋 Séances</button>
     <button class="admin-tab" onclick="showTab('calendrier',this)">🗓 Calendrier</button>
     <button class="admin-tab" onclick="showTab('config',this)">⚙️ Configuration</button>
   </div>
 
-  <!-- ══ NIVEAUX ══ -->
-  <div class="admin-page" id="tab-niveaux">
-    <div class="section-title">Niveaux de séance</div>
-    <div class="section-sub">Reps, récupération et allure pour chaque type de séance et chaque niveau — s'affichent dans la fiche détail sur le site des membres</div>
-    <div id="niveaux-grid" style="display:flex;flex-direction:column;gap:1rem;max-width:900px"></div>
-    <div style="margin-top:1.2rem">
-      <button onclick="saveNiveaux()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.65rem 1.5rem;border:none;border-radius:8px;cursor:pointer">💾 Enregistrer les niveaux</button>
+  <!-- ══ SÉANCES ══ -->
+  <div class="admin-page" id="tab-seances">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem">
+      <div>
+        <div class="section-title">Bibliothèque de séances</div>
+        <div class="section-sub">Toutes les séances disponibles — modifiez les détails et publiez. Dans l'onglet Programme, sélectionnez une séance depuis cette bibliothèque.</div>
+      </div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+        <input type="text" id="seance-search" placeholder="Rechercher..." oninput="filterSeances(this.value)"
+          style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.38rem .8rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);width:180px">
+        <select id="seance-cat-filter" onchange="filterSeances()" style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.38rem .6rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text)">
+          <option value="">Toutes catégories</option>
+          <option value="cote">🏔 Côtes</option>
+          <option value="fartlek">🌀 Fartlek</option>
+          <option value="pyramid">📐 Pyramides</option>
+          <option value="piste">🏟 Piste</option>
+          <option value="seuil">⚡ Seuil</option>
+          <option value="vma">🔥 VMA</option>
+          <option value="vitesse">💨 Vitesse</option>
+          <option value="sortie">🏃 Sortie</option>
+        </select>
+        <button onclick="openAddSeance()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.4rem 1rem;border:none;border-radius:7px;cursor:pointer">+ Nouvelle séance</button>
+        <button onclick="saveNiveaux()" style="background:var(--mousse);color:#fff;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.4rem 1rem;border:none;border-radius:7px;cursor:pointer">💾 Enregistrer tout</button>
+      </div>
     </div>
+    <div id="seances-grid" style="display:flex;flex-direction:column;gap:.7rem"></div>
   </div>
 
   <!-- ══ PROGRAMME ══ -->
@@ -367,7 +385,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
   </div>
   <div class="edit-panel-body" id="panel-body"></div>
   <div class="edit-panel-foot">
-    <button class="btn-save" onclick="saveWeek()">💾 Enregistrer</button>
+    <button class="btn-save" onclick="editingSeanceKey ? saveSeance() : saveWeek()">💾 Enregistrer</button>
     <button class="btn-cancel-panel" onclick="closePanel()">Annuler</button>
     <button class="btn-reset" id="btn-reset-week" onclick="resetWeek()" style="display:none">↺ Original</button>
   </div>
@@ -528,7 +546,7 @@ function showTab(id, btn){
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
   closePanel();
-  if(id==='niveaux') buildNiveauxGrid();
+  if(id==='seances') buildSeancesGrid();
 }
 
 // ════════════════════════════════════════════════
@@ -602,10 +620,46 @@ function openPanel(sem){
     `<option value="${k}" ${sel===k?'selected':''}>${v.icon} ${v.label}</option>`
   ).join('');
 
+  // Build seance picker options grouped by category
+  const catGroups = {
+    'Côtes':     k => k.startsWith('cote') || k.includes('cote') || k.includes('douves') || k.includes('escaliers'),
+    'Fartlek':   k => k.startsWith('fartlek') || k.includes('fartlek'),
+    'Pyramides': k => k.startsWith('pyramid'),
+    'Piste':     k => k.startsWith('piste') || k.startsWith('vitesse'),
+    'Seuil':     k => ['3x15_r5','8x3_r130','3x7_r130','3x8_r1','5x1000_halage','4x2000_r2','allure_marathon','allure_semi','sortie_longue','sortie_recup'].includes(k) || k.includes('min') && !k.includes('cote'),
+    'VMA':       k => k.includes('3030') || k.includes('2020') || k.includes('30_30') || k.includes('vma') || k === '8x50s_vma' || k.includes('decrements') || k.includes('interval'),
+    'Autre':     k => true,
+  };
+
+  function seancePickerOpts(curTitre) {
+    let html = '<option value="">— Choisir depuis la bibliothèque —</option>';
+    const keys = Object.keys(localNiveaux);
+    const assigned = new Set();
+    for(const [grp, fn] of Object.entries(catGroups)){
+      const grpKeys = keys.filter(k => !assigned.has(k) && fn(k));
+      if(!grpKeys.length) continue;
+      html += `<optgroup label="${grp}">`;
+      grpKeys.forEach(k => {
+        assigned.add(k);
+        const lbl = (localNiveaux[k].label || niveauTypeLabels[k] || k).substring(0,55);
+        const sel = curTitre && curTitre.toLowerCase().includes(k.replace(/_/g,' ')) ? 'selected' : '';
+        html += `<option value="${k}" ${sel}>${lbl}</option>`;
+      });
+      html += '</optgroup>';
+    }
+    return html;
+  }
+
   document.getElementById('panel-body').innerHTML = `
     <span class="block-sep">📅 MARDI</span>
     <div class="field-group">
-      <label class="field-label">Titre de la séance</label>
+      <label class="field-label">Séance depuis la bibliothèque</label>
+      <select class="field-select" id="p-mardi-seance" onchange="applySeance('mardi')">
+        ${seancePickerOpts(s.mardi.titre)}
+      </select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Titre <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>
       <input class="field-input" id="p-mardi-titre" value="${s.mardi.titre.replace(/"/g,'&quot;')}">
     </div>
     <div class="field-group">
@@ -613,13 +667,20 @@ function openPanel(sem){
       <select class="field-select" id="p-mardi-terrain">${terrainOpts(s.mardi.terrain)}</select>
     </div>
     <div class="field-group">
-      <label class="field-label">Description & PPG</label>
+      <label class="field-label">Description & PPG <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>
       <textarea class="field-textarea" id="p-mardi-detail" rows="5">${s.mardi.detail}</textarea>
     </div>
+    <div id="p-mardi-niveaux" style="margin-top:.4rem"></div>
 
     <span class="block-sep" style="background:rgba(74,138,90,.06);border-color:rgba(74,138,90,.15);color:var(--mousse)">📅 JEUDI</span>
     <div class="field-group">
-      <label class="field-label">Titre de la séance</label>
+      <label class="field-label">Séance depuis la bibliothèque</label>
+      <select class="field-select" id="p-jeudi-seance" onchange="applySeance('jeudi')">
+        ${seancePickerOpts(s.jeudi.titre)}
+      </select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Titre <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>
       <input class="field-input" id="p-jeudi-titre" value="${s.jeudi.titre.replace(/"/g,'&quot;')}">
     </div>
     <div class="field-group">
@@ -627,9 +688,10 @@ function openPanel(sem){
       <select class="field-select" id="p-jeudi-terrain">${terrainOpts(s.jeudi.terrain)}</select>
     </div>
     <div class="field-group">
-      <label class="field-label">Description & PPG</label>
+      <label class="field-label">Description & PPG <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>
       <textarea class="field-textarea" id="p-jeudi-detail" rows="5">${s.jeudi.detail}</textarea>
     </div>
+    <div id="p-jeudi-niveaux" style="margin-top:.4rem"></div>
 
     <span class="block-sep" style="background:rgba(27,58,107,.04)">🏃 WEEKEND (par profil)</span>
     <div class="field-group">
@@ -650,19 +712,74 @@ function openPanel(sem){
         Semaine de décharge
       </label>
     </div>
-    <p style="font-size:.72rem;color:var(--muted);margin-top:.5rem;font-style:italic">
-      💡 Pour modifier les niveaux (reps/récup/allure), utilisez l'onglet <strong>📊 Niveaux</strong>.
-    </p>
   `;
+
+  // Show niveau preview for current sessions
+  showNiveauPreview('mardi', s.mardi.titre);
+  showNiveauPreview('jeudi', s.jeudi.titre);
 
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
+}
+
+// Apply a library session to mardi or jeudi fields
+function applySeance(jour){
+  const key = document.getElementById(`p-${jour}-seance`).value;
+  if(!key) return;
+  const niv = localNiveaux[key];
+  if(!niv) return;
+  const label = niv.label || niveauTypeLabels[key] || key;
+  document.getElementById(`p-${jour}-titre`).value = label;
+  // Build description from niveaux
+  const desc = `${label}\n| Débutant : ${niv.reps[0]} reps · R=${niv.recup[0]} · ${niv.allure[0]}\n| Intermédiaire : ${niv.reps[1]} reps · R=${niv.recup[1]} · ${niv.allure[1]}\n| Confirmé : ${niv.reps[2]} reps · R=${niv.recup[2]} · ${niv.allure[2]}${niv.notes?'\n| '+niv.notes:''}`;
+  document.getElementById(`p-${jour}-detail`).value = desc;
+  showNiveauPreview(jour, label);
+  toast(`Séance "${label.substring(0,30)}" chargée — adaptez si besoin`, 'success');
+}
+
+// Show niveau cards preview in panel
+function showNiveauPreview(jour, titre){
+  const el = document.getElementById(`p-${jour}-niveaux`);
+  if(!el) return;
+  const nd = getNiveauBlockAdmin(titre);
+  if(!nd){ el.innerHTML=''; return; }
+  const cols = ['#3d8b5c','#2351a0','#c04040'];
+  const lbls = ['\uD83D\uDFE2 D\u00E9butant','\uD83D\uDD35 Interm\u00E9diaire','\uD83D\uDD34 Confirm\u00E9'];
+  el.innerHTML = `<div style="background:rgba(27,58,107,.04);border:1px solid rgba(27,58,107,.1);border-radius:8px;padding:.7rem .9rem;margin-bottom:.6rem">
+    <div style="font-family:'Syne',sans-serif;font-size:.58rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ab-blue);margin-bottom:.5rem">Niveaux détectés</div>
+    ${[0,1,2].map(i=>`<div style="display:flex;gap:.5rem;align-items:baseline;font-size:.75rem;margin-bottom:.2rem">
+      <span style="font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;color:${cols[i]};min-width:90px">${lbls[i]}</span>
+      <span style="color:var(--text)">${nd.reps[i]}</span>
+      <span style="color:var(--muted)">· R=${nd.recup[i]}</span>
+      <span style="color:var(--muted);font-size:.7rem">· ${nd.allure[i]}</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+// Admin version of getNiveauBlock (uses localNiveaux)
+function getNiveauBlockAdmin(titre){
+  if(!titre) return null;
+  // Try all keys
+  const t = titre.toLowerCase();
+  for(const key of Object.keys(localNiveaux)){
+    const kl = key.toLowerCase().replace(/_/g,' ');
+    if(t.includes(kl) && kl.length > 3) return localNiveaux[key];
+  }
+  // Fallback: check by known patterns (same logic as index.html)
+  if(/1min30|1'30/.test(t)) return localNiveaux['1min30'];
+  if(/2min|2'/.test(t)) return localNiveaux['2min'];
+  if(/1min|1'/.test(t)) return localNiveaux['1min'];
+  if(/30s|30"/.test(t)) return localNiveaux['30s'];
+  if(/côte|cote/.test(t)) return localNiveaux['cote'];
+  if(/fartlek/.test(t)) return localNiveaux['fartlek'];
+  return null;
 }
 
 function closePanel(){
   document.getElementById('edit-panel').classList.remove('open');
   document.getElementById('panel-overlay').style.display='none';
   editingSem = null;
+  editingSeanceKey = null;
 }
 
 function saveWeek(){
@@ -867,54 +984,185 @@ const niveauTypeLabels = {
   '8x50s_vma': '8×50" (VMA intermédiaire)',
 };
 
-function buildNiveauxGrid(){
-  const grid = document.getElementById('niveaux-grid');
+function filterSeances(val){
+  const search = (typeof val === 'string' ? val : document.getElementById('seance-search').value).toLowerCase();
+  const cat = document.getElementById('seance-cat-filter').value;
+  document.querySelectorAll('.seance-card').forEach(card => {
+    const key = card.dataset.key || '';
+    const label = card.dataset.label || '';
+    const matchSearch = !search || key.includes(search) || label.toLowerCase().includes(search);
+    const matchCat = !cat || key.includes(cat) || (cat==='seuil' && (key.includes('min') || key.includes('halage') || key.includes('allure') || key.includes('sortie')));
+    card.style.display = matchSearch && matchCat ? '' : 'none';
+  });
+}
+
+function buildSeancesGrid(){
+  const grid = document.getElementById('seances-grid');
   if(!grid) return;
   const nivColors = ['#3d8b5c','#2351a0','#c04040'];
-  const nivLabels = ['🟢 Débutant','🔵 Intermédiaire','🔴 Confirmé'];
+  const nivLabels = ['\uD83D\uDFE2 D\u00E9b','\uD83D\uDD35 Inter','\uD83D\uDD34 Conf'];
 
-  grid.innerHTML = Object.entries(localNiveaux).map(([key, niv]) => `
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(27,58,107,.05)">
-      <div style="background:var(--surface2);padding:.7rem 1.2rem;border-bottom:1px solid var(--border)">
-        <span style="font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:var(--ab-blue)">${niveauTypeLabels[key]||key}</span>
-        <span style="font-family:'Syne',sans-serif;font-size:.6rem;color:var(--muted);margin-left:.5rem">clé : ${key}</span>
-      </div>
-      <div style="padding:.9rem 1.2rem">
-        <div style="display:grid;grid-template-columns:120px 1fr 1fr 2fr;gap:.5rem;margin-bottom:.4rem">
-          <div></div>
-          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Répétitions</div>
-          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Récupération</div>
-          <div style="font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Allure / Intensité</div>
+  grid.innerHTML = Object.entries(localNiveaux).map(([key, niv]) => {
+    const label = niv.label || niveauTypeLabels[key] || key;
+    const hasNotes = niv.notes && niv.notes.trim();
+    return `
+    <div class="seance-card" data-key="${key}" data-label="${label}"
+      style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 2px 6px rgba(27,58,107,.04)">
+      <div style="background:var(--surface2);padding:.65rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap">
+        <div>
+          <span style="font-family:'Syne',sans-serif;font-size:.78rem;font-weight:800;color:var(--ab-blue)">${label}</span>
+          <span style="font-family:'Syne',sans-serif;font-size:.58rem;color:var(--muted);margin-left:.5rem;background:rgba(27,58,107,.07);padding:.1rem .4rem;border-radius:3px">${key}</span>
         </div>
-        ${[0,1,2].map(i => `
-        <div style="display:grid;grid-template-columns:120px 1fr 1fr 2fr;gap:.5rem;margin-bottom:.4rem;align-items:center">
-          <div style="font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;color:${nivColors[i]}">${nivLabels[i]}</div>
-          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
-            id="ng_${key}_reps_${i}" value="${niv.reps[i]}">
-          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
-            id="ng_${key}_recup_${i}" value="${niv.recup[i]}">
-          <input class="field-input" style="font-size:.78rem;padding:.38rem .55rem"
-            id="ng_${key}_allure_${i}" value="${niv.allure[i]}">
+        <button onclick="editSeance('${key}')"
+          style="background:none;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.62rem;font-weight:700;padding:.25rem .65rem;border-radius:5px;cursor:pointer;white-space:nowrap;transition:all .15s"
+          onmouseover="this.style.borderColor='var(--ab-light)';this.style.color='var(--ab-blue)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          ✏️ Modifier
+        </button>
+      </div>
+      <div style="padding:.7rem 1.1rem">
+        <div style="display:grid;grid-template-columns:110px 1fr 1fr 2fr;gap:.4rem;margin-bottom:.3rem">
+          <div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Reps</div>
+          <div style="font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Récup</div>
+          <div style="font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Allure / Intensité</div>
+        </div>
+        ${[0,1,2].map(i=>`
+        <div style="display:grid;grid-template-columns:110px 1fr 1fr 2fr;gap:.4rem;align-items:baseline;margin-bottom:.2rem">
+          <span style="font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;color:${nivColors[i]}">${nivLabels[i]}</span>
+          <span style="font-size:.78rem;color:var(--text)">${niv.reps[i]||'—'}</span>
+          <span style="font-size:.78rem;color:var(--muted)">${niv.recup[i]||'—'}</span>
+          <span style="font-size:.75rem;color:var(--muted)">${niv.allure[i]||'—'}</span>
         </div>`).join('')}
+        ${hasNotes?`<div style="margin-top:.5rem;padding:.4rem .6rem;background:rgba(212,137,58,.06);border-left:3px solid var(--ocre);font-size:.73rem;color:var(--muted);line-height:1.5">${niv.notes}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let editingSeanceKey = null;
+
+function editSeance(key){
+  editingSeanceKey = key;
+  const niv = localNiveaux[key];
+  if(!niv) return;
+  const label = niv.label || niveauTypeLabels[key] || key;
+  const nivColors = ['#3d8b5c','#2351a0','#c04040'];
+  const nivLabels = ['\uD83D\uDFE2 D\u00E9butant','\uD83D\uDD35 Interm\u00E9diaire','\uD83D\uDD34 Confirm\u00E9'];
+
+  document.getElementById('panel-title').textContent = `Séance : ${label.substring(0,40)}`;
+  document.getElementById('btn-reset-week').style.display = 'none';
+
+  document.getElementById('panel-body').innerHTML = `
+    <div class="field-group">
+      <label class="field-label">Clé (identifiant)</label>
+      <div style="font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;color:var(--ab-blue);background:rgba(27,58,107,.06);padding:.4rem .7rem;border-radius:6px">${key}</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Label (nom affiché)</label>
+      <input class="field-input" id="es-label" value="${(niv.label||label).replace(/"/g,'&quot;')}">
+    </div>
+    ${[0,1,2].map(i=>`
+    <span class="block-sep" style="background:${['rgba(74,138,90,.06)','rgba(27,58,107,.05)','rgba(192,64,64,.05)'][i]};border-color:${['rgba(74,138,90,.2)','rgba(27,58,107,.12)','rgba(192,64,64,.15)'][i]};color:${nivColors[i]}">${nivLabels[i]}</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+      <div class="field-group">
+        <label class="field-label">Répétitions</label>
+        <input class="field-input" id="es-reps-${i}" value="${(niv.reps[i]||'').replace(/"/g,'&quot;')}">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Récupération</label>
+        <input class="field-input" id="es-recup-${i}" value="${(niv.recup[i]||'').replace(/"/g,'&quot;')}">
       </div>
     </div>
-  `).join('');
+    <div class="field-group">
+      <label class="field-label">Allure / Intensité</label>
+      <input class="field-input" id="es-allure-${i}" value="${(niv.allure[i]||'').replace(/"/g,'&quot;')}">
+    </div>`).join('')}
+    <div class="field-group" style="margin-top:.4rem">
+      <label class="field-label">Notes coach</label>
+      <textarea class="field-textarea" id="es-notes" rows="3">${niv.notes||''}</textarea>
+    </div>
+  `;
+
+  document.getElementById('edit-panel').classList.add('open');
+  document.getElementById('panel-overlay').style.display='block';
 }
 
-function saveNiveaux(){
-  Object.keys(localNiveaux).forEach(key => {
-    for(let i=0;i<3;i++){
-      const r = document.getElementById(`ng_${key}_reps_${i}`);
-      const c = document.getElementById(`ng_${key}_recup_${i}`);
-      const a = document.getElementById(`ng_${key}_allure_${i}`);
-      if(r){ localNiveaux[key].reps[i]=r.value.trim(); }
-      if(c){ localNiveaux[key].recup[i]=c.value.trim(); }
-      if(a){ localNiveaux[key].allure[i]=a.value.trim(); }
-    }
-  });
+function saveSeance(){
+  if(!editingSeanceKey) return saveWeek();
+  if(editingSeanceKey === '__new__'){
+    // Creating a new seance
+    const key = document.getElementById('es-label-key').value.trim().replace(/\s+/g,'_');
+    if(!key){ toast('La clé est obligatoire','error'); return; }
+    if(localNiveaux[key]){ toast('Cette clé existe déjà','error'); return; }
+    localNiveaux[key] = {
+      label: document.getElementById('es-label').value.trim(),
+      reps:  [0,1,2].map(i=>document.getElementById(`es-reps-${i}`).value.trim()),
+      recup: [0,1,2].map(i=>document.getElementById(`es-recup-${i}`).value.trim()),
+      allure:[0,1,2].map(i=>document.getElementById(`es-allure-${i}`).value.trim()),
+      notes: document.getElementById('es-notes').value.trim(),
+    };
+    saveLocal(); buildSeancesGrid(); closePanel();
+    toast('Nouvelle séance créée — pensez à Publier \u2713','success');
+    return;
+  }
+  const key = editingSeanceKey;
+  localNiveaux[key].label   = document.getElementById('es-label').value.trim();
+  localNiveaux[key].notes   = document.getElementById('es-notes').value.trim();
+  for(let i=0;i<3;i++){
+    localNiveaux[key].reps[i]   = document.getElementById(`es-reps-${i}`).value.trim();
+    localNiveaux[key].recup[i]  = document.getElementById(`es-recup-${i}`).value.trim();
+    localNiveaux[key].allure[i] = document.getElementById(`es-allure-${i}`).value.trim();
+  }
   saveLocal();
-  toast('Niveaux enregistrés — pensez à Publier ✓','success');
+  buildSeancesGrid();
+  closePanel();
+  editingSeanceKey = null;
+  toast('Séance mise à jour — pensez à Publier \u2713','success');
 }
+
+function openAddSeance(){
+  editingSeanceKey = '__new__';
+  document.getElementById('panel-title').textContent = 'Nouvelle séance';
+  document.getElementById('btn-reset-week').style.display = 'none';
+  const nivColors = ['#3d8b5c','#2351a0','#c04040'];
+  const nivLabels = ['\uD83D\uDFE2 D\u00E9butant','\uD83D\uDD35 Interm\u00E9diaire','\uD83D\uDD34 Confirm\u00E9'];
+
+  document.getElementById('panel-body').innerHTML = `
+    <div class="field-group">
+      <label class="field-label">Clé (identifiant unique, sans espaces)</label>
+      <input class="field-input" id="es-label-key" placeholder="ex: 6x1000_halage">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Label (nom affiché)</label>
+      <input class="field-input" id="es-label" placeholder="ex: 6×1000m Halage R=2'">
+    </div>
+    ${[0,1,2].map(i=>`
+    <span class="block-sep" style="background:${['rgba(74,138,90,.06)','rgba(27,58,107,.05)','rgba(192,64,64,.05)'][i]};border-color:${['rgba(74,138,90,.2)','rgba(27,58,107,.12)','rgba(192,64,64,.15)'][i]};color:${nivColors[i]}">${nivLabels[i]}</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+      <div class="field-group">
+        <label class="field-label">Répétitions</label>
+        <input class="field-input" id="es-reps-${i}" placeholder="ex: 6×">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Récupération</label>
+        <input class="field-input" id="es-recup-${i}" placeholder="ex: 2min">
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Allure / Intensité</label>
+      <input class="field-input" id="es-allure-${i}" placeholder="ex: allure seuil">
+    </div>`).join('')}
+    <div class="field-group" style="margin-top:.4rem">
+      <label class="field-label">Notes coach</label>
+      <textarea class="field-textarea" id="es-notes" rows="3" placeholder="Conseils, variantes, terrain recommandé..."></textarea>
+    </div>
+  `;
+  document.getElementById('edit-panel').classList.add('open');
+  document.getElementById('panel-overlay').style.display='block';
+}
+
+function saveNiveaux(){ saveSeance(); }
 
 // ════════════════════════════════════════════════
 // CONFIG GITHUB
@@ -1045,7 +1293,7 @@ async function doPublish(){
     updateStatusBar();
     buildProgTable();
     buildCalList();
-    if(document.getElementById('tab-niveaux').classList.contains('active')) buildNiveauxGrid();
+    if(document.getElementById('tab-seances').classList.contains('active')) buildSeancesGrid();
 
     setTimeout(closePublishModal, 3000);
 
