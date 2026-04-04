@@ -1,38 +1,38 @@
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
-// data.js Ã¢ÂÂ DonnÃÂ©es AB Running Loisir
+// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+// data.js ÃÂ¢ÃÂÃÂ DonnÃÂÃÂ©es AB Running Loisir
 // Modifiable par les coachs via admin.html
-// Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 const terrainLabel = {
   // Bayonne
-  halage:    {icon:'Ã°ÂÂÂ',label:'Halage ÃÂ· Nive',cls:'tag-sky'},
-  floride:   {icon:'Ã¢ÂÂ°Ã¯Â¸Â',label:'CÃÂ´te La Floride',cls:'tag-blue'},
-  voulgre:   {icon:'Ã¢ÂÂ°Ã¯Â¸Â',label:'CÃÂ´te Voulgre',cls:'tag-blue'},
-  vw:        {icon:'Ã¢ÂÂ°Ã¯Â¸Â',label:'CÃÂ´te VW',cls:'tag-blue'},
-  douves:    {icon:'Ã°ÂÂÂ¿',label:'Les Douves',cls:'tag-green'},
-  intramuros:{icon:'Ã°ÂÂÂ°',label:'Intra-muros',cls:'tag-green'},
-  stades:    {icon:'Ã°ÂÂÂ',label:'Tour stades rugby',cls:'tag-sky'},
+  halage:    {icon:'ÃÂ°ÃÂÃÂÃÂ',label:'Halage ÃÂÃÂ· Nive',cls:'tag-sky'},
+  floride:   {icon:'ÃÂ¢ÃÂÃÂ°ÃÂ¯ÃÂ¸ÃÂ',label:'CÃÂÃÂ´te La Floride',cls:'tag-blue'},
+  voulgre:   {icon:'ÃÂ¢ÃÂÃÂ°ÃÂ¯ÃÂ¸ÃÂ',label:'CÃÂÃÂ´te Voulgre',cls:'tag-blue'},
+  vw:        {icon:'ÃÂ¢ÃÂÃÂ°ÃÂ¯ÃÂ¸ÃÂ',label:'CÃÂÃÂ´te VW',cls:'tag-blue'},
+  douves:    {icon:'ÃÂ°ÃÂÃÂÃÂ¿',label:'Les Douves',cls:'tag-green'},
+  intramuros:{icon:'ÃÂ°ÃÂÃÂÃÂ°',label:'Intra-muros',cls:'tag-green'},
+  stades:    {icon:'ÃÂ°ÃÂÃÂÃÂ',label:'Tour stades rugby',cls:'tag-sky'},
   // Anglet
-  coteanglet:{icon:'Ã¢ÂÂ°Ã¯Â¸Â',label:'CÃÂ´te Anglet',cls:'tag-blue'},
-  girouettes:{icon:'Ã°ÂÂÂ¿',label:'Parc Les Girouettes',cls:'tag-green'},
-  chiberta:  {icon:'Ã°ÂÂÂ²',label:'ForÃÂªt Chiberta',cls:'tag-green'},
-  plage:     {icon:'Ã°ÂÂÂ',label:'Plage + Chiberta',cls:'tag-sky'},
+  coteanglet:{icon:'ÃÂ¢ÃÂÃÂ°ÃÂ¯ÃÂ¸ÃÂ',label:'CÃÂÃÂ´te Anglet',cls:'tag-blue'},
+  girouettes:{icon:'ÃÂ°ÃÂÃÂÃÂ¿',label:'Parc Les Girouettes',cls:'tag-green'},
+  chiberta:  {icon:'ÃÂ°ÃÂÃÂÃÂ²',label:'ForÃÂÃÂªt Chiberta',cls:'tag-green'},
+  plage:     {icon:'ÃÂ°ÃÂÃÂÃÂ',label:'Plage + Chiberta',cls:'tag-sky'},
   // Biarritz & montagne
-  escaliers: {icon:'Ã°ÂÂªÂ',label:'Escaliers Biarritz',cls:'tag-ocre'},
-  montagne:  {icon:'Ã°ÂÂÂ',label:'Ursuya / Mondarrain',cls:'tag-rouge'},
-  vvf:       {icon:'Ã¢ÂÂ°Ã¯Â¸Â',label:'CÃÂ´te VVF Anglet',cls:'tag-blue'},
+  escaliers: {icon:'ÃÂ°ÃÂÃÂªÃÂ',label:'Escaliers Biarritz',cls:'tag-ocre'},
+  montagne:  {icon:'ÃÂ°ÃÂÃÂÃÂ',label:'Ursuya / Mondarrain',cls:'tag-rouge'},
+  vvf:       {icon:'ÃÂ¢ÃÂÃÂ°ÃÂ¯ÃÂ¸ÃÂ',label:'CÃÂÃÂ´te VVF Anglet',cls:'tag-blue'},
 }
 
 const phaseLabels = {
   'phase-reprise':   {label:'Reprise',cls:'phase-reprise'},
   'phase-base':      {label:'Base endurance',cls:'phase-base'},
-  'phase-dev':       {label:'DÃÂ©veloppement',cls:'phase-dev'},
+  'phase-dev':       {label:'DÃÂÃÂ©veloppement',cls:'phase-dev'},
   'phase-force':     {label:'Force / D+',cls:'phase-force'},
-  'phase-prepa':     {label:'PrÃÂ©pa trail',cls:'phase-prepa'},
-  'phase-precomp':   {label:'PrÃÂ©-compÃÂ©tition',cls:'phase-precomp'},
+  'phase-prepa':     {label:'PrÃÂÃÂ©pa trail',cls:'phase-prepa'},
+  'phase-precomp':   {label:'PrÃÂÃÂ©-compÃÂÃÂ©tition',cls:'phase-precomp'},
   'phase-senpereko': {label:'Objectif course',cls:'phase-event'},
   'phase-euskal':    {label:'Objectif course',cls:'phase-event'},
-  'phase-recup':     {label:'RÃÂ©cupÃÂ©ration',cls:'phase-recup'},
+  'phase-recup':     {label:'RÃÂÃÂ©cupÃÂÃÂ©ration',cls:'phase-recup'},
   'phase-grp':       {label:'Bloc montagne',cls:'phase-montagne'},
   'phase-montagne':  {label:'Bloc montagne',cls:'phase-montagne'},
 }
@@ -1555,9 +1555,10 @@ const niveauxData = {
 
 
 
+
 const typeLabel = {
-  trail:'Ã°ÂÂÂ¿ Trail', route:'Ã°ÂÂÂ Route', rando:'Ã°ÂÂ¥Â¾ Rando',
-  montagne:'Ã°ÂÂÂ Montagne', social:'Ã°ÂÂÂ Section'
+  trail:'ÃÂ°ÃÂÃÂÃÂ¿ Trail', route:'ÃÂ°ÃÂÃÂÃÂ Route', rando:'ÃÂ°ÃÂÃÂ¥ÃÂ¾ Rando',
+  montagne:'ÃÂ°ÃÂÃÂÃÂ Montagne', social:'ÃÂ°ÃÂÃÂÃÂ Section'
 };
 
 const typeCls = {
@@ -2193,7 +2194,7 @@ const programme = [
     "phase": "Construction été",
     "phaseClass": "phase-euskal",
     "mardi": {
-      "titre": "Footing 40min + 5×1min vifs",
+      "titre": "test Footing 40min + 5×1min vifs",
       "terrain": "halage",
       "detail": "Décharge. Footing facile avec 5 accélérations courtes. On préserve les jambes. | 🏋 PPG couplée — Bloc PPG 5 min après le fractionné, avant le retour calme : 🟢 10 squats + 10 fentes alternées + 30s planche frontale · 🔵 8 squats sautés réception souple + 10 fentes + gainage latéral 30s chaque côté · 🔴 10 squats sautés + 8 step-down excentriques (4s) + 8 fentes bulgares + planche dynamique 40s. Ne pas faire après le retour calme — les jambes doivent encore être chaudes pour l'adaptation musculaire."
     },
@@ -2533,6 +2534,7 @@ const programme = [
 
 
 
+
 const calFixed = [
   {
     "id": "f1",
@@ -2671,322 +2673,323 @@ const calFixed = [
 
 
 
+
 const circuits = {
   fondamental: {
     corpo: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'squat_pc', dose:'2ÃÂ15 ÃÂ· allure lente'},
-        {id:'clamshell', dose:'2ÃÂ15 chaque cÃÂ´tÃÂ©'},
-        {id:'cheville_proprio', dose:'2ÃÂ30 sec chaque'},
-        {id:'planche', dose:'2ÃÂ30 sec'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'squat_pc', dose:'2ÃÂÃÂ15 ÃÂÃÂ· allure lente'},
+        {id:'clamshell', dose:'2ÃÂÃÂ15 chaque cÃÂÃÂ´tÃÂÃÂ©'},
+        {id:'cheville_proprio', dose:'2ÃÂÃÂ30 sec chaque'},
+        {id:'planche', dose:'2ÃÂÃÂ30 sec'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force jambes (15 min)', exos:[
-        {id:'step_up', dose:'3ÃÂ10 chaque ÃÂ· 3s descente'},
-        {id:'step_down', dose:'3ÃÂ8 chaque ÃÂ· 4s descente'},
-        {id:'fentes', dose:'3ÃÂ10 chaque'},
-        {id:'glute_bridge', dose:'3ÃÂ12 chaque'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force jambes (15 min)', exos:[
+        {id:'step_up', dose:'3ÃÂÃÂ10 chaque ÃÂÃÂ· 3s descente'},
+        {id:'step_down', dose:'3ÃÂÃÂ8 chaque ÃÂÃÂ· 4s descente'},
+        {id:'fentes', dose:'3ÃÂÃÂ10 chaque'},
+        {id:'glute_bridge', dose:'3ÃÂÃÂ12 chaque'},
       ]},
-      { bloc:'Ã°ÂÂ§Â± Gainage (10 min)', exos:[
-        {id:'dead_bug', dose:'3ÃÂ8 alternÃÂ©s lents'},
-        {id:'bird_dog', dose:'3ÃÂ8 alternÃÂ©s ÃÂ· pause 2s'},
-        {id:'planche_lat', dose:'3ÃÂ30 sec chaque'},
+      { bloc:'ÃÂ°ÃÂÃÂ§ÃÂ± Gainage (10 min)', exos:[
+        {id:'dead_bug', dose:'3ÃÂÃÂ8 alternÃÂÃÂ©s lents'},
+        {id:'bird_dog', dose:'3ÃÂÃÂ8 alternÃÂÃÂ©s ÃÂÃÂ· pause 2s'},
+        {id:'planche_lat', dose:'3ÃÂÃÂ30 sec chaque'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets / cheville (7 min)', exos:[
-        {id:'calf_raises', dose:'3ÃÂ15 ÃÂ· complet'},
-        {id:'tibialis', dose:'3ÃÂ20'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets / cheville (7 min)', exos:[
+        {id:'calf_raises', dose:'3ÃÂÃÂ15 ÃÂÃÂ· complet'},
+        {id:'tibialis', dose:'3ÃÂÃÂ20'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements (5 min)', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements (5 min)', exos:[
         {id:'psoas', dose:'60 sec chaque'},
         {id:'ischios', dose:'60 sec chaque'},
-        {id:'mollets_etirement', dose:'60 sec ÃÂ 2 variantes'},
+        {id:'mollets_etirement', dose:'60 sec ÃÂÃÂ 2 variantes'},
       ]}
     ],
     elastiques: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'monster_walk', dose:'3ÃÂ10 pas chaque sens'},
-        {id:'clamshell', dose:'3ÃÂ12 ÃÂ· ÃÂ©lastique lÃÂ©ger'},
-        {id:'cheville_proprio', dose:'2ÃÂ30 sec chaque'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'monster_walk', dose:'3ÃÂÃÂ10 pas chaque sens'},
+        {id:'clamshell', dose:'3ÃÂÃÂ12 ÃÂÃÂ· ÃÂÃÂ©lastique lÃÂÃÂ©ger'},
+        {id:'cheville_proprio', dose:'2ÃÂÃÂ30 sec chaque'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force jambes (15 min)', exos:[
-        {id:'step_up', dose:'3ÃÂ10 chaque ÃÂ· poids cheville'},
-        {id:'step_down', dose:'3ÃÂ10 chaque ÃÂ· 4s ÃÂ· poids cheville'},
-        {id:'rdl_unipodal', dose:'3ÃÂ10 ÃÂ· KB lÃÂ©ger ou haltÃÂ¨re'},
-        {id:'glute_bridge', dose:'3ÃÂ12 ÃÂ· ÃÂ©lastique sur cuisses'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force jambes (15 min)', exos:[
+        {id:'step_up', dose:'3ÃÂÃÂ10 chaque ÃÂÃÂ· poids cheville'},
+        {id:'step_down', dose:'3ÃÂÃÂ10 chaque ÃÂÃÂ· 4s ÃÂÃÂ· poids cheville'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ10 ÃÂÃÂ· KB lÃÂÃÂ©ger ou haltÃÂÃÂ¨re'},
+        {id:'glute_bridge', dose:'3ÃÂÃÂ12 ÃÂÃÂ· ÃÂÃÂ©lastique sur cuisses'},
       ]},
-      { bloc:'Ã°ÂÂ§Â± Gainage (12 min)', exos:[
-        {id:'dead_bug', dose:'3ÃÂ10 ÃÂ· ÃÂ©lastique sur pied'},
-        {id:'pallof_press', dose:'3ÃÂ10 chaque cÃÂ´tÃÂ©'},
-        {id:'planche_lat', dose:'3ÃÂ35 sec chaque'},
-        {id:'bird_dog', dose:'3ÃÂ10 ÃÂ· poids cheville'},
+      { bloc:'ÃÂ°ÃÂÃÂ§ÃÂ± Gainage (12 min)', exos:[
+        {id:'dead_bug', dose:'3ÃÂÃÂ10 ÃÂÃÂ· ÃÂÃÂ©lastique sur pied'},
+        {id:'pallof_press', dose:'3ÃÂÃÂ10 chaque cÃÂÃÂ´tÃÂÃÂ©'},
+        {id:'planche_lat', dose:'3ÃÂÃÂ35 sec chaque'},
+        {id:'bird_dog', dose:'3ÃÂÃÂ10 ÃÂÃÂ· poids cheville'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets (7 min)', exos:[
-        {id:'calf_raises', dose:'3ÃÂ15 ÃÂ· marche ÃÂ· poids cheville'},
-        {id:'tibialis', dose:'3ÃÂ15 ÃÂ· ÃÂ©lastique'},
-        {id:'abducteurs_debout', dose:'3ÃÂ15 chaque ÃÂ· ÃÂ©lastique'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets (7 min)', exos:[
+        {id:'calf_raises', dose:'3ÃÂÃÂ15 ÃÂÃÂ· marche ÃÂÃÂ· poids cheville'},
+        {id:'tibialis', dose:'3ÃÂÃÂ15 ÃÂÃÂ· ÃÂÃÂ©lastique'},
+        {id:'abducteurs_debout', dose:'3ÃÂÃÂ15 chaque ÃÂÃÂ· ÃÂÃÂ©lastique'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements (5 min)', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements (5 min)', exos:[
         {id:'psoas', dose:'60 sec chaque'},
         {id:'piriforme', dose:'60 sec chaque'},
-        {id:'mollets_etirement', dose:'60 sec ÃÂ 2 variantes'},
+        {id:'mollets_etirement', dose:'60 sec ÃÂÃÂ 2 variantes'},
       ]}
     ],
     salle: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'monster_walk', dose:'3ÃÂ10 pas ÃÂ· ÃÂ©lastique fort'},
-        {id:'abducteurs_debout', dose:'3ÃÂ15 chaque ÃÂ· machine'},
-        {id:'cheville_proprio', dose:'2ÃÂ30 sec chaque'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'monster_walk', dose:'3ÃÂÃÂ10 pas ÃÂÃÂ· ÃÂÃÂ©lastique fort'},
+        {id:'abducteurs_debout', dose:'3ÃÂÃÂ15 chaque ÃÂÃÂ· machine'},
+        {id:'cheville_proprio', dose:'2ÃÂÃÂ30 sec chaque'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force jambes (20 min)', exos:[
-        {id:'squat_pc', dose:'4ÃÂ12 ÃÂ· goblet squat KB'},
-        {id:'fentes', dose:'4ÃÂ10 chaque ÃÂ· haltÃÂ¨res'},
-        {id:'step_up', dose:'3ÃÂ10 chaque ÃÂ· KB ou haltÃÂ¨res'},
-        {id:'rdl_unipodal', dose:'3ÃÂ10 ÃÂ· KB moyen'},
-        {id:'leg_press', dose:'3ÃÂ12 unilatÃÂ©ral'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force jambes (20 min)', exos:[
+        {id:'squat_pc', dose:'4ÃÂÃÂ12 ÃÂÃÂ· goblet squat KB'},
+        {id:'fentes', dose:'4ÃÂÃÂ10 chaque ÃÂÃÂ· haltÃÂÃÂ¨res'},
+        {id:'step_up', dose:'3ÃÂÃÂ10 chaque ÃÂÃÂ· KB ou haltÃÂÃÂ¨res'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ10 ÃÂÃÂ· KB moyen'},
+        {id:'leg_press', dose:'3ÃÂÃÂ12 unilatÃÂÃÂ©ral'},
       ]},
-      { bloc:'Ã°ÂÂ§Â± Gainage (12 min)', exos:[
-        {id:'pallof_press', dose:'3ÃÂ10 chaque cÃÂ´tÃÂ© ÃÂ· cÃÂ¢ble'},
-        {id:'dead_bug', dose:'3ÃÂ10 ÃÂ· KB tenu'},
-        {id:'planche_lat', dose:'3ÃÂ35 sec chaque'},
+      { bloc:'ÃÂ°ÃÂÃÂ§ÃÂ± Gainage (12 min)', exos:[
+        {id:'pallof_press', dose:'3ÃÂÃÂ10 chaque cÃÂÃÂ´tÃÂÃÂ© ÃÂÃÂ· cÃÂÃÂ¢ble'},
+        {id:'dead_bug', dose:'3ÃÂÃÂ10 ÃÂÃÂ· KB tenu'},
+        {id:'planche_lat', dose:'3ÃÂÃÂ35 sec chaque'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets (8 min)', exos:[
-        {id:'calf_raises', dose:'4ÃÂ15 ÃÂ· KB lourd ÃÂ· marche'},
-        {id:'tibialis', dose:'3ÃÂ15 ÃÂ· machine ou disque'},
-        {id:'glute_bridge', dose:'4ÃÂ12 ÃÂ· hip thrust barre lÃÂ©gÃÂ¨re'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets (8 min)', exos:[
+        {id:'calf_raises', dose:'4ÃÂÃÂ15 ÃÂÃÂ· KB lourd ÃÂÃÂ· marche'},
+        {id:'tibialis', dose:'3ÃÂÃÂ15 ÃÂÃÂ· machine ou disque'},
+        {id:'glute_bridge', dose:'4ÃÂÃÂ12 ÃÂÃÂ· hip thrust barre lÃÂÃÂ©gÃÂÃÂ¨re'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements (5 min)', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements (5 min)', exos:[
         {id:'psoas', dose:'60 sec chaque'},
         {id:'piriforme', dose:'60 sec chaque'},
-        {id:'bandelette', dose:'60 sec chaque ÃÂ· foam roller'},
+        {id:'bandelette', dose:'60 sec chaque ÃÂÃÂ· foam roller'},
       ]}
     ]
   },
   force: {
     corpo: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'clamshell', dose:'2ÃÂ15 ÃÂ· lent'},
-        {id:'monster_walk', dose:'2ÃÂ10 pas chaque sens'},
-        {id:'squat_pc', dose:'2ÃÂ10 ÃÂ· 3s descente excentrique'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'clamshell', dose:'2ÃÂÃÂ15 ÃÂÃÂ· lent'},
+        {id:'monster_walk', dose:'2ÃÂÃÂ10 pas chaque sens'},
+        {id:'squat_pc', dose:'2ÃÂÃÂ10 ÃÂÃÂ· 3s descente excentrique'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force maximale (20 min)', exos:[
-        {id:'squat_unipodal', dose:'4ÃÂ8 chaque ÃÂ· 4s descente'},
-        {id:'step_down', dose:'4ÃÂ10 chaque ÃÂ· 5s excentrique'},
-        {id:'fentes', dose:'4ÃÂ8 chaque ÃÂ· 3s excentrique'},
-        {id:'rdl_unipodal', dose:'3ÃÂ10 chaque ÃÂ· lent'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force maximale (20 min)', exos:[
+        {id:'squat_unipodal', dose:'4ÃÂÃÂ8 chaque ÃÂÃÂ· 4s descente'},
+        {id:'step_down', dose:'4ÃÂÃÂ10 chaque ÃÂÃÂ· 5s excentrique'},
+        {id:'fentes', dose:'4ÃÂÃÂ8 chaque ÃÂÃÂ· 3s excentrique'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ10 chaque ÃÂÃÂ· lent'},
       ]},
-      { bloc:'Ã°ÂÂ§Â± Gainage lourd (12 min)', exos:[
-        {id:'planche', dose:'4ÃÂ50 sec'},
-        {id:'planche_lat', dose:'3ÃÂ40 sec + 10 dips'},
-        {id:'pallof_press', dose:'Sans ÃÂ©quip : planche rotative'},
+      { bloc:'ÃÂ°ÃÂÃÂ§ÃÂ± Gainage lourd (12 min)', exos:[
+        {id:'planche', dose:'4ÃÂÃÂ50 sec'},
+        {id:'planche_lat', dose:'3ÃÂÃÂ40 sec + 10 dips'},
+        {id:'pallof_press', dose:'Sans ÃÂÃÂ©quip : planche rotative'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets intensif (8 min)', exos:[
-        {id:'calf_raises', dose:'4ÃÂ20 ÃÂ· amplitude max'},
-        {id:'tibialis', dose:'3ÃÂ20'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets intensif (8 min)', exos:[
+        {id:'calf_raises', dose:'4ÃÂÃÂ20 ÃÂÃÂ· amplitude max'},
+        {id:'tibialis', dose:'3ÃÂÃÂ20'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements (5 min)', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements (5 min)', exos:[
         {id:'psoas', dose:'90 sec chaque'},
         {id:'ischios', dose:'90 sec chaque'},
         {id:'piriforme', dose:'60 sec chaque'},
       ]}
     ],
     elastiques: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'monster_walk', dose:'3ÃÂ12 ÃÂ· ÃÂ©lastique fort aux chevilles'},
-        {id:'clamshell', dose:'3ÃÂ12 ÃÂ· ÃÂ©lastique fort'},
-        {id:'abducteurs_debout', dose:'3ÃÂ12 chaque ÃÂ· ÃÂ©lastique'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'monster_walk', dose:'3ÃÂÃÂ12 ÃÂÃÂ· ÃÂÃÂ©lastique fort aux chevilles'},
+        {id:'clamshell', dose:'3ÃÂÃÂ12 ÃÂÃÂ· ÃÂÃÂ©lastique fort'},
+        {id:'abducteurs_debout', dose:'3ÃÂÃÂ12 chaque ÃÂÃÂ· ÃÂÃÂ©lastique'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force (20 min)', exos:[
-        {id:'squat_unipodal', dose:'4ÃÂ8 ÃÂ· 4s excentrique ÃÂ· poids cheville'},
-        {id:'step_down', dose:'4ÃÂ10 ÃÂ· 5s ÃÂ· poids cheville'},
-        {id:'rdl_unipodal', dose:'4ÃÂ10 ÃÂ· KB moyen'},
-        {id:'fentes', dose:'4ÃÂ8 chaque ÃÂ· poids cheville'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force (20 min)', exos:[
+        {id:'squat_unipodal', dose:'4ÃÂÃÂ8 ÃÂÃÂ· 4s excentrique ÃÂÃÂ· poids cheville'},
+        {id:'step_down', dose:'4ÃÂÃÂ10 ÃÂÃÂ· 5s ÃÂÃÂ· poids cheville'},
+        {id:'rdl_unipodal', dose:'4ÃÂÃÂ10 ÃÂÃÂ· KB moyen'},
+        {id:'fentes', dose:'4ÃÂÃÂ8 chaque ÃÂÃÂ· poids cheville'},
       ]},
-      { bloc:'Ã°ÂÂ§Â± Gainage (12 min)', exos:[
-        {id:'pallof_press', dose:'4ÃÂ10 chaque ÃÂ· ÃÂ©lastique fort'},
-        {id:'dead_bug', dose:'3ÃÂ12 ÃÂ· poids cheville'},
-        {id:'planche_lat', dose:'3ÃÂ45 sec + dips'},
+      { bloc:'ÃÂ°ÃÂÃÂ§ÃÂ± Gainage (12 min)', exos:[
+        {id:'pallof_press', dose:'4ÃÂÃÂ10 chaque ÃÂÃÂ· ÃÂÃÂ©lastique fort'},
+        {id:'dead_bug', dose:'3ÃÂÃÂ12 ÃÂÃÂ· poids cheville'},
+        {id:'planche_lat', dose:'3ÃÂÃÂ45 sec + dips'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets (8 min)', exos:[
-        {id:'calf_raises', dose:'4ÃÂ15 ÃÂ· poids cheville ÃÂ· marche'},
-        {id:'tibialis', dose:'3ÃÂ20 ÃÂ· ÃÂ©lastique'},
-        {id:'glute_bridge', dose:'3ÃÂ12 ÃÂ· ÃÂ©lastique sur cuisses ÃÂ· poids sur bassin'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets (8 min)', exos:[
+        {id:'calf_raises', dose:'4ÃÂÃÂ15 ÃÂÃÂ· poids cheville ÃÂÃÂ· marche'},
+        {id:'tibialis', dose:'3ÃÂÃÂ20 ÃÂÃÂ· ÃÂÃÂ©lastique'},
+        {id:'glute_bridge', dose:'3ÃÂÃÂ12 ÃÂÃÂ· ÃÂÃÂ©lastique sur cuisses ÃÂÃÂ· poids sur bassin'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements', exos:[
         {id:'psoas', dose:'90 sec chaque'},
-        {id:'ischios', dose:'ÃÂ©lastique ÃÂ· 90 sec chaque'},
+        {id:'ischios', dose:'ÃÂÃÂ©lastique ÃÂÃÂ· 90 sec chaque'},
         {id:'bandelette', dose:'60 sec chaque'},
       ]}
     ],
     salle: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'monster_walk', dose:'3ÃÂ12 ÃÂ· ÃÂ©lastique fort'},
-        {id:'hip_thrust', dose:'2ÃÂ15 ÃÂ· barre lÃÂ©gÃÂ¨re ÃÂ· activation'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'monster_walk', dose:'3ÃÂÃÂ12 ÃÂÃÂ· ÃÂÃÂ©lastique fort'},
+        {id:'hip_thrust', dose:'2ÃÂÃÂ15 ÃÂÃÂ· barre lÃÂÃÂ©gÃÂÃÂ¨re ÃÂÃÂ· activation'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force maximale (25 min)', exos:[
-        {id:'squat_pc', dose:'5ÃÂ5 ÃÂ· back squat chargÃÂ© ÃÂ· 3s excentrique'},
-        {id:'fentes', dose:'4ÃÂ8 chaque ÃÂ· barre ou KB lourds'},
-        {id:'step_down', dose:'4ÃÂ10 ÃÂ· 5s ÃÂ· KB lourd'},
-        {id:'rdl_unipodal', dose:'4ÃÂ8 ÃÂ· barre ou KB lourd'},
-        {id:'leg_press', dose:'4ÃÂ10 ÃÂ· chargÃÂ© ÃÂ· unilatÃÂ©ral'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force maximale (25 min)', exos:[
+        {id:'squat_pc', dose:'5ÃÂÃÂ5 ÃÂÃÂ· back squat chargÃÂÃÂ© ÃÂÃÂ· 3s excentrique'},
+        {id:'fentes', dose:'4ÃÂÃÂ8 chaque ÃÂÃÂ· barre ou KB lourds'},
+        {id:'step_down', dose:'4ÃÂÃÂ10 ÃÂÃÂ· 5s ÃÂÃÂ· KB lourd'},
+        {id:'rdl_unipodal', dose:'4ÃÂÃÂ8 ÃÂÃÂ· barre ou KB lourd'},
+        {id:'leg_press', dose:'4ÃÂÃÂ10 ÃÂÃÂ· chargÃÂÃÂ© ÃÂÃÂ· unilatÃÂÃÂ©ral'},
       ]},
-      { bloc:'Ã°ÂÂÂ Fessiers (10 min)', exos:[
-        {id:'hip_thrust', dose:'4ÃÂ10 ÃÂ· barre chargÃÂ©e'},
-        {id:'abducteurs_debout', dose:'3ÃÂ15 ÃÂ· machine'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Fessiers (10 min)', exos:[
+        {id:'hip_thrust', dose:'4ÃÂÃÂ10 ÃÂÃÂ· barre chargÃÂÃÂ©e'},
+        {id:'abducteurs_debout', dose:'3ÃÂÃÂ15 ÃÂÃÂ· machine'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets (8 min)', exos:[
-        {id:'calf_raises', dose:'5ÃÂ15 ÃÂ· machine chargÃÂ©e'},
-        {id:'tibialis', dose:'3ÃÂ15 ÃÂ· machine'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets (8 min)', exos:[
+        {id:'calf_raises', dose:'5ÃÂÃÂ15 ÃÂÃÂ· machine chargÃÂÃÂ©e'},
+        {id:'tibialis', dose:'3ÃÂÃÂ15 ÃÂÃÂ· machine'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements', exos:[
         {id:'psoas', dose:'90 sec chaque'},
         {id:'ischios', dose:'90 sec chaque'},
-        {id:'bandelette', dose:'foam roller ÃÂ· 90 sec chaque'},
+        {id:'bandelette', dose:'foam roller ÃÂÃÂ· 90 sec chaque'},
       ]}
     ]
   },
   specifique: {
     corpo: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'squat_jump', dose:'2ÃÂ6 ÃÂ· lÃÂ©ger ÃÂ· allumage'},
-        {id:'clamshell', dose:'2ÃÂ12 ÃÂ· lent'},
-        {id:'cheville_proprio', dose:'2ÃÂ30 sec'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'squat_jump', dose:'2ÃÂÃÂ6 ÃÂÃÂ· lÃÂÃÂ©ger ÃÂÃÂ· allumage'},
+        {id:'clamshell', dose:'2ÃÂÃÂ12 ÃÂÃÂ· lent'},
+        {id:'cheville_proprio', dose:'2ÃÂÃÂ30 sec'},
       ]},
-      { bloc:'Ã¢ÂÂ¡ PliomÃÂ©trie trail (15 min)', exos:[
-        {id:'squat_jump', dose:'4ÃÂ8 ÃÂ· puissants'},
-        {id:'bounding', dose:'4ÃÂ10 aller-retour'},
-        {id:'drop_jump', dose:'3ÃÂ8 ÃÂ· box 20cm'},
+      { bloc:'ÃÂ¢ÃÂÃÂ¡ PliomÃÂÃÂ©trie trail (15 min)', exos:[
+        {id:'squat_jump', dose:'4ÃÂÃÂ8 ÃÂÃÂ· puissants'},
+        {id:'bounding', dose:'4ÃÂÃÂ10 aller-retour'},
+        {id:'drop_jump', dose:'3ÃÂÃÂ8 ÃÂÃÂ· box 20cm'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force unilatÃÂ©rale (12 min)', exos:[
-        {id:'squat_unipodal', dose:'3ÃÂ8 chaque ÃÂ· lent'},
-        {id:'step_down', dose:'3ÃÂ10 ÃÂ· 5s excentrique'},
-        {id:'rdl_unipodal', dose:'3ÃÂ10 chaque'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force unilatÃÂÃÂ©rale (12 min)', exos:[
+        {id:'squat_unipodal', dose:'3ÃÂÃÂ8 chaque ÃÂÃÂ· lent'},
+        {id:'step_down', dose:'3ÃÂÃÂ10 ÃÂÃÂ· 5s excentrique'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ10 chaque'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets & cheville (8 min)', exos:[
-        {id:'calf_raises', dose:'3ÃÂ20 ÃÂ· amplitude max'},
-        {id:'cheville_proprio', dose:'3ÃÂ30 sec ÃÂ· yeux fermÃÂ©s'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets & cheville (8 min)', exos:[
+        {id:'calf_raises', dose:'3ÃÂÃÂ20 ÃÂÃÂ· amplitude max'},
+        {id:'cheville_proprio', dose:'3ÃÂÃÂ30 sec ÃÂÃÂ· yeux fermÃÂÃÂ©s'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements (7 min)', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements (7 min)', exos:[
         {id:'psoas', dose:'60 sec chaque'},
         {id:'piriforme', dose:'60 sec chaque'},
-        {id:'mollets_etirement', dose:'60 sec ÃÂ 2 variantes'},
+        {id:'mollets_etirement', dose:'60 sec ÃÂÃÂ 2 variantes'},
       ]}
     ],
     elastiques: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'monster_walk', dose:'3ÃÂ10 pas ÃÂ· ÃÂ©lastique'},
-        {id:'bounding', dose:'2ÃÂ8 ÃÂ· activation'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'monster_walk', dose:'3ÃÂÃÂ10 pas ÃÂÃÂ· ÃÂÃÂ©lastique'},
+        {id:'bounding', dose:'2ÃÂÃÂ8 ÃÂÃÂ· activation'},
       ]},
-      { bloc:'Ã¢ÂÂ¡ PliomÃÂ©trie (15 min)', exos:[
-        {id:'squat_jump', dose:'4ÃÂ8'},
-        {id:'bounding', dose:'4ÃÂ10 AR ÃÂ· poids cheville'},
-        {id:'drop_jump', dose:'3ÃÂ8'},
+      { bloc:'ÃÂ¢ÃÂÃÂ¡ PliomÃÂÃÂ©trie (15 min)', exos:[
+        {id:'squat_jump', dose:'4ÃÂÃÂ8'},
+        {id:'bounding', dose:'4ÃÂÃÂ10 AR ÃÂÃÂ· poids cheville'},
+        {id:'drop_jump', dose:'3ÃÂÃÂ8'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force (12 min)', exos:[
-        {id:'squat_unipodal', dose:'3ÃÂ8 ÃÂ· poids cheville'},
-        {id:'step_down', dose:'3ÃÂ10 ÃÂ· poids cheville ÃÂ· 5s'},
-        {id:'rdl_unipodal', dose:'3ÃÂ10 ÃÂ· KB'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force (12 min)', exos:[
+        {id:'squat_unipodal', dose:'3ÃÂÃÂ8 ÃÂÃÂ· poids cheville'},
+        {id:'step_down', dose:'3ÃÂÃÂ10 ÃÂÃÂ· poids cheville ÃÂÃÂ· 5s'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ10 ÃÂÃÂ· KB'},
       ]},
-      { bloc:'Ã°ÂÂ§Â± Gainage anti-rotation (8 min)', exos:[
-        {id:'pallof_press', dose:'4ÃÂ10 chaque ÃÂ· ÃÂ©lastique'},
-        {id:'planche_lat', dose:'3ÃÂ40 sec + dips'},
+      { bloc:'ÃÂ°ÃÂÃÂ§ÃÂ± Gainage anti-rotation (8 min)', exos:[
+        {id:'pallof_press', dose:'4ÃÂÃÂ10 chaque ÃÂÃÂ· ÃÂÃÂ©lastique'},
+        {id:'planche_lat', dose:'3ÃÂÃÂ40 sec + dips'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements', exos:[
         {id:'psoas', dose:'60 sec chaque'},
-        {id:'ischios', dose:'ÃÂ©lastique ÃÂ· 60 sec chaque'},
+        {id:'ischios', dose:'ÃÂÃÂ©lastique ÃÂÃÂ· 60 sec chaque'},
         {id:'bandelette', dose:'60 sec chaque'},
       ]}
     ],
     salle: [
-      { bloc:'Ã°ÂÂÂ¥ Activation (8 min)', exos:[
-        {id:'monster_walk', dose:'3ÃÂ12 ÃÂ· fort'},
-        {id:'hip_thrust', dose:'2ÃÂ15 ÃÂ· activation lÃÂ©gÃÂ¨re'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¥ Activation (8 min)', exos:[
+        {id:'monster_walk', dose:'3ÃÂÃÂ12 ÃÂÃÂ· fort'},
+        {id:'hip_thrust', dose:'2ÃÂÃÂ15 ÃÂÃÂ· activation lÃÂÃÂ©gÃÂÃÂ¨re'},
       ]},
-      { bloc:'Ã¢ÂÂ¡ PliomÃÂ©trie (15 min)', exos:[
-        {id:'box_jump', dose:'4ÃÂ6 ÃÂ· box 40cm'},
-        {id:'squat_jump', dose:'3ÃÂ8 ÃÂ· gilet lestÃÂ© lÃÂ©ger'},
-        {id:'drop_jump', dose:'3ÃÂ6 ÃÂ· box 30cm'},
-        {id:'bounding', dose:'3ÃÂ10 AR'},
+      { bloc:'ÃÂ¢ÃÂÃÂ¡ PliomÃÂÃÂ©trie (15 min)', exos:[
+        {id:'box_jump', dose:'4ÃÂÃÂ6 ÃÂÃÂ· box 40cm'},
+        {id:'squat_jump', dose:'3ÃÂÃÂ8 ÃÂÃÂ· gilet lestÃÂÃÂ© lÃÂÃÂ©ger'},
+        {id:'drop_jump', dose:'3ÃÂÃÂ6 ÃÂÃÂ· box 30cm'},
+        {id:'bounding', dose:'3ÃÂÃÂ10 AR'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Force spÃÂ©cifique (15 min)', exos:[
-        {id:'squat_unipodal', dose:'3ÃÂ8 ÃÂ· KB ÃÂ· 4s excentrique'},
-        {id:'rdl_unipodal', dose:'3ÃÂ10 ÃÂ· KB lourd'},
-        {id:'hip_thrust', dose:'3ÃÂ10 ÃÂ· barre chargÃÂ©e'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Force spÃÂÃÂ©cifique (15 min)', exos:[
+        {id:'squat_unipodal', dose:'3ÃÂÃÂ8 ÃÂÃÂ· KB ÃÂÃÂ· 4s excentrique'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ10 ÃÂÃÂ· KB lourd'},
+        {id:'hip_thrust', dose:'3ÃÂÃÂ10 ÃÂÃÂ· barre chargÃÂÃÂ©e'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets (8 min)', exos:[
-        {id:'calf_raises', dose:'4ÃÂ15 ÃÂ· machine chargÃÂ©e'},
-        {id:'tibialis', dose:'3ÃÂ15 ÃÂ· machine'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets (8 min)', exos:[
+        {id:'calf_raises', dose:'4ÃÂÃÂ15 ÃÂÃÂ· machine chargÃÂÃÂ©e'},
+        {id:'tibialis', dose:'3ÃÂÃÂ15 ÃÂÃÂ· machine'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements', exos:[
         {id:'psoas', dose:'60 sec chaque'},
         {id:'piriforme', dose:'60 sec chaque'},
-        {id:'bandelette', dose:'foam roller ÃÂ· 90 sec'},
+        {id:'bandelette', dose:'foam roller ÃÂÃÂ· 90 sec'},
       ]}
     ]
   },
   competition: {
     corpo: [
-      { bloc:'Ã¢ÂÂ¡ Activation + vivacitÃÂ© (10 min)', exos:[
-        {id:'squat_jump', dose:'2ÃÂ6 ÃÂ· lÃÂ©ger'},
-        {id:'bounding', dose:'2ÃÂ8 aller-retour'},
-        {id:'clamshell', dose:'2ÃÂ12 chaque'},
-        {id:'cheville_proprio', dose:'2ÃÂ30 sec'},
+      { bloc:'ÃÂ¢ÃÂÃÂ¡ Activation + vivacitÃÂÃÂ© (10 min)', exos:[
+        {id:'squat_jump', dose:'2ÃÂÃÂ6 ÃÂÃÂ· lÃÂÃÂ©ger'},
+        {id:'bounding', dose:'2ÃÂÃÂ8 aller-retour'},
+        {id:'clamshell', dose:'2ÃÂÃÂ12 chaque'},
+        {id:'cheville_proprio', dose:'2ÃÂÃÂ30 sec'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Entretien force (12 min)', exos:[
-        {id:'step_down', dose:'3ÃÂ8 ÃÂ· 4s excentrique'},
-        {id:'glute_bridge', dose:'3ÃÂ10 chaque'},
-        {id:'rdl_unipodal', dose:'3ÃÂ8 ÃÂ· lÃÂ©ger'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Entretien force (12 min)', exos:[
+        {id:'step_down', dose:'3ÃÂÃÂ8 ÃÂÃÂ· 4s excentrique'},
+        {id:'glute_bridge', dose:'3ÃÂÃÂ10 chaque'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ8 ÃÂÃÂ· lÃÂÃÂ©ger'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets & prÃÂ©vention (8 min)', exos:[
-        {id:'calf_raises', dose:'3ÃÂ15'},
-        {id:'tibialis', dose:'3ÃÂ20'},
-        {id:'cheville_proprio', dose:'2ÃÂ30 sec yeux fermÃÂ©s'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets & prÃÂÃÂ©vention (8 min)', exos:[
+        {id:'calf_raises', dose:'3ÃÂÃÂ15'},
+        {id:'tibialis', dose:'3ÃÂÃÂ20'},
+        {id:'cheville_proprio', dose:'2ÃÂÃÂ30 sec yeux fermÃÂÃÂ©s'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements (10 min)', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements (10 min)', exos:[
         {id:'psoas', dose:'90 sec chaque'},
         {id:'ischios', dose:'90 sec chaque'},
         {id:'piriforme', dose:'60 sec chaque'},
-        {id:'mollets_etirement', dose:'60 sec ÃÂ 2'},
+        {id:'mollets_etirement', dose:'60 sec ÃÂÃÂ 2'},
       ]}
     ],
     elastiques: [
-      { bloc:'Ã¢ÂÂ¡ Activation (10 min)', exos:[
-        {id:'monster_walk', dose:'2ÃÂ10 ÃÂ· ÃÂ©lastique lÃÂ©ger'},
-        {id:'squat_jump', dose:'2ÃÂ6'},
-        {id:'bounding', dose:'2ÃÂ8 AR'},
+      { bloc:'ÃÂ¢ÃÂÃÂ¡ Activation (10 min)', exos:[
+        {id:'monster_walk', dose:'2ÃÂÃÂ10 ÃÂÃÂ· ÃÂÃÂ©lastique lÃÂÃÂ©ger'},
+        {id:'squat_jump', dose:'2ÃÂÃÂ6'},
+        {id:'bounding', dose:'2ÃÂÃÂ8 AR'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Entretien (12 min)', exos:[
-        {id:'step_down', dose:'3ÃÂ8 ÃÂ· poids cheville ÃÂ· 4s'},
-        {id:'rdl_unipodal', dose:'3ÃÂ8 ÃÂ· KB lÃÂ©ger'},
-        {id:'clamshell', dose:'3ÃÂ12 ÃÂ· ÃÂ©lastique'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Entretien (12 min)', exos:[
+        {id:'step_down', dose:'3ÃÂÃÂ8 ÃÂÃÂ· poids cheville ÃÂÃÂ· 4s'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ8 ÃÂÃÂ· KB lÃÂÃÂ©ger'},
+        {id:'clamshell', dose:'3ÃÂÃÂ12 ÃÂÃÂ· ÃÂÃÂ©lastique'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets (8 min)', exos:[
-        {id:'calf_raises', dose:'3ÃÂ15 ÃÂ· poids cheville'},
-        {id:'cheville_proprio', dose:'3ÃÂ30 sec'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets (8 min)', exos:[
+        {id:'calf_raises', dose:'3ÃÂÃÂ15 ÃÂÃÂ· poids cheville'},
+        {id:'cheville_proprio', dose:'3ÃÂÃÂ30 sec'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements', exos:[
         {id:'psoas', dose:'90 sec chaque'},
         {id:'piriforme', dose:'60 sec chaque'},
-        {id:'bandelette', dose:'foam roller ÃÂ· 60 sec'},
+        {id:'bandelette', dose:'foam roller ÃÂÃÂ· 60 sec'},
       ]}
     ],
     salle: [
-      { bloc:'Ã¢ÂÂ¡ Activation + pliomÃÂ©trie lÃÂ©gÃÂ¨re (10 min)', exos:[
-        {id:'box_jump', dose:'2ÃÂ5 ÃÂ· box basse'},
-        {id:'monster_walk', dose:'2ÃÂ10 ÃÂ· fort'},
-        {id:'bounding', dose:'2ÃÂ8 AR'},
+      { bloc:'ÃÂ¢ÃÂÃÂ¡ Activation + pliomÃÂÃÂ©trie lÃÂÃÂ©gÃÂÃÂ¨re (10 min)', exos:[
+        {id:'box_jump', dose:'2ÃÂÃÂ5 ÃÂÃÂ· box basse'},
+        {id:'monster_walk', dose:'2ÃÂÃÂ10 ÃÂÃÂ· fort'},
+        {id:'bounding', dose:'2ÃÂÃÂ8 AR'},
       ]},
-      { bloc:'Ã°ÂÂ¦Âµ Entretien force (15 min)', exos:[
-        {id:'squat_unipodal', dose:'3ÃÂ6 ÃÂ· KB ÃÂ· modÃÂ©rÃÂ©'},
-        {id:'rdl_unipodal', dose:'3ÃÂ8 ÃÂ· KB moyen'},
-        {id:'hip_thrust', dose:'3ÃÂ10 ÃÂ· modÃÂ©rÃÂ©'},
+      { bloc:'ÃÂ°ÃÂÃÂ¦ÃÂµ Entretien force (15 min)', exos:[
+        {id:'squat_unipodal', dose:'3ÃÂÃÂ6 ÃÂÃÂ· KB ÃÂÃÂ· modÃÂÃÂ©rÃÂÃÂ©'},
+        {id:'rdl_unipodal', dose:'3ÃÂÃÂ8 ÃÂÃÂ· KB moyen'},
+        {id:'hip_thrust', dose:'3ÃÂÃÂ10 ÃÂÃÂ· modÃÂÃÂ©rÃÂÃÂ©'},
       ]},
-      { bloc:'Ã°ÂÂÂ Mollets (8 min)', exos:[
-        {id:'calf_raises', dose:'3ÃÂ15 ÃÂ· machine chargÃÂ©e'},
-        {id:'tibialis', dose:'3ÃÂ15'},
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ Mollets (8 min)', exos:[
+        {id:'calf_raises', dose:'3ÃÂÃÂ15 ÃÂÃÂ· machine chargÃÂÃÂ©e'},
+        {id:'tibialis', dose:'3ÃÂÃÂ15'},
       ]},
-      { bloc:'Ã°ÂÂÂ¿ ÃÂtirements', exos:[
+      { bloc:'ÃÂ°ÃÂÃÂÃÂ¿ ÃÂÃÂtirements', exos:[
         {id:'psoas', dose:'90 sec chaque'},
         {id:'ischios', dose:'90 sec chaque'},
-        {id:'bandelette', dose:'foam roller ÃÂ· 90 sec'},
+        {id:'bandelette', dose:'foam roller ÃÂÃÂ· 90 sec'},
       ]}
     ]
   }
