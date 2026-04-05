@@ -1107,7 +1107,24 @@ async function doPublish(){
       throw new Error(err.message || pushResp.status);
     }
 
-    setProgress(100, '✅ Publié avec succès ! Le site sera mis à jour dans 1-2 minutes.');
+    // Mise à jour de index.html pour casser le cache de data.js
+    setProgress(85, '\uD83D\uDD04 Mise \u00E0 jour du cache...');
+    try {
+      const idxUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/index.html`;
+      const idxGet = await fetch(idxUrl, {headers});
+      if(idxGet.ok){
+        const idxData = await idxGet.json();
+        let idxContent = decodeURIComponent(escape(atob(idxData.content.replace(/\n/g,''))));
+        idxContent = idxContent.replace(/data\.js\?v=\d+/, 'data.js?v='+Date.now());
+        await fetch(idxUrl, {method:'PUT', headers, body: JSON.stringify({
+          message: '[Admin] Cache bust',
+          content: btoa(unescape(encodeURIComponent(idxContent))),
+          sha: idxData.sha,
+        })});
+      }
+    } catch(e){ console.warn('Cache bust failed:', e); }
+
+    setProgress(100, '\u2705 Publi\u00E9 avec succ\u00E8s ! Le site sera mis \u00E0 jour dans 1-2 minutes.');
 
     // Clear pending
     localStorage.removeItem('ab-admin-pending');
