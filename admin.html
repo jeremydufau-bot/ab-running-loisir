@@ -417,14 +417,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 <!-- ══ TOAST ══ -->
 <div id="toast"></div>
 
-<script>
-// Chargement de data.js sans cache — les coachs ont toujours besoin des données fraîches
-(function(){
-  var s = document.createElement('script');
-  s.src = 'data.js?v=' + Date.now();
-  document.head.appendChild(s);
-})();
-</script>
+<script src="data.js"></script>
 <script>
 // ════════════════════════════════════════════════
 // AUTHENTIFICATION — simple et fiable
