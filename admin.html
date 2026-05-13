@@ -3,1182 +3,1059 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — AB Running Loisir</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>Admin — AB Running</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #F4F6FA; --surface: #fff; --border: rgba(30,60,120,.12);
-  --ab-blue: #1B3A6B; --ab-blue2: #2351A0; --ab-light: #4A7ACC;
-  --ab-sky: #7AAEE0; --text: #1A2540; --muted: #6B7A9A;
-  --mousse: #4A8A5A; --rouge: #C04040; --ocre: #D4893A;
+:root{
+  --bg:#F2F5FA;--surface:#fff;--surface2:#F8FAFF;--border:rgba(27,58,107,.1);
+  --navy:#1B3A6B;--blue:#2A5DA0;--light:#4A7ECC;--sky:#7BC3E5;
+  --text:#1A2540;--muted:#6B7A9A;--mousse:#4A8A5A;--rouge:#C04040;--ocre:#D4893A;
+  --gold:#B8860B;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:14px;line-height:1.6;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:14px;line-height:1.6}
 
-/* ── LOGIN ── */
-#login-screen{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--ab-blue) 0%,var(--ab-blue2) 60%,var(--ab-light) 100%);
+/* Login */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy),var(--blue),var(--light))}
+.login-box{background:#fff;border-radius:16px;padding:2.5rem;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.login-box h2{font-size:1.2rem;color:var(--navy);margin-bottom:.2rem}
+.login-box p{font-size:.7rem;color:var(--muted);margin-bottom:1.5rem}
+.login-box input{width:100%;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Lora',serif;font-size:.85rem;margin-bottom:.8rem}
+.login-box button{width:100%;background:var(--navy);color:#fff;border:none;padding:.7rem;border-radius:8px;font-family:'Lora',serif;font-size:.78rem;font-weight:700;cursor:pointer}
+#login-err{color:var(--rouge);font-size:.72rem;display:none;margin-top:.4rem}
+
+/* App */
+#app{display:none}
+.topbar{background:var(--navy);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(27,58,107,.25)}
+.topbar h1{color:#fff;font-size:1rem;font-weight:700}
+.topbar-right{display:flex;gap:.5rem;align-items:center}
+.topbar-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:'Lora',serif;font-size:.68rem;padding:.35rem .7rem;border-radius:6px;cursor:pointer}
+.topbar-btn:hover{background:rgba(255,255,255,.2)}
+.topbar-btn.pub{background:var(--mousse);border-color:var(--mousse)}
+
+.tabs{display:flex;gap:.3rem;padding:.6rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{font-family:'Lora',serif;font-size:.72rem;font-weight:600;padding:.4rem .8rem;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer}
+.tab:hover{color:var(--navy);background:rgba(27,58,107,.05)}
+.tab.active{background:rgba(42,93,160,.12);color:var(--navy)}
+
+.admin-page{display:none;max-width:1100px;margin:0 auto;padding:1.5rem}
+.admin-page.active{display:block}
+
+.status-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:.4rem 1.5rem;font-size:.68rem;display:flex;align-items:center;gap:.5rem}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--mousse)}
+.status-dot.warn{background:var(--ocre)}
+
+/* Form */
+.field-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:.25rem}
+.field-input,.field-select,.field-textarea{width:100%;padding:.5rem .7rem;border:1px solid var(--border);border-radius:6px;font-family:'Lora',serif;font-size:.82rem;background:var(--surface);color:var(--text)}
+.field-textarea{resize:vertical}
+.field-group{margin-bottom:.8rem}
+.btn-sm{font-family:'Lora',serif;font-size:.68rem;font-weight:600;padding:.3rem .6rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}
+.btn-sm:hover{border-color:var(--light);color:var(--navy)}
+.btn-sm.danger{color:var(--rouge);border-color:rgba(192,64,64,.3)}
+.block-sep{display:block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .8rem;margin:.8rem 0 .6rem;background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:6px;color:var(--navy)}
+
+/* Prog table */
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{background:var(--surface2);font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border)}
+.admin-table td{padding:.45rem .7rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.admin-table tr:hover td{background:rgba(123,195,229,.04)}
+.admin-table tr.dec td{background:rgba(74,138,90,.03)}
+.modified-flag{color:var(--ocre);font-size:.6rem;margin-left:.3rem}
+
+/* Séances grid */
+.seance-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.5rem}
+.seance-card-hdr{background:var(--surface2);padding:.5rem .8rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;border-bottom:1px solid var(--border)}
+.seance-card-body{padding:.5rem .8rem}
+
+/* Panel */
+#panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200}
+#edit-panel{position:fixed;top:0;right:-480px;width:460px;max-width:95vw;height:100vh;background:var(--surface);box-shadow:-4px 0 30px rgba(0,0,0,.15);z-index:210;transition:right .3s;overflow-y:auto}
+#edit-panel.open{right:0}
+.panel-hdr{background:var(--navy);color:#fff;padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:center}
+.panel-hdr h3{font-size:.85rem;font-weight:700}
+.panel-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.1rem;cursor:pointer}
+.panel-body{padding:1rem 1.2rem}
+.panel-footer{padding:.8rem 1.2rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end}
+.panel-btn{font-family:'Lora',serif;font-size:.72rem;font-weight:700;padding:.5rem 1rem;border-radius:6px;border:none;cursor:pointer}
+.panel-btn.save{background:var(--navy);color:#fff}
+.panel-btn.cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.panel-btn.reset{background:transparent;border:1px solid rgba(192,64,64,.3);color:var(--rouge)}
+
+.seance-preview {
+  background-color: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.login-box{background:#fff;border-radius:16px;padding:2.5rem;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
-.login-logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--ab-blue);margin-bottom:.2rem;}
-.login-sub{font-family:'Syne',sans-serif;font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.8rem;}
-.login-label{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;color:var(--ab-blue);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:.35rem;}
-.login-input{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;font-family:'Lora',serif;color:var(--text);background:#f8faff;outline:none;transition:border-color .15s;margin-bottom:1rem;}
-.login-input:focus{border-color:var(--ab-light);}
-.login-btn{width:100%;background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;padding:.75rem;border:none;border-radius:8px;cursor:pointer;letter-spacing:.05em;transition:background .15s;}
-.login-btn:hover{background:var(--ab-blue2);}
-.login-error{color:var(--rouge);font-family:'Syne',sans-serif;font-size:.72rem;margin-top:.6rem;display:none;}
+  
+/* Toast */
+#toast{position:fixed;top:1rem;right:1rem;z-index:300;display:flex;flex-direction:column;gap:.3rem}
+.toast-item{padding:.6rem 1rem;border-radius:8px;font-size:.76rem;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15);animation:slideIn .3s}
+.toast-item.success{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+.toast-item.error{background:#fbe9e7;color:#c62828;border:1px solid #ef9a9a}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:none;opacity:1}}
 
-/* ── APP ── */
-#app{display:none;}
-.topbar{
-  background:var(--ab-blue);padding:.9rem 2rem;display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;z-index:100;
-  box-shadow:0 2px 12px rgba(27,58,107,.25);
-}
-.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#fff;letter-spacing:.05em;}
-.topbar-subtitle{font-family:'Syne',sans-serif;font-size:.6rem;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;}
-.topbar-right{display:flex;align-items:center;gap:.8rem;}
-.publish-btn{
-  background:var(--mousse);color:#fff;font-family:'Syne',sans-serif;
-  font-size:.72rem;font-weight:700;padding:.55rem 1.2rem;border:none;
-  border-radius:8px;cursor:pointer;letter-spacing:.04em;transition:all .15s;
-  display:flex;align-items:center;gap:.4rem;
-}
-.publish-btn:hover{background:#3a7548;}
-.publish-btn:disabled{background:var(--muted);cursor:not-allowed;}
-.logout-btn{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;cursor:pointer;}
-.status-bar{background:rgba(27,58,107,.06);border-bottom:1px solid var(--border);padding:.5rem 2rem;font-family:'Syne',sans-serif;font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--mousse);flex-shrink:0;}
-.status-dot.warn{background:var(--ocre);}
-.status-dot.error{background:var(--rouge);}
-
-/* ── TABS ── */
-.admin-tabs{display:flex;gap:0;background:var(--surface);border-bottom:2px solid var(--border);padding:0 2rem;}
-.admin-tab{
-  background:none;border:none;border-bottom:3px solid transparent;
-  font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;
-  color:var(--muted);padding:.9rem 1.2rem;cursor:pointer;letter-spacing:.06em;
-  text-transform:uppercase;margin-bottom:-2px;transition:all .15s;
-}
-.admin-tab.active{color:var(--ab-blue);border-bottom-color:var(--ab-blue);}
-.admin-tab:hover{color:var(--ab-blue);}
-
-/* ── CONTENT ── */
-.admin-page{display:none;padding:2rem;max-width:1200px;margin:0 auto;}
-.admin-page.active{display:block;}
-.section-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--ab-blue);margin-bottom:.3rem;}
-.section-sub{color:var(--muted);font-size:.82rem;margin-bottom:1.5rem;}
-
-/* ── PROGRAMME TABLE ── */
-.prog-admin-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.8rem;}
-.prog-admin-table th{
-  background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;
-  font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  padding:.7rem 1rem;text-align:left;position:sticky;top:52px;z-index:5;
-}
-.prog-admin-table td{padding:.6rem 1rem;border-bottom:1px solid var(--border);background:var(--surface);vertical-align:middle;}
-.prog-admin-table tr:hover td{background:rgba(74,122,204,.04);}
-.prog-admin-table tr.decharge td{background:rgba(74,138,90,.03);}
-.sem-badge{font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:var(--ab-blue);}
-.phase-mini{font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;padding:.1rem .4rem;border-radius:3px;}
-.seance-cell{font-size:.78rem;color:var(--text);}
-.seance-terrain{font-family:'Syne',sans-serif;font-size:.58rem;color:var(--muted);margin-top:.15rem;}
-.modified-flag{color:var(--ab-light);font-size:.6rem;margin-left:.3rem;}
-.btn-edit-row{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.62rem;font-weight:700;padding:.25rem .6rem;border-radius:5px;cursor:pointer;white-space:nowrap;transition:all .15s;}
-.btn-edit-row:hover{border-color:var(--ab-light);color:var(--ab-blue);}
-
-/* ── EDIT PANEL ── */
-.edit-panel{
-  position:fixed;right:0;top:0;bottom:0;width:480px;background:var(--surface);
-  border-left:1px solid var(--border);box-shadow:-8px 0 40px rgba(27,58,107,.12);
-  z-index:200;display:flex;flex-direction:column;transform:translateX(100%);
-  transition:transform .25s ease;overflow:hidden;
-}
-.edit-panel.open{transform:translateX(0);}
-.edit-panel-head{
-  padding:1.2rem 1.5rem;background:var(--ab-blue);color:#fff;flex-shrink:0;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.edit-panel-head h2{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.03em;}
-.edit-panel-body{flex:1;overflow-y:auto;padding:1.2rem 1.5rem;}
-.edit-panel-foot{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.6rem;background:var(--surface);flex-shrink:0;}
-.panel-close{background:rgba(255,255,255,.15);border:none;color:#fff;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;padding:.3rem .7rem;border-radius:5px;cursor:pointer;}
-
-.field-group{margin-bottom:1.1rem;}
-.field-label{font-family:'Syne',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ab-blue);display:block;margin-bottom:.3rem;}
-.field-input{width:100%;background:#f8faff;border:1.5px solid var(--border);border-radius:7px;padding:.55rem .8rem;font-family:'Lora',serif;font-size:.85rem;color:var(--text);outline:none;transition:border-color .15s;}
-.field-input:focus{border-color:var(--ab-light);}
-.field-textarea{width:100%;background:#f8faff;border:1.5px solid var(--border);border-radius:7px;padding:.55rem .8rem;font-family:'Lora',serif;font-size:.82rem;color:var(--text);outline:none;min-height:90px;resize:vertical;transition:border-color .15s;line-height:1.6;}
-.field-textarea:focus{border-color:var(--ab-light);}
-.field-select{width:100%;background:#f8faff;border:1.5px solid var(--border);border-radius:7px;padding:.5rem .8rem;font-family:'Syne',sans-serif;font-size:.78rem;color:var(--text);outline:none;cursor:pointer;}
-.field-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
-
-.block-sep{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ab-blue);background:rgba(27,58,107,.05);border:1px solid rgba(27,58,107,.1);border-radius:6px;padding:.4rem .8rem;margin:1rem 0 .8rem;display:block;}
-
-.btn-save{background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.4rem;border-radius:7px;border:none;cursor:pointer;flex:1;}
-.btn-save:hover{background:var(--ab-blue2);}
-.btn-cancel-panel{background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.2rem;border-radius:7px;cursor:pointer;}
-.btn-reset{background:none;border:1.5px solid rgba(192,64,64,.25);color:var(--rouge);font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:7px;cursor:pointer;}
-
-/* ── CALENDRIER ADMIN ── */
-.cal-admin-list{display:flex;flex-direction:column;gap:.6rem;}
-.cal-admin-item{
-  background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  padding:.9rem 1.1rem;display:flex;align-items:center;gap:1rem;
-}
-.cal-admin-date{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--ab-blue);min-width:38px;text-align:center;line-height:1;}
-.cal-admin-month{font-family:'Syne',sans-serif;font-size:.58rem;color:var(--muted);text-align:center;}
-.cal-admin-info{flex:1;}
-.cal-admin-titre{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;color:var(--text);}
-.cal-admin-desc{font-size:.74rem;color:var(--muted);margin-top:.1rem;}
-.cal-type-badge{font-family:'Syne',sans-serif;font-size:.58rem;font-weight:700;padding:.15rem .5rem;border-radius:20px;}
-.type-trail{background:rgba(74,138,90,.12);color:var(--mousse);}
-.type-route{background:rgba(74,122,204,.12);color:var(--ab-blue2);}
-.type-rando{background:rgba(212,137,58,.12);color:#8a5010;}
-.type-montagne{background:rgba(192,64,64,.12);color:var(--rouge);}
-.type-social{background:rgba(120,80,180,.12);color:#6030a0;}
-.btn-del-cal{background:none;border:1px solid rgba(192,64,64,.2);color:rgba(192,64,64,.5);font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;cursor:pointer;transition:all .15s;flex-shrink:0;}
-.btn-del-cal:hover{background:rgba(192,64,64,.08);border-color:var(--rouge);color:var(--rouge);}
-.btn-edit-cal{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;padding:.2rem .5rem;border-radius:4px;cursor:pointer;transition:all .15s;flex-shrink:0;}
-.btn-edit-cal:hover{border-color:var(--ab-light);color:var(--ab-blue);}
-.add-cal-box{background:var(--surface);border:1.5px dashed var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;}
-.add-cal-box h3{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:800;color:var(--ab-blue);margin-bottom:1rem;}
-.add-cal-row{display:flex;gap:.8rem;flex-wrap:wrap;align-items:flex-end;}
-
-/* ── CONFIG ── */
-.config-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin-bottom:1rem;}
-.config-card h3{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:800;color:var(--ab-blue);margin-bottom:.8rem;}
-.config-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem;}
-.config-key{font-family:'Syne',sans-serif;font-size:.72rem;color:var(--text);}
-.config-note{font-size:.72rem;color:var(--muted);margin-top:.4rem;line-height:1.5;}
-
-/* ── GITHUB MODAL ── */
-#gh-modal-overlay{
-  display:none;position:fixed;inset:0;background:rgba(20,35,70,.6);
-  backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;
-}
-#gh-modal-overlay.open{display:flex;}
-.gh-modal{background:#fff;border-radius:16px;padding:2rem;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
-.gh-modal h2{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--ab-blue);margin-bottom:.4rem;}
-.gh-modal p{font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;}
-.gh-steps{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.2rem;}
-.gh-step{display:flex;gap:.8rem;align-items:flex-start;}
-.gh-step-num{background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.65rem;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;}
-.gh-step-text{font-size:.8rem;color:var(--text);line-height:1.5;}
-.gh-step-text a{color:var(--ab-blue2);}
-.progress-bar{height:4px;background:rgba(27,58,107,.1);border-radius:2px;overflow:hidden;margin:1rem 0;}
-.progress-fill{height:100%;background:var(--mousse);border-radius:2px;width:0;transition:width .3s;}
-#publish-status{font-family:'Syne',sans-serif;font-size:.72rem;color:var(--muted);text-align:center;min-height:1.2rem;}
-
-/* ── TOAST ── */
-#toast{
-  position:fixed;bottom:2rem;right:2rem;background:var(--ab-blue);color:#fff;
-  font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;
-  padding:.7rem 1.3rem;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);
-  z-index:1000;transform:translateY(100px);opacity:0;transition:all .25s;pointer-events:none;
-}
-#toast.show{transform:translateY(0);opacity:1;}
-#toast.success{background:var(--mousse);}
-#toast.error{background:var(--rouge);}
+/* Publish modal */
+#pub-overlay{display:none;position:fixed;inset:0;background:rgba(20,35,70,.6);z-index:250;align-items:center;justify-content:center}
+#pub-overlay.open{display:flex}
+.pub-box{background:var(--surface);border-radius:14px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 </style>
 </head>
 <body>
 
-<!-- ══ LOGIN ══ -->
-<div id="login-screen">
+<!-- LOGIN -->
+<div id="login">
   <div class="login-box">
-    <div class="login-logo">AB Running Loisir</div>
-    <div class="login-sub">Interface Coach — Accès restreint</div>
-    <label class="login-label">Mot de passe coach</label>
-    <input type="password" class="login-input" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">Accéder →</button>
-    <div class="login-error" id="login-error">Mot de passe incorrect.</div>
+    <h2>AB Running Admin</h2>
+    <p>Accès réservé aux coachs</p>
+    <input type="password" id="pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">Connexion</button>
+    <div id="login-err">Mot de passe incorrect</div>
   </div>
 </div>
 
-<!-- ══ APP ══ -->
+<!-- APP -->
 <div id="app">
-
   <div class="topbar">
-    <div>
-      <div class="topbar-title">AB Running Loisir — Admin</div>
-      <div class="topbar-subtitle">Interface Coach</div>
-    </div>
+    <h1>Admin — AB Running</h1>
     <div class="topbar-right">
-      <button class="publish-btn" id="publish-btn" onclick="openPublishModal()">
-        📤 Publier les modifications
-      </button>
-      <button class="logout-btn" onclick="doLogout()">Déconnexion</button>
+      <span id="status-msg" style="font-size:.65rem;color:rgba(255,255,255,.6)">Prêt</span>
+      <button class="topbar-btn pub" onclick="openPublish()">📤 Publier</button>
+      <button class="topbar-btn" onclick="doLogout()">Déconnexion</button>
     </div>
   </div>
+  <div class="status-bar"><div class="status-dot" id="status-dot"></div><span id="status-text">Aucune modification en attente</span></div>
 
-  <div class="status-bar" id="status-bar">
-    <div class="status-dot" id="status-dot"></div>
-    <span id="status-msg">Prêt — aucune modification en attente</span>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('tab-prog',this)">📅 Programme</button>
+    <button class="tab" onclick="showTab('tab-seances',this)">📋 Séances</button>
+    <button class="tab" onclick="showTab('tab-cal',this)">🗓 Calendrier</button>
+    <button class="tab" onclick="showTab('tab-infos',this)">📢 Infos Club</button>
+    <button class="tab" onclick="showTab('tab-calc',this)">📊 Calculateur</button>
+    <button class="tab" onclick="showTab('tab-obj',this)">🏆 Objectifs</button>
+    <button class="tab" onclick="showTab('tab-config',this)">⚙️ Config</button>
   </div>
 
-  <div class="admin-tabs">
-    <button class="admin-tab active" onclick="showTab('programme',this)">📅 Programme</button>
-    <button class="admin-tab" onclick="showTab('seances',this)">📋 Séances</button>
-    <button class="admin-tab" onclick="showTab('calendrier',this)">🗓 Calendrier</button>
-    <button class="admin-tab" onclick="showTab('config',this)">⚙️ Configuration</button>
-  </div>
+  <!-- TAB PROGRAMME -->
+  <div class="admin-page active" id="tab-prog">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1rem;color:var(--navy)">Programme 52 semaines</h2>
+      <select class="field-select" style="width:auto" id="phase-filter" onchange="buildAdminProg()">
+        <option value="">Toutes les phases</option>
+      </select>
+    </div>
 
-  <!-- ══ SÉANCES ══ -->
-  <div class="admin-page" id="tab-seances">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem">
-      <div>
-        <div class="section-title">Bibliothèque de séances</div>
-        <div class="section-sub">Toutes les séances disponibles — modifiez les détails. Dans l'onglet Programme, sélectionnez une séance pour éviter la re-saisie.</div>
+    <!-- SOCLE HEBDOMADAIRE -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="document.getElementById('socle-body').style.display=document.getElementById('socle-body').style.display==='none'?'block':'none';this.querySelector('.chevron').textContent=document.getElementById('socle-body').style.display==='none'?'▸':'▾'">
+        <div>
+          <span style="font-size:.72rem;font-weight:700;color:var(--navy)">📊 Socle hebdomadaire (Méthode Foster)</span>
+          <span id="socle-total-badge" style="margin-left:.5rem;font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:4px;background:rgba(27,58,107,.08);color:var(--navy)"></span>
+        </div>
+        <span class="chevron" style="font-size:.8rem;color:var(--muted)">▾</span>
       </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-        <input type="text" id="seance-search" placeholder="Rechercher…"
-          oninput="filterSeances(this.value)"
-          style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.38rem .8rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);width:180px">
-        <select id="seance-cat" onchange="filterSeances()"
-          style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.38rem .6rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text)">
-          <option value="">Toutes catégories</option>
-          <option value="cote">⛰️ Côtes</option>
-          <option value="fartlek">🌀 Fartlek</option>
-          <option value="pyramid">📐 Pyramides</option>
-          <option value="piste">🏟 Piste</option>
-          <option value="vitesse">💨 Vitesse</option>
-          <option value="seuil">⚡ Seuil</option>
-          <option value="vma">🔥 VMA / 30-30</option>
-          <option value="sortie">🏃 Sortie</option>
-        </select>
-        <button onclick="openNewSeance()"
-          style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.4rem 1rem;border:none;border-radius:7px;cursor:pointer">+ Nouvelle séance</button>
+      <div id="socle-body" style="margin-top:.8rem">
+        <p style="font-size:.72rem;color:var(--muted);margin-bottom:.8rem;line-height:1.5">
+          Le calcul Foster intègre <strong>tous les jours de la semaine</strong> pour éviter l'hypersensibilité des pourcentages.
+          Les séances club (mardi/jeudi) s'ajoutent à ce socle de base. Ajustez les curseurs pour simuler l'évolution saisonnière.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+          <!-- LUNDI -->
+          <div style="padding:.6rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.4rem">🏋️ Lundi — Renforcement</div>
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">Durée (min)</label>
+                <input type="range" min="30" max="90" value="60" id="socle-lun-dur" oninput="updateSocle()" style="width:100%">
+                <span id="socle-lun-dur-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">60</span>
+              </div>
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">RPE</label>
+                <input type="range" min="2" max="7" value="4" id="socle-lun-rpe" oninput="updateSocle()" style="width:100%">
+                <span id="socle-lun-rpe-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">4</span>
+              </div>
+              <div style="text-align:center;min-width:55px">
+                <div style="font-size:.55rem;color:var(--muted)">UA</div>
+                <div id="socle-lun-ua" style="font-size:.9rem;font-weight:800;color:var(--navy)">240</div>
+              </div>
+            </div>
+          </div>
+          <!-- MERCREDI -->
+          <div style="padding:.6rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mousse);margin-bottom:.4rem">🏃 Mercredi — Footing récup</div>
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">Durée (min)</label>
+                <input type="range" min="30" max="70" value="50" id="socle-mer-dur" oninput="updateSocle()" style="width:100%">
+                <span id="socle-mer-dur-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">50</span>
+              </div>
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">RPE</label>
+                <input type="range" min="2" max="5" value="3" id="socle-mer-rpe" oninput="updateSocle()" style="width:100%">
+                <span id="socle-mer-rpe-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">3</span>
+              </div>
+              <div style="text-align:center;min-width:55px">
+                <div style="font-size:.55rem;color:var(--muted)">UA</div>
+                <div id="socle-mer-ua" style="font-size:.9rem;font-weight:800;color:var(--mousse)">150</div>
+              </div>
+            </div>
+          </div>
+          <!-- WEEKEND ROUTE -->
+          <div style="padding:.6rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.4rem">🛣️ Weekend — Sortie Route</div>
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">Durée (min)</label>
+                <input type="range" min="45" max="180" value="60" step="5" id="socle-wer-dur" oninput="updateSocle()" style="width:100%">
+                <span id="socle-wer-dur-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">60</span>
+              </div>
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">RPE</label>
+                <input type="range" min="3" max="7" value="4" id="socle-wer-rpe" oninput="updateSocle()" style="width:100%">
+                <span id="socle-wer-rpe-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">4</span>
+              </div>
+              <div style="text-align:center;min-width:55px">
+                <div style="font-size:.55rem;color:var(--muted)">UA</div>
+                <div id="socle-wer-ua" style="font-size:.9rem;font-weight:800;color:var(--blue)">240</div>
+              </div>
+            </div>
+          </div>
+          <!-- WEEKEND TRAIL -->
+          <div style="padding:.6rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mousse);margin-bottom:.4rem">🌲 Weekend — Sortie Trail</div>
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">Durée (min)</label>
+                <input type="range" min="60" max="300" value="90" step="5" id="socle-wet-dur" oninput="updateSocle()" style="width:100%">
+                <span id="socle-wet-dur-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">90</span>
+              </div>
+              <div style="flex:1">
+                <label style="font-size:.6rem;color:var(--muted)">RPE</label>
+                <input type="range" min="3" max="7" value="4" id="socle-wet-rpe" oninput="updateSocle()" style="width:100%">
+                <span id="socle-wet-rpe-v" style="font-size:.72rem;font-weight:700;color:var(--navy)">4</span>
+              </div>
+              <div style="text-align:center;min-width:55px">
+                <div style="font-size:.55rem;color:var(--muted)">UA</div>
+                <div id="socle-wet-ua" style="font-size:.9rem;font-weight:800;color:var(--mousse)">360</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:.6rem;padding:.5rem .8rem;background:rgba(27,58,107,.05);border-radius:6px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.68rem;color:var(--muted)">Socle hors club (Lundi + Mercredi + Weekend) :</span>
+          <span id="socle-hors-club" style="font-size:.82rem;font-weight:800;color:var(--navy)">—</span>
+        </div>
       </div>
     </div>
-    <div id="seances-list" style="display:flex;flex-direction:column;gap:.7rem;max-width:1000px"></div>
-  </div>
-
-  <!-- ══ PROGRAMME ══ -->
-  <div class="admin-page active" id="tab-programme">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem">
-      <div>
-        <div class="section-title">Programme annuel</div>
-        <div class="section-sub">48 semaines · cliquez sur ✏️ pour modifier une semaine · les changements sont publiés via "Publier"</div>
-      </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-        <span style="font-family:'Syne',sans-serif;font-size:.62rem;color:var(--muted)">Filtre :</span>
-        <select id="phase-filter" onchange="buildProgTable()" style="font-family:'Syne',sans-serif;font-size:.72rem;padding:.35rem .6rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text)">
-          <option value="">Toutes les phases</option>
-          <option value="phase-reprise">Reprise</option>
-          <option value="phase-base">Base endurance</option>
-          <option value="phase-force">Force / D+</option>
-          <option value="phase-prepa">Prépa trail</option>
-          <option value="phase-precomp">Pré-compétition</option>
-          <option value="phase-montagne">Bloc montagne</option>
-        </select>
-      </div>
-    </div>
-    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(27,58,107,.07)">
-      <table class="prog-admin-table">
-        <thead>
-          <tr>
-            <th style="width:65px">Sem.</th>
-            <th style="width:130px">Phase</th>
-            <th>Mardi</th>
-            <th>Jeudi</th>
-            <th style="width:100px">Action</th>
-          </tr>
-        </thead>
-        <tbody id="prog-admin-body"></tbody>
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Sem</th><th>Phase</th><th>Mardi</th><th>RPE</th><th>Jeudi</th><th>RPE</th><th>Club</th><th>Total</th><th>Δ%</th><th></th>
+        </tr></thead>
+        <tbody id="admin-prog-body"></tbody>
       </table>
     </div>
   </div>
 
-  <!-- ══ CALENDRIER ══ -->
-  <div class="admin-page" id="tab-calendrier">
-    <div class="section-title">Calendrier des sorties</div>
-    <div class="section-sub">Gérez les sorties et événements — modifiez, ajoutez, supprimez</div>
-
-    <div class="add-cal-box">
-      <h3>➕ Ajouter un événement</h3>
-      <div class="add-cal-row">
-        <div style="flex:1;min-width:150px">
-          <label class="field-label">Date</label>
-          <input type="date" class="field-input" id="new-cal-date">
-        </div>
-        <div style="flex:1;min-width:150px">
-          <label class="field-label">Type</label>
-          <select class="field-select" id="new-cal-type">
-            <option value="trail">🌿 Trail</option>
-            <option value="route">🏃 Route</option>
-            <option value="rando">🥾 Rando</option>
-            <option value="montagne">🏔 Montagne</option>
-            <option value="social">🎉 Section</option>
-          </select>
-        </div>
-        <div style="flex:2;min-width:200px">
-          <label class="field-label">Titre</label>
-          <input type="text" class="field-input" id="new-cal-titre" placeholder="Ex: Sortie trail Ursuya">
-        </div>
-      </div>
-      <div style="margin-top:.7rem">
-        <label class="field-label">Description</label>
-        <textarea class="field-textarea" id="new-cal-desc" rows="2" placeholder="Détails, niveau requis, covoiturage..."></textarea>
-      </div>
-      <button onclick="addCalEvent()" style="margin-top:.7rem;background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;padding:.55rem 1.2rem;border:none;border-radius:7px;cursor:pointer;">Ajouter →</button>
+  <!-- TAB SÉANCES -->
+  <div class="admin-page" id="tab-seances">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1rem;color:var(--navy)">Bibliothèque des séances</h2>
+      <button class="btn-sm" onclick="openNewSeance()">＋ Nouvelle séance</button>
     </div>
-
-    <div id="cal-admin-list" class="cal-admin-list"></div>
+    <input class="field-input" id="seance-search" placeholder="Rechercher par clé ou nom…" oninput="filterSeances()" style="margin-bottom:.8rem;max-width:400px">
+    <div id="seances-list"></div>
   </div>
 
-  <!-- ══ CONFIG ══ -->
+  <!-- TAB CALENDRIER -->
+  <div class="admin-page" id="tab-cal">
+    <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Calendrier des sorties</h2>
+    <div id="cal-list" style="margin-bottom:1rem"></div>
+    <div class="block-sep">Ajouter une sortie</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;max-width:500px">
+      <div class="field-group"><label class="field-label">Date</label><input type="date" class="field-input" id="new-cal-date"></div>
+      <div class="field-group"><label class="field-label">Type</label>
+        <select class="field-select" id="new-cal-type"><option value="course">Course</option><option value="social">Social</option><option value="trail">Trail</option><option value="rando">Rando</option></select></div>
+      <div class="field-group" style="grid-column:1/-1"><label class="field-label">Titre</label><input class="field-input" id="new-cal-titre" placeholder="Sortie montagne…"></div>
+      <div class="field-group" style="grid-column:1/-1"><label class="field-label">Détails</label><textarea class="field-textarea" id="new-cal-desc" rows="2" placeholder="Lieu, RDV, covoiturage…"></textarea></div>
+    </div>
+    <button class="btn-sm" onclick="addCalEvent()" style="margin-top:.5rem">Ajouter</button>
+  </div>
+
+  <!-- TAB INFOS CLUB -->
+  <div class="admin-page" id="tab-infos">
+    <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Messages Info Club</h2>
+    <div id="infos-list" style="margin-bottom:1rem"></div>
+    <div class="block-sep">Ajouter un message</div>
+    <div style="max-width:500px">
+      <div class="field-group"><label class="field-label">Titre</label><input class="field-input" id="new-info-titre" placeholder="🎉 Bienvenue…"></div>
+      <div class="field-group"><label class="field-label">Texte</label><textarea class="field-textarea" id="new-info-texte" rows="2"></textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+        <div class="field-group"><label class="field-label">Type</label>
+          <select class="field-select" id="new-info-type"><option value="info">Info</option><option value="urgent">Urgent</option></select></div>
+        <div class="field-group"><label class="field-label">Date fin (optionnel)</label><input type="date" class="field-input" id="new-info-fin"></div>
+      </div>
+      <button class="btn-sm" onclick="addInfo()" style="margin-top:.3rem">Ajouter</button>
+    </div>
+  </div>
+
+  <!-- TAB CALCULATEUR -->
+  <div class="admin-page" id="tab-calc">
+    <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Textes & seuils du calculateur</h2>
+    <div class="block-sep">Textes explicatifs</div>
+    <div id="calc-textes-form" style="max-width:600px"></div>
+    <div class="block-sep">Seuils de charge hebdomadaire</div>
+    <div id="calc-seuils-form" style="max-width:600px"></div>
+  </div>
+
+  <!-- TAB OBJECTIFS -->
+<div class="admin-page" id="tab-obj">
+  <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Objectifs de la saison</h2>
+  <div id="obj-list" style="margin-bottom:1rem"></div>
+  <div class="block-sep">Ajouter un objectif</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;max-width:500px">
+    <div class="field-group"><label class="field-label">Semaine (S1 à S52)</label><input type="number" class="field-input" id="new-obj-s" min="1" max="52"></div>
+    <div class="field-group"><label class="field-label">Date de la course</label><input type="date" class="field-input" id="new-obj-date"></div>
+    <div class="field-group" style="grid-column:1/-1"><label class="field-label">Nom de la course</label><input class="field-input" id="new-obj-nom" placeholder="Ex: Marathon de Paris..."></div>
+    <div class="field-group" style="grid-column:1/-1"><label class="field-label">Type</label>
+      <select class="field-select" id="new-obj-type"><option value="route">Route</option><option value="trail">Trail</option><option value="cross">Cross</option></select>
+    </div>
+  </div>
+  <button class="btn-sm" onclick="addObj()" style="margin-top:.5rem">Ajouter</button>
+</div>
+  
+  <!-- TAB CONFIG -->
   <div class="admin-page" id="tab-config">
-    <div class="section-title">Configuration</div>
-    <div class="section-sub">Paramètres de connexion GitHub pour la publication automatique</div>
-
-    <div class="config-card">
-      <h3>🔗 Connexion GitHub</h3>
-      <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">
-        Pour publier les modifications directement sur votre site, renseignez vos informations GitHub. Ces données sont stockées uniquement dans votre navigateur.
-      </p>
-
-      <div class="field-group">
-        <label class="field-label">Pseudo GitHub</label>
-        <input type="text" class="field-input" id="cfg-owner" placeholder="ex: jeremydufau-bot">
-        <div class="field-sub">Votre nom d'utilisateur GitHub</div>
-      </div>
-      <div class="field-group">
-        <label class="field-label">Nom du dépôt</label>
-        <input type="text" class="field-input" id="cfg-repo" placeholder="ex: ab-running">
-        <div class="field-sub">Le nom du dépôt GitHub (sans le /)</div>
-      </div>
-      <div class="field-group">
-        <label class="field-label">Token GitHub (Personal Access Token)</label>
-        <input type="password" class="field-input" id="cfg-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-        <div class="field-sub">
-          Créez un token sur GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)<br>
-          Cochez la permission <strong>repo</strong> (accès complet aux dépôts). Ce token reste dans votre navigateur uniquement.
-        </div>
-      </div>
-      <button onclick="saveConfig()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.4rem;border:none;border-radius:7px;cursor:pointer;">💾 Enregistrer</button>
-      <button onclick="testConnection()" style="margin-left:.6rem;background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.58rem 1.2rem;border-radius:7px;cursor:pointer;">🔍 Tester la connexion</button>
-    </div>
-
-    <div class="config-card">
-      <h3>🔐 Mot de passe coach</h3>
-      <div class="field-group">
-        <label class="field-label">Nouveau mot de passe</label>
-        <input type="password" class="field-input" id="cfg-pwd-new" placeholder="Nouveau mot de passe">
-      </div>
-      <div class="field-group">
-        <label class="field-label">Confirmer</label>
-        <input type="password" class="field-input" id="cfg-pwd-confirm" placeholder="Confirmer le mot de passe">
-      </div>
-      <button onclick="changePwd()" style="background:var(--ab-blue);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.6rem 1.4rem;border:none;border-radius:7px;cursor:pointer;">Changer le mot de passe</button>
-      <div class="config-note" style="margin-top:.8rem">⚠️ Le mot de passe est partagé entre les 3 coachs. Communiquez-le de vive voix ou par message privé.</div>
-    </div>
-  </div>
-
-</div><!-- /app -->
-
-<!-- ══ EDIT PANEL ══ -->
-<div class="edit-panel" id="edit-panel">
-  <div class="edit-panel-head">
-    <h2 id="panel-title">Modifier la semaine</h2>
-    <button class="panel-close" onclick="closePanel()">✕ Fermer</button>
-  </div>
-  <div class="edit-panel-body" id="panel-body"></div>
-  <div class="edit-panel-foot">
-    <button class="btn-save" onclick="editingSeanceKey ? saveSeance() : saveWeek()">💾 Enregistrer</button>
-    <button class="btn-cancel-panel" onclick="closePanel()">Annuler</button>
-    <button class="btn-reset" id="btn-reset-week" onclick="resetWeek()" style="display:none">↺ Original</button>
-  </div>
-</div>
-<div id="panel-overlay" onclick="closePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.15);z-index:199;"></div>
-
-<!-- ══ PUBLISH MODAL ══ -->
-<div id="gh-modal-overlay">
-  <div class="gh-modal">
-    <h2>📤 Publier sur GitHub</h2>
-    <p>Cette action va mettre à jour <strong>data.js</strong> sur votre dépôt GitHub. Tous les membres verront les modifications dans 1-2 minutes.</p>
-    <div class="gh-steps" id="gh-steps-config" style="display:none">
-      <div class="gh-step">
-        <div class="gh-step-num">1</div>
-        <div class="gh-step-text">⚠️ Configurez d'abord vos informations GitHub dans l'onglet <strong>Configuration</strong></div>
-      </div>
-    </div>
-    <div class="progress-bar" id="progress-bar" style="display:none"><div class="progress-fill" id="progress-fill"></div></div>
-    <div id="publish-status"></div>
-    <div style="display:flex;gap:.8rem;margin-top:1.2rem;flex-wrap:wrap">
-      <button id="confirm-publish-btn" onclick="doPublish()" style="background:var(--mousse);color:#fff;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.65rem 1.5rem;border:none;border-radius:8px;cursor:pointer;flex:1">📤 Publier maintenant</button>
-      <button onclick="closePublishModal()" style="background:none;border:1.5px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;padding:.63rem 1.2rem;border-radius:8px;cursor:pointer">Annuler</button>
+    <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Configuration GitHub</h2>
+    <div style="max-width:400px">
+      <div class="field-group"><label class="field-label">Owner (utilisateur/org)</label><input class="field-input" id="cfg-owner"></div>
+      <div class="field-group"><label class="field-label">Repo</label><input class="field-input" id="cfg-repo"></div>
+      <div class="field-group"><label class="field-label">Token (PAT)</label><input type="password" class="field-input" id="cfg-token"></div>
+      <button class="btn-sm" onclick="saveConfig()">Sauvegarder</button>
     </div>
   </div>
 </div>
 
-<!-- ══ TOAST ══ -->
+<!-- EDIT PANEL -->
+<div id="panel-overlay" onclick="closePanel()"></div>
+<div id="edit-panel">
+  <div class="panel-hdr"><h3 id="panel-title"></h3><button class="panel-close" onclick="closePanel()">✕</button></div>
+  <div class="panel-body" id="panel-body"></div>
+  <div class="panel-footer">
+    <button class="panel-btn reset" id="btn-reset" style="display:none" onclick="resetItem()">↺ Réinitialiser</button>
+    <button class="panel-btn cancel" onclick="closePanel()">Annuler</button>
+    <button class="panel-btn save" onclick="saveItem()">✓ Enregistrer</button>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div id="pub-overlay" onclick="if(event.target===this)closePub()">
+  <div class="pub-box">
+    <h3 style="font-size:.9rem;color:var(--navy);margin-bottom:.5rem">Publier sur GitHub</h3>
+    <p style="font-size:.76rem;color:var(--muted);margin-bottom:1rem">Pousse le data.js modifié vers votre repo. Index.html est aussi mis à jour pour casser le cache navigateur.</p>
+    <div id="pub-progress" style="display:none;margin-bottom:1rem">
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div id="pub-bar" style="height:100%;background:var(--navy);width:0;transition:width .3s"></div></div>
+      <div id="pub-msg" style="font-size:.72rem;color:var(--muted);margin-top:.3rem"></div>
+    </div>
+    <div style="display:flex;gap:.5rem;justify-content:flex-end">
+      <button class="panel-btn cancel" onclick="closePub()">Annuler</button>
+      <button class="panel-btn save" id="pub-btn" onclick="doPublish()">📤 Publier</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="data.js"></script>
 <script>
-// ════════════════════════════════════════════════
-// AUTHENTIFICATION — simple et fiable
-// ════════════════════════════════════════════════
-
-// Mot de passe stocké en clair (encodé base64 pour ne pas être visible à l'oeil)
-// "admin" en base64 = "YWRtaW4="
-// Pour changer: encoder votre mot de passe sur https://www.base64encode.org
-const DEFAULT_PWD_B64 = 'YWRtaW4='; // = "admin"
-
-function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
-
+// ══════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════
+const HASH = 'ab2024run';
 function doLogin(){
-  const pwd = document.getElementById('login-pwd').value;
-  const stored = localStorage.getItem('ab-admin-pwd-b64') || DEFAULT_PWD_B64;
-  if(b64(pwd) === stored){
-    localStorage.setItem('ab-admin-session', 'true');
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-    initApp();
-  } else {
-    document.getElementById('login-error').style.display='block';
-    document.getElementById('login-pwd').value='';
-    document.getElementById('login-pwd').focus();
-  }
+  const v = document.getElementById('pwd').value;
+  if(v===HASH){ localStorage.setItem('ab-auth','1'); document.getElementById('login').style.display='none'; document.getElementById('app').style.display='block'; initApp(); }
+  else{ document.getElementById('login-err').style.display='block'; }
 }
+function doLogout(){ localStorage.removeItem('ab-auth'); location.reload(); }
+if(localStorage.getItem('ab-auth')==='1'){ document.getElementById('login').style.display='none'; document.getElementById('app').style.display='block'; }
 
-function doLogout(){
-  localStorage.removeItem('ab-admin-session');
-  location.reload();
-}
+// ══════════════════════════════════════════════════
+// DATE HELPERS
+// ══════════════════════════════════════════════════
+const S1_saison = new Date(2026,7,31);
+function semFmt(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
+function semRange(n){ const l=new Date(+S1_saison+(n-1)*7*864e5); return semFmt(l)+' – '+semFmt(new Date(+l+6*864e5)); }
+function semRangeLun(n){ return semFmt(new Date(+S1_saison+(n-1)*7*864e5)); }
+function semRangeDim(n){ return semFmt(new Date(+S1_saison+(n-1)*7*864e5+6*864e5)); }
 
-function changePwd(){
-  const n = document.getElementById('cfg-pwd-new').value;
-  const c = document.getElementById('cfg-pwd-confirm').value;
-  if(!n){ toast('Entrez un nouveau mot de passe','error'); return; }
-  if(n!==c){ toast('Les mots de passe ne correspondent pas','error'); return; }
-  localStorage.setItem('ab-admin-pwd-b64', b64(n));
-  document.getElementById('cfg-pwd-new').value='';
-  document.getElementById('cfg-pwd-confirm').value='';
-  toast('Mot de passe mis à jour ✓','success');
-}
-
-// Check session on load
-if(localStorage.getItem('ab-admin-session')==='true'){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app').style.display='block';
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initApp);
-  } else {
-    initApp();
-  }
-}
-
-// ════════════════════════════════════════════════
-// ÉTAT LOCAL — modifications en attente
-// ════════════════════════════════════════════════
-// On travaille sur une copie locale du programme et calFixed
-// Seul "Publier" écrit sur GitHub
-let localProgramme = null;
-let localCalFixed = null;
-let localNiveaux = null;
-let pendingChanges = false;
+// ══════════════════════════════════════════════════
+// LOCAL STATE
+// ══════════════════════════════════════════════════
+let L = {}; // local edits
+let editMode = null; // 'week'|'seance'|'seance-new'
+let editKey = null;
 
 function getLocal(){
-  const stored = localStorage.getItem('ab-admin-pending');
-  if(stored){
-    const d = JSON.parse(stored);
-    localProgramme = d.programme;
-    localCalFixed = d.calFixed;
-    localNiveaux = d.niveaux || JSON.parse(JSON.stringify(niveauxData));
-  } else {
-    localProgramme = JSON.parse(JSON.stringify(programme));
-    localCalFixed = JSON.parse(JSON.stringify(calFixed));
-    localNiveaux = JSON.parse(JSON.stringify(niveauxData));
-  }
+  const s = localStorage.getItem('ab-admin-v4');
+  if(s) L = JSON.parse(s);
+  else L = {};
+  // Deep clone originals as starting point
+  if(!L.programme) L.programme = JSON.parse(JSON.stringify(programme));
+  if(!L.seances) L.seances = JSON.parse(JSON.stringify(seancesData));
+  if(!L.calFixed) L.calFixed = JSON.parse(JSON.stringify(calFixed));
+  if(!L.infosClub) L.infosClub = JSON.parse(JSON.stringify(infosClub));
+  if(!L.calcTextes) L.calcTextes = JSON.parse(JSON.stringify(typeof calculateurTextes!=='undefined'?calculateurTextes:{}));
+  if(!L.chargeSeuils) L.chargeSeuils = JSON.parse(JSON.stringify(chargeHebdoSeuils));
+  if(!L.objectifs) L.objectifs = JSON.parse(JSON.stringify(typeof objectifs!=='undefined'?objectifs:[]));
 }
-
 function saveLocal(){
-  localStorage.setItem('ab-admin-pending', JSON.stringify({
-    programme: localProgramme,
-    calFixed: localCalFixed,
-    niveaux: localNiveaux,
-    savedAt: new Date().toISOString()
-  }));
-  pendingChanges = true;
-  updateStatusBar();
+  L.savedAt = new Date().toISOString();
+  localStorage.setItem('ab-admin-v4', JSON.stringify(L));
+  updateStatus();
+}
+function updateStatus(){
+  const changed = JSON.stringify(L.programme)!==JSON.stringify(programme) ||
+                  JSON.stringify(L.seances)!==JSON.stringify(seancesData) ||
+                  JSON.stringify(L.calFixed)!==JSON.stringify(calFixed) ||
+                  JSON.stringify(L.infosClub)!==JSON.stringify(infosClub)||
+                  JSON.stringify(L.objectifs)!==JSON.stringify(objectifs);
+  document.getElementById('status-dot').className = 'status-dot'+(changed?' warn':'');
+  const t = L.savedAt ? new Date(L.savedAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '';
+  document.getElementById('status-text').textContent = changed ? `⚠️ Modifications non publiées${t?' — '+t:''}` : 'Prêt — aucune modification';
+}
+function toast(msg,type){
+  const el = document.getElementById('toast');
+  const d = document.createElement('div');
+  d.className='toast-item '+(type||'success');
+  d.textContent=msg;
+  el.appendChild(d);
+  setTimeout(()=>d.remove(),4000);
 }
 
-function updateStatusBar(){
-  const dot = document.getElementById('status-dot');
-  const msg = document.getElementById('status-msg');
-  if(pendingChanges){
-    dot.className = 'status-dot warn';
-    const saved = JSON.parse(localStorage.getItem('ab-admin-pending')||'{}').savedAt;
-    const t = saved ? new Date(saved).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '';
-    msg.textContent = `⚠️ Modifications non publiées${t?' — dernière sauvegarde à '+t:''}`;
-  } else {
-    dot.className = 'status-dot';
-    msg.textContent = 'Prêt — aucune modification en attente';
-  }
-}
-
-// ════════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════════
-function initApp(){
-  getLocal();
-  // Check if there are pending changes
-  const pending = localStorage.getItem('ab-admin-pending');
-  if(pending){
-    const d = JSON.parse(pending);
-    pendingChanges = (JSON.stringify(d.programme) !== JSON.stringify(programme) ||
-                      JSON.stringify(d.calFixed) !== JSON.stringify(calFixed) ||
-                      JSON.stringify(d.niveaux) !== JSON.stringify(niveauxData));
-  }
-  buildProgTable();
-  buildCalList();
-  loadConfig();
-  updateStatusBar();
-}
-
-// ════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // TABS
-// ════════════════════════════════════════════════
-function showTab(id, btn){
+// ══════════════════════════════════════════════════
+function showTab(id,btn){
   document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
   btn.classList.add('active');
-  closePanel();
-  if(id==='seances') buildSeancesGrid();
+  if(id==='tab-prog') buildAdminProg();
+  if(id==='tab-seances') buildSeancesList();
+  if(id==='tab-cal') buildCalList();
+  if(id==='tab-infos') buildInfosList();
+  if(id==='tab-calc') buildCalcAdmin();
+  if(id==='tab-obj') buildObjList();
 }
 
-// ════════════════════════════════════════════════
-// PROGRAMME — tableau
-// ════════════════════════════════════════════════
-const phaseColors = {
-  'phase-reprise':'#c5dcfa','phase-base':'rgba(74,122,204,.15)',
-  'phase-force':'rgba(212,137,58,.15)','phase-prepa':'rgba(74,122,204,.18)',
-  'phase-precomp':'rgba(160,90,180,.15)','phase-montagne':'rgba(192,64,64,.12)',
-  'phase-senpereko':'rgba(27,58,107,.15)','phase-euskal':'rgba(27,58,107,.15)',
-};
-const phaseTextColors = {
-  'phase-reprise':'#1a5080','phase-base':'#2351a0','phase-force':'#8a5010',
-  'phase-prepa':'#1b3a6b','phase-precomp':'#6a3080','phase-montagne':'#c04040',
-  'phase-senpereko':'#1b3a6b','phase-euskal':'#1b3a6b',
-};
-
-function buildProgTable(){
+// ══════════════════════════════════════════════════
+// PROGRAMME
+// ══════════════════════════════════════════════════
+function buildAdminProg(){
   const filter = document.getElementById('phase-filter').value;
-  const rows = localProgramme.filter(s => !filter || s.phaseClass === filter);
-  const orig = programme;
+  const rows = L.programme.filter(w=>!filter||(phaseMap[w.p]&&phaseMap[w.p].c===filter));
+  const MOIS = ['Janv','Févr','Mars','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'];
+  const S1 = new Date(2026,7,31);
+  const socle = getSocleUA();
 
-  document.getElementById('prog-admin-body').innerHTML = rows.map(s => {
-    const o = orig.find(x=>x.sem===s.sem) || s;
-    const mardiChanged = JSON.stringify(s.mardi) !== JSON.stringify(o.mardi);
-    const jeudiChanged = JSON.stringify(s.jeudi) !== JSON.stringify(o.jeudi);
-    const wkndChanged = (s.g0!==o.g0)||(s.g1!==o.g1)||(s.g2!==o.g2);
-    const anyChanged = mardiChanged||jeudiChanged||wkndChanged;
-    const bg = phaseColors[s.phaseClass]||'rgba(27,58,107,.08)';
-    const col = phaseTextColors[s.phaseClass]||'#1b3a6b';
-    return `<tr class="${s.decharge?'decharge':''}">
-      <td>
-        <div class="sem-badge">S${s.sem}</div>
-        <div style="font-family:'Syne',sans-serif;font-size:.6rem;color:var(--muted)">${s.mois}</div>
-      </td>
-      <td>
-        <span class="phase-mini" style="background:${bg};color:${col}">${s.phase}</span>
-        ${s.decharge?'<div style="font-family:\'Syne\',sans-serif;font-size:.55rem;color:var(--mousse);margin-top:.2rem">🟢 Décharge</div>':''}
-      </td>
-      <td>
-        <div class="seance-cell">${s.mardi.titre}${mardiChanged?'<span class="modified-flag">✏️</span>':''}</div>
-        <div class="seance-terrain">${terrainLabel[s.mardi.terrain]?terrainLabel[s.mardi.terrain].icon+' '+terrainLabel[s.mardi.terrain].label:s.mardi.terrain}</div>
-      </td>
-      <td>
-        <div class="seance-cell">${s.jeudi.titre}${jeudiChanged?'<span class="modified-flag">✏️</span>':''}</div>
-        <div class="seance-terrain">${terrainLabel[s.jeudi.terrain]?terrainLabel[s.jeudi.terrain].icon+' '+terrainLabel[s.jeudi.terrain].label:s.jeudi.terrain}</div>
-      </td>
-      <td>
-        <button class="btn-edit-row" onclick="openPanel(${s.sem})">✏️ Modifier</button>
-        ${anyChanged?`<button class="btn-edit-row" style="margin-top:.3rem;color:var(--rouge);border-color:rgba(192,64,64,.3)" onclick="resetWeekById(${s.sem})">↺</button>`:''}
-      </td>
+  // Populate phase filter
+  const sel = document.getElementById('phase-filter');
+  if(sel.options.length <= 1){
+    Object.entries(phaseMap).forEach(([k,v])=>{
+      if(!Array.from(sel.options).find(o=>o.value===v.c)){
+        sel.add(new Option(v.l, v.c));
+      }
+    });
+  }
+
+document.getElementById('admin-prog-body').innerHTML = rows.map(w=>{
+    const mD = L.seances[w.m], jD = L.seances[w.j];
+    const weR = L.seances[w.wr];
+    const uaMardi = mD ? (mD.ua || mD.rn*(mD.d||60)) : 0;
+    const uaJeudi = jD ? (jD.ua || jD.rn*(jD.d||60)) : 0;
+    const uaWE = weR ? (weR.ua || weR.rn*(weR.d||90)) : socle.weRoute;
+    const uaReel = socle.lundi + uaMardi + socle.mercredi + uaJeudi + uaWE;
+    
+    // On s'assure de mettre à jour la valeur dans l'objet pour les calculs suivants (important pour le delta)
+    w.ua = uaReel; 
+
+    const orig = programme.find(x=>x.s===w.s);
+    const changed = orig && JSON.stringify(w)!==JSON.stringify(orig);
+    const prev = L.programme.find(x=>x.s===w.s-1);
+    let delta = '';
+    if(prev && prev.ua>0){
+      // Le calcul se fait maintenant sur la nouvelle charge réelle (uaReel)
+      const d = Math.round((uaReel-prev.ua)/prev.ua*100);
+      const col = d>15?'var(--rouge)':d>10?'var(--ocre)':d>5?'var(--blue)':d<-5?'var(--mousse)':'var(--muted)';
+      delta = `<span style="color:${col};font-weight:700">${d>0?'+':''}${d}%</span>`;
+    }
+    const d = new Date(+S1+(w.s-1)*7*864e5);
+    return `<tr class="${w.d?'dec':''}">
+      <td><strong style="font-size:.62rem;color:var(--navy)">${semRangeLun(w.s)}</strong><div style="font-size:.58rem;color:var(--muted)">${semRangeDim(w.s)}</div></td>
+      <td><span style="font-size:.68rem;font-weight:600;color:var(--navy)">${w.p}</span>${w.d?'<div style="font-size:.58rem;color:var(--mousse)">Décharge</div>':''}</td>
+      <td style="font-size:.75rem">${mD?mD.l:'—'}${changed?'<span class="modified-flag">✏️</span>':''}</td>
+      <td style="text-align:center;font-size:.82rem;font-weight:700;color:${mRpe>=8?'var(--rouge)':mRpe>=6?'var(--navy)':'var(--mousse)'}">${mRpe||'—'}</td>
+      <td style="font-size:.75rem">${jD?jD.l:'—'}</td>
+      <td style="text-align:center;font-size:.82rem;font-weight:700;color:${jRpe>=8?'var(--rouge)':jRpe>=6?'var(--navy)':'var(--mousse)'}">${jRpe||'—'}</td>
+      <td style="text-align:center;font-size:.72rem;color:var(--muted)">${uaClub}</td>
+      <td style="text-align:center;font-weight:700;color:var(--navy)">${w.ua}</td>
+      <td style="text-align:center;font-size:.72rem">${delta||'—'}</td>
+      <td><button class="btn-sm" onclick="openWeekEdit(${w.s})">✏️</button>${changed?`<button class="btn-sm danger" style="margin-left:.2rem" onclick="resetWeek(${w.s})">↺</button>`:''}</td>
     </tr>`;
   }).join('');
 }
 
-// ════════════════════════════════════════════════
-// EDIT PANEL
-// ════════════════════════════════════════════════
-let editingSem = null;
+function openWeekEdit(sn){
+  editMode='week'; editKey=sn;
+  const w = L.programme.find(x=>x.s===sn);
+  if(!w) return;
+  document.getElementById('panel-title').textContent = `${semRange(sn)} — ${w.p}`;
+  document.getElementById('btn-reset').style.display = JSON.stringify(w)!==JSON.stringify(programme.find(x=>x.s===sn))?'block':'none';
+ 
+  const picker = (id,cur)=>{
+    let html = '<option value="—">— Repos —</option>';
+    const cats = [{l:'⛰️ Côtes',fn:k=>k.startsWith('cote')||k==='circuit_douves'||k==='escaliers'||k.includes('vvf')},
+      {l:'🌀 Fartlek',fn:k=>k.includes('fartlek')},{l:'📐 Pyramides',fn:k=>k.startsWith('pyramid')},
+      {l:'⚡ Seuil',fn:k=>['3x15_r5','3x7_r130','3x8_r1','8x3_r130','5x1000_halage','4x2000_r2'].includes(k)||/^\d+min$/.test(k)},
+      {l:'🔥 VMA',fn:k=>k.includes('3030')||k.includes('30_30')||k.includes('2020')||k==='8x50s_vma'},
+      {l:'💨 Vitesse',fn:k=>k.startsWith('vitesse')||k.startsWith('piste')},
+      {l:'🏃 Sortie',fn:k=>['sortie_longue','sortie_recup','allure_marathon','allure_semi','ppg_seance'].includes(k)},
+      {l:'📦 Autres',fn:()=>true}];
+    const used = new Set();
+    for(const cat of cats){
+      const grp = Object.keys(L.seances).filter(k=>!used.has(k)&&cat.fn(k));
+      if(!grp.length) continue;
+      html += `<optgroup label="${cat.l}">`;
+      grp.forEach(k=>{ used.add(k); html += `<option value="${k}" ${k===cur?'selected':''}>${(L.seances[k].l||k).substring(0,55)}</option>`; });
+      html += '</optgroup>';
 
-function seancePicker(seanceId, jourid){
-  const cats = [
-    {label:'\u26F0\uFE0F C\u00F4tes', fn: k => k.startsWith('cote') || k==='circuit_douves' || k==='escaliers' || k.includes('vvf')},
-    {label:'\uD83C\uDF00 Fartlek', fn: k => k.startsWith('fartlek') || k.includes('fartlek')},
-    {label:'\uD83D\uDCD0 Pyramides', fn: k => k.startsWith('pyramid')},
-    {label:'\u26A1 Seuil', fn: k => ['3x15_r5','3x7_r130','3x8_r1','8x3_r130','5x1000_halage','4x2000_r2'].includes(k) || /^\d+min$/.test(k)},
-    {label:'\uD83D\uDD25 VMA', fn: k => k.includes('3030') || k.includes('30_30') || k.includes('2020') || k==='8x50s_vma' || k.includes('decrements') || k.includes('interval')},
-    {label:'\uD83D\uDCA8 Vitesse', fn: k => k.startsWith('vitesse') || k.startsWith('piste')},
-    {label:'\uD83C\uDFC3 Sortie', fn: k => ['sortie_longue','sortie_recup','allure_marathon','allure_semi','ppg_seance'].includes(k)},
-    {label:'\uD83D\uDCE6 Autres', fn: k => true},
-  ];
-  const keys = Object.keys(localNiveaux);
-  const used = new Set();
-  let html = '<option value="">\u2014 Choisir depuis la biblioth\u00E8que \u2014</option>';
-  for(const cat of cats){
-    const grp = keys.filter(k => !used.has(k) && cat.fn(k));
-    if(!grp.length) continue;
-    html += '<optgroup label="'+cat.label+'">';
-    grp.forEach(k => {
-      used.add(k);
-      const lbl = (localNiveaux[k].label || k).substring(0,60);
-      html += '<option value="'+k+'">'+lbl+'</option>';
-    });
-    html += '</optgroup>';
-  }
-  return '<select class="field-select" id="'+seanceId+'" onchange="applySeancePicker(\''+jourid+'\',\''+seanceId+'\')">'+html+'</select>';
-}
-
-function applySeancePicker(jourid, seanceId){
-  const key = document.getElementById(seanceId).value;
-  if(!key) return;
-  const niv = localNiveaux[key];
-  if(!niv) return;
-  document.getElementById('p-'+jourid+'-titre').value = niv.label || key;
-  const lines = [
-    '\uD83D\uDFE2 D\u00E9butant : '+niv.reps[0]+' r\u00E9p \u00B7 R='+niv.recup[0]+' \u00B7 '+niv.allure[0],
-    '\uD83D\uDD35 Interm\u00E9diaire : '+niv.reps[1]+' r\u00E9p \u00B7 R='+niv.recup[1]+' \u00B7 '+niv.allure[1],
-    '\uD83D\uDD34 Confirm\u00E9 : '+niv.reps[2]+' r\u00E9p \u00B7 R='+niv.recup[2]+' \u00B7 '+niv.allure[2],
-  ];
-  if(niv.notes) lines.push('\uD83D\uDCA1 '+niv.notes);
-  document.getElementById('p-'+jourid+'-detail').value = lines.join('\n');
-  showNivPreview(jourid, key);
-}
-
-function showNivPreview(jourid, key){
-  const el = document.getElementById('niv-preview-'+jourid);
-  if(!el || !localNiveaux[key]) return;
-  const niv = localNiveaux[key];
-  const cols = ['#3d8b5c','#2351a0','#c04040'];
-  const lbls = ['\uD83D\uDFE2 D\u00E9b','\uD83D\uDD35 Inter','\uD83D\uDD34 Conf'];
-  el.innerHTML = '<div style="background:rgba(27,58,107,.04);border:1px solid rgba(27,58,107,.1);border-radius:8px;padding:.6rem .9rem;margin-bottom:.6rem">'
-    +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ab-blue);margin-bottom:.4rem">Niveaux</div>'
-    +[0,1,2].map(i => '<div style="display:flex;gap:.5rem;font-size:.74rem;margin-bottom:.15rem">'
-      +'<span style="font-family:\'Syne\',sans-serif;font-size:.63rem;font-weight:700;color:'+cols[i]+';min-width:65px">'+lbls[i]+'</span>'
-      +'<span>'+niv.reps[i]+'</span>'
-      +'<span style="color:var(--muted)">\u00B7 R='+niv.recup[i]+'</span>'
-      +'<span style="color:var(--muted);font-size:.68rem">\u00B7 '+niv.allure[i]+'</span>'
-      +'</div>').join('')
-    +'</div>';
-}
-
-function openPanel(sem){
-  editingSem = sem;
-  const s = localProgramme.find(x=>x.sem===sem);
-  const orig = programme.find(x=>x.sem===sem) || s;
-  const anyChanged = JSON.stringify(s)!==JSON.stringify(orig);
-
-  document.getElementById('panel-title').textContent = 'Semaine '+sem+' \u2014 '+s.mois+' \u00B7 '+s.phase;
-  document.getElementById('btn-reset-week').style.display = anyChanged ? 'block' : 'none';
-
-  const terrainOpts = (sel) => Object.entries(terrainLabel).map(([k,v])=>
-    '<option value="'+k+'" '+(sel===k?'selected':'')+'>'+v.icon+' '+v.label+'</option>'
-  ).join('');
+    }
+    // On englobe tout dans une div pour la mise en page
+return `
+  <div class="select-with-preview">
+    <select class="field-select" id="${id}" onchange="handleSeanceChange('${id}')">
+      ${html}
+    </select>
+    <div id="preview-${id}" class="seance-preview" style="display: none;"></div>
+  </div>
+`;
+  };
 
   document.getElementById('panel-body').innerHTML =
-    '<span class="block-sep">\uD83D\uDCC5 MARDI</span>'
-    +'<div class="field-group">'
-    +'<label class="field-label">S\u00E9ance depuis la biblioth\u00E8que <span style="font-weight:400;color:var(--muted)">(remplit le titre et la description)</span></label>'
-    +seancePicker('p-mardi-bib','mardi')
-    +'</div>'
-    +'<div id="niv-preview-mardi"></div>'
-    +'<div class="field-group"><label class="field-label">Titre <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
-    +'<input class="field-input" id="p-mardi-titre" value="'+s.mardi.titre.replace(/"/g,'&quot;')+'"></div>'
-    +'<div class="field-group"><label class="field-label">Terrain</label>'
-    +'<select class="field-select" id="p-mardi-terrain">'+terrainOpts(s.mardi.terrain)+'</select></div>'
-    +'<div class="field-group"><label class="field-label">Description <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
-    +'<textarea class="field-textarea" id="p-mardi-detail" rows="4">'+s.mardi.detail+'</textarea></div>'
-    +'<span class="block-sep" style="background:rgba(74,138,90,.06);border-color:rgba(74,138,90,.15);color:var(--mousse)">\uD83D\uDCC5 JEUDI</span>'
-    +'<div class="field-group">'
-    +'<label class="field-label">S\u00E9ance depuis la biblioth\u00E8que <span style="font-weight:400;color:var(--muted)">(remplit le titre et la description)</span></label>'
-    +seancePicker('p-jeudi-bib','jeudi')
-    +'</div>'
-    +'<div id="niv-preview-jeudi"></div>'
-    +'<div class="field-group"><label class="field-label">Titre <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
-    +'<input class="field-input" id="p-jeudi-titre" value="'+s.jeudi.titre.replace(/"/g,'&quot;')+'"></div>'
-    +'<div class="field-group"><label class="field-label">Terrain</label>'
-    +'<select class="field-select" id="p-jeudi-terrain">'+terrainOpts(s.jeudi.terrain)+'</select></div>'
-    +'<div class="field-group"><label class="field-label">Description <span style="font-weight:400;color:var(--muted)">(modifiable)</span></label>'
-    +'<textarea class="field-textarea" id="p-jeudi-detail" rows="4">'+s.jeudi.detail+'</textarea></div>'
-    +'<span class="block-sep" style="background:rgba(27,58,107,.04)">\uD83C\uDFC3 WEEKEND (par profil)</span>'
-    +'<div class="field-group"><label class="field-label">Route \uD83C\uDFC3</label>'
-    +'<input class="field-input" id="p-g0" value="'+(s.g0||'').replace(/"/g,'&quot;')+'"></div>'
-    +'<div class="field-group"><label class="field-label">Trail loisir \uD83C\uDF3F</label>'
-    +'<input class="field-input" id="p-g1" value="'+(s.g1||'').replace(/"/g,'&quot;')+'"></div>'
-    +'<div class="field-group"><label class="field-label">Trail montagne \uD83C\uDFD4</label>'
-    +'<input class="field-input" id="p-g2" value="'+(s.g2||'').replace(/"/g,'&quot;')+'"></div>'
-    +'<div class="field-group"><label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer">'
-    +'<input type="checkbox" id="p-decharge" '+(s.decharge?'checked':'')+'>Semaine de d\u00E9charge</label></div>';
+    '<span class="block-sep">📅 MARDI</span>'
+    +`<div class="field-group"><label class="field-label">Séance</label>${picker('pw-m',w.m)}</div>`
+    +'<span class="block-sep" style="color:var(--mousse)">📅 JEUDI</span>'
+    +`<div class="field-group"><label class="field-label">Séance</label>${picker('pw-j',w.j)}</div>`
+    +'<span class="block-sep">🏃 SORTIE WEEKEND</span>'
+    +`<div class="field-group"><label class="field-label">🛣️ Route</label>${picker('pw-wr',w.wr)}</div>`
+    +`<div class="field-group"><label class="field-label">🌲 Trail</label>${picker('pw-wt',w.wt)}</div>`
+    +`<div class="field-group"><label class="field-label">UA semaine (auto-calculé)</label><input type="number" class="field-input" id="pw-ua" value="${w.ua}" style="font-weight:700"></div>`
+    +`<div id="pw-preview" style="background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.8rem"></div>`
+    +`<div class="field-group"><label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="pw-d" ${w.d?'checked':''}> Semaine de décharge</label></div>`
+    +`<div class="field-group"><label class="field-label">Notes coach</label><textarea class="field-textarea" id="pw-n" rows="2">${w.n||''}</textarea></div>`;
 
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
+  updateSeancePreview('pw-m');
+  updateSeancePreview('pw-j');
+  updateSeancePreview('pw-wr');
+  updateSeancePreview('pw-wt');
+  autoCalcWeekUA();
 }
 
-function closePanel(){
-  document.getElementById('edit-panel').classList.remove('open');
-  document.getElementById('panel-overlay').style.display='none';
-  editingSem = null;
-  editingSeanceKey = null;
-}
-
-function saveWeek(){
-  if(!editingSem) return;
-  const idx = localProgramme.findIndex(x=>x.sem===editingSem);
-  if(idx===-1) return;
-  localProgramme[idx].mardi.titre   = document.getElementById('p-mardi-titre').value.trim();
-  localProgramme[idx].mardi.terrain = document.getElementById('p-mardi-terrain').value;
-  localProgramme[idx].mardi.detail  = document.getElementById('p-mardi-detail').value.trim();
-  localProgramme[idx].jeudi.titre   = document.getElementById('p-jeudi-titre').value.trim();
-  localProgramme[idx].jeudi.terrain = document.getElementById('p-jeudi-terrain').value;
-  localProgramme[idx].jeudi.detail  = document.getElementById('p-jeudi-detail').value.trim();
-  localProgramme[idx].g0 = document.getElementById('p-g0').value.trim();
-  localProgramme[idx].g1 = document.getElementById('p-g1').value.trim();
-  localProgramme[idx].g2 = document.getElementById('p-g2').value.trim();
-  localProgramme[idx].decharge = document.getElementById('p-decharge').checked;
-  saveLocal();
-  buildProgTable();
-  closePanel();
-  toast('Semaine S'+editingSem+' mise à jour — pensez à Publier ✓','success');
-}
-
-function resetWeek(){
-  if(!editingSem) return;
-  resetWeekById(editingSem);
-  closePanel();
-}
-
-function resetWeekById(sem){
-  const orig = programme.find(x=>x.sem===sem);
+function resetWeek(sn){
+  const orig = programme.find(x=>x.s===sn);
   if(!orig) return;
-  const idx = localProgramme.findIndex(x=>x.sem===sem);
-  localProgramme[idx] = JSON.parse(JSON.stringify(orig));
-  saveLocal();
-  buildProgTable();
-  toast('Semaine S'+sem+' remise à l\'original','success');
+  const idx = L.programme.findIndex(x=>x.s===sn);
+  L.programme[idx] = JSON.parse(JSON.stringify(orig));
+  saveLocal(); buildAdminProg(); toast('S'+sn+' réinitialisée','success');
+}
+function autoCalcWeekUA() {
+  const getCharge = (elementId) => {
+    const el = document.getElementById(elementId);
+    if(!el) return 0;
+    const key = el.value;
+    const seance = L.seances[key];
+    return seance ? (seance.ua || (seance.rn||0) * (seance.d||60)) : 0;
+  };
+
+  const uaMardi = getCharge('pw-m');
+  const uaJeudi = getCharge('pw-j');
+  const socle = getSocleUA();
+  const totalUA = socle.lundi + uaMardi + socle.mercredi + uaJeudi + socle.weekend;
+  document.getElementById('pw-ua').value = totalUA;
+
+  // Update live preview
+  updateWeekPreview(uaMardi, uaJeudi, socle);
 }
 
-// ════════════════════════════════════════════════
-// CALENDRIER — admin
-// ════════════════════════════════════════════════
-const typeInfo = {
-  trail:{label:'🌿 Trail',cls:'type-trail'},
-  route:{label:'🏃 Route',cls:'type-route'},
-  rando:{label:'🥾 Rando',cls:'type-rando'},
-  montagne:{label:'🏔 Montagne',cls:'type-montagne'},
-  social:{label:'🎉 Section',cls:'type-social'},
-};
+// ══════════════════════════════════════════════════
+// SOCLE HEBDOMADAIRE
+// ══════════════════════════════════════════════════
+function getSocleFromUI(){
+  return {
+    lundi:    { dur: +(document.getElementById('socle-lun-dur')?.value||60), rpe: +(document.getElementById('socle-lun-rpe')?.value||4) },
+    mercredi: { dur: +(document.getElementById('socle-mer-dur')?.value||50), rpe: +(document.getElementById('socle-mer-rpe')?.value||3) },
+    weRoute:  { dur: +(document.getElementById('socle-wer-dur')?.value||60), rpe: +(document.getElementById('socle-wer-rpe')?.value||4) },
+    weTrail:  { dur: +(document.getElementById('socle-wet-dur')?.value||90), rpe: +(document.getElementById('socle-wet-rpe')?.value||4) }
+  };
+}
 
-function buildCalList(){
-  const today = new Date(); today.setHours(0,0,0,0);
-  const sorted = [...localCalFixed].sort((a,b)=>new Date(a.date)-new Date(b.date));
+function getSocleUA(){
+  const cfg = getSocleFromUI();
+  return {
+    lundi:    cfg.lundi.dur * cfg.lundi.rpe,
+    mercredi: cfg.mercredi.dur * cfg.mercredi.rpe,
+    weRoute:  cfg.weRoute.dur * cfg.weRoute.rpe,
+    weTrail:  cfg.weTrail.dur * cfg.weTrail.rpe,
+    weekend:  cfg.weRoute.dur * cfg.weRoute.rpe // default to route
+  };
+}
 
-  document.getElementById('cal-admin-list').innerHTML = sorted.map(e => {
-    const d = new Date(e.date+'T12:00:00');
-    const isPast = d < today;
-    const ti = typeInfo[e.type] || {label:e.type,cls:'type-social'};
-    const orig = calFixed.find(x=>x.id===e.id);
-    const isNew = !orig;
-    const isModified = orig && JSON.stringify(e)!==JSON.stringify(orig);
-    return `<div class="cal-admin-item" style="${isPast?'opacity:.5':''}">
+function updateSocle(){
+  const cfg = getSocleFromUI();
+  // Update display values
+  document.getElementById('socle-lun-dur-v').textContent = cfg.lundi.dur;
+  document.getElementById('socle-lun-rpe-v').textContent = cfg.lundi.rpe;
+  document.getElementById('socle-lun-ua').textContent = cfg.lundi.dur * cfg.lundi.rpe;
+  document.getElementById('socle-mer-dur-v').textContent = cfg.mercredi.dur;
+  document.getElementById('socle-mer-rpe-v').textContent = cfg.mercredi.rpe;
+  document.getElementById('socle-mer-ua').textContent = cfg.mercredi.dur * cfg.mercredi.rpe;
+  document.getElementById('socle-wer-dur-v').textContent = cfg.weRoute.dur;
+  document.getElementById('socle-wer-rpe-v').textContent = cfg.weRoute.rpe;
+  document.getElementById('socle-wer-ua').textContent = cfg.weRoute.dur * cfg.weRoute.rpe;
+  document.getElementById('socle-wet-dur-v').textContent = cfg.weTrail.dur;
+  document.getElementById('socle-wet-rpe-v').textContent = cfg.weTrail.rpe;
+  document.getElementById('socle-wet-ua').textContent = cfg.weTrail.dur * cfg.weTrail.rpe;
+
+  const horsClub = cfg.lundi.dur*cfg.lundi.rpe + cfg.mercredi.dur*cfg.mercredi.rpe + cfg.weRoute.dur*cfg.weRoute.rpe;
+  document.getElementById('socle-hors-club').textContent = horsClub + ' UA (route) / ' + (cfg.lundi.dur*cfg.lundi.rpe + cfg.mercredi.dur*cfg.mercredi.rpe + cfg.weTrail.dur*cfg.weTrail.rpe) + ' UA (trail)';
+  document.getElementById('socle-total-badge').textContent = 'Socle route : ' + horsClub + ' UA';
+
+  // Save to localStorage
+  localStorage.setItem('ab-admin-socle', JSON.stringify(cfg));
+
+  // Refresh if edit panel is open
+  if(document.getElementById('pw-ua')) autoCalcWeekUA();
+}
+
+function loadSocle(){
+  const saved = localStorage.getItem('ab-admin-socle');
+  if(saved){
+    const cfg = JSON.parse(saved);
+    if(cfg.lundi) { document.getElementById('socle-lun-dur').value = cfg.lundi.dur; document.getElementById('socle-lun-rpe').value = cfg.lundi.rpe; }
+    if(cfg.mercredi) { document.getElementById('socle-mer-dur').value = cfg.mercredi.dur; document.getElementById('socle-mer-rpe').value = cfg.mercredi.rpe; }
+    if(cfg.weRoute) { document.getElementById('socle-wer-dur').value = cfg.weRoute.dur; document.getElementById('socle-wer-rpe').value = cfg.weRoute.rpe; }
+    if(cfg.weTrail) { document.getElementById('socle-wet-dur').value = cfg.weTrail.dur; document.getElementById('socle-wet-rpe').value = cfg.weTrail.rpe; }
+  }
+  updateSocle();
+}
+
+function updateWeekPreview(uaMardi, uaJeudi, socle){
+  const el = document.getElementById('pw-preview');
+  if(!el) return;
+  const total = socle.lundi + uaMardi + socle.mercredi + uaJeudi + socle.weekend;
+  const sn = editKey;
+  const prev = L.programme.find(x=>x.s===sn-1);
+  let deltaHtml = '';
+  if(prev && prev.ua>0){
+    const d = Math.round((total-prev.ua)/prev.ua*100);
+    const col = d>15?'var(--rouge)':d>10?'var(--ocre)':d>5?'var(--blue)':d<-5?'var(--mousse)':'var(--muted)';
+    const icon = d>10?'⚠️':d>5?'📈':d<-5?'📉':'✅';
+    deltaHtml = `<span style="color:${col};font-weight:700;font-size:.85rem">${icon} ${d>0?'+':''}${d}% vs ${semRange(sn-1)}</span>`;
+    if(d>10) deltaHtml += `<div style="font-size:.62rem;color:var(--rouge);margin-top:.2rem">Attention : progression > 10%. Règle d'or = +10% max.</div>`;
+  }
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.3rem;text-align:center;margin-bottom:.5rem">
+      <div style="padding:.3rem;background:rgba(27,58,107,.04);border-radius:4px">
+        <div style="font-size:.5rem;color:var(--muted);text-transform:uppercase">Lun</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--navy)">${socle.lundi}</div>
+      </div>
+      <div style="padding:.3rem;background:rgba(42,93,160,.08);border-radius:4px;border:1.5px solid var(--sky)">
+        <div style="font-size:.5rem;color:var(--blue);text-transform:uppercase;font-weight:700">Mar ★</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--navy)">${uaMardi}</div>
+      </div>
+      <div style="padding:.3rem;background:rgba(27,58,107,.04);border-radius:4px">
+        <div style="font-size:.5rem;color:var(--muted);text-transform:uppercase">Mer</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--mousse)">${socle.mercredi}</div>
+      </div>
+      <div style="padding:.3rem;background:rgba(42,93,160,.08);border-radius:4px;border:1.5px solid var(--sky)">
+        <div style="font-size:.5rem;color:var(--blue);text-transform:uppercase;font-weight:700">Jeu ★</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--navy)">${uaJeudi}</div>
+      </div>
+      <div style="padding:.3rem;background:rgba(27,58,107,.04);border-radius:4px">
+        <div style="font-size:.5rem;color:var(--muted);text-transform:uppercase">WE</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--navy)">${socle.weekend}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
-        <div class="cal-admin-date">${d.getDate()}</div>
-        <div class="cal-admin-month">${d.toLocaleDateString('fr-FR',{month:'short'}).replace('.','')}</div>
+        <span style="font-size:.65rem;color:var(--muted)">Charge totale semaine :</span>
+        <span style="font-size:1rem;font-weight:800;color:var(--navy);margin-left:.3rem">${total} UA</span>
       </div>
-      <div class="cal-admin-info">
-        <div class="cal-admin-titre">
-          ${e.titre}
-          ${isNew?'<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;color:var(--mousse);margin-left:.3rem">NEW</span>':''}
-          ${isModified?'<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;color:var(--ab-light);margin-left:.3rem">✏️</span>':''}
-        </div>
-        <div class="cal-admin-desc">${e.desc}</div>
-      </div>
-      <span class="cal-type-badge ${ti.cls}">${ti.label}</span>
-      <button class="btn-edit-cal" onclick="editCalEvent('${e.id}')">✏️</button>
-      <button class="btn-del-cal" onclick="deleteCalEvent('${e.id}')">✕</button>
-    </div>`;
-  }).join('');
+      ${deltaHtml}
+    </div>
+  `;
 }
 
-function addCalEvent(){
-  const date  = document.getElementById('new-cal-date').value;
-  const type  = document.getElementById('new-cal-type').value;
-  const titre = document.getElementById('new-cal-titre').value.trim();
-  const desc  = document.getElementById('new-cal-desc').value.trim();
-  if(!date||!titre){ toast('Date et titre obligatoires','error'); return; }
-  const id = 'u'+Date.now();
-  localCalFixed.push({id, date, type, titre, desc});
-  document.getElementById('new-cal-date').value='';
-  document.getElementById('new-cal-titre').value='';
-  document.getElementById('new-cal-desc').value='';
-  saveLocal();
-  buildCalList();
-  toast('Événement ajouté','success');
+function handleSeanceChange(elementId) {
+  // 1. Mise à jour de l'aperçu
+  updateSeancePreview(elementId);
+  // 2. Recalcul de l'UA
+  autoCalcWeekUA();
 }
 
-function deleteCalEvent(id){
-  if(!confirm('Supprimer cet événement ?')) return;
-  localCalFixed = localCalFixed.filter(e=>e.id!==id);
-  saveLocal();
-  buildCalList();
-  toast('Événement supprimé','success');
+function updateSeancePreview(elementId) {
+  const selectElement = document.getElementById(elementId);
+  const previewDiv = document.getElementById(`preview-${elementId}`);
+  
+  // Sécurité
+  if (!selectElement || !previewDiv) return;
+
+  const key = selectElement.value;
+  
+  // Si c'est un repos ou une clé invalide
+  if (!key || key === '—' || !L.seances[key]) {
+    previewDiv.style.display = 'none';
+    previewDiv.innerHTML = '';
+    return;
+  }
+
+  const s = L.seances[key];
+  
+  // Construction du HTML calqué sur tes variables existantes
+  const html = `
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 0.95em;">
+      <strong style="color: var(--navy);">${s.l || key}</strong>
+      <span style="background: rgba(27,58,107,.06); padding: 2px 6px; border-radius: 4px; color: var(--muted); font-size: 0.85em;">${key}</span>
+      <span style="background: rgba(184,134,11,.12); padding: 2px 6px; border-radius: 4px; color: var(--gold); font-weight: bold; font-size: 0.85em;">RPE ${s.rpe || '—'}</span>
+      <span style="color: var(--muted); font-size: 0.9em;">${s.c || ''}</span>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 70px 1fr; gap: 6px 12px; font-size: 0.9em; margin-bottom: 12px;">
+      ${s.halage && s.halage !== '—' ? `<span style="color: var(--navy); font-weight: bold;">🏞️ Halage</span><span>${s.halage}</span>` : ''}
+      ${s.piste && s.piste !== '—' ? `<span style="color: var(--blue); font-weight: bold;">🏟️ Piste</span><span>${s.piste}</span>` : ''}
+    </div>
+    <div style="font-size: 0.85em; border-top: 1px solid var(--border); padding-top: 8px;">
+      ${s.desc ? `<div style="color: var(--muted); font-style: italic;">${s.desc}</div>` : ''}
+    </div>
+  `;
+  
+  previewDiv.innerHTML = html;
+  previewDiv.style.display = 'block';
 }
-
-function editCalEvent(id){
-  const e = localCalFixed.find(x=>x.id===id);
-  if(!e) return;
-  document.getElementById('new-cal-date').value = e.date;
-  document.getElementById('new-cal-type').value = e.type;
-  document.getElementById('new-cal-titre').value = e.titre;
-  document.getElementById('new-cal-desc').value = e.desc;
-  // Remove old and user will re-add
-  localCalFixed = localCalFixed.filter(x=>x.id!==id);
-  saveLocal();
-  buildCalList();
-  toast('Événement chargé dans le formulaire — modifiez et cliquez Ajouter','success');
-}
-
-// ══════════════════════// SEANCES - bibliotheque
-let editingSeanceKey = null;
-
-function filterSeances(val){
-  const search = (typeof val === 'string' ? val : (document.getElementById('seance-search')||{}).value||'').toLowerCase();
-  const cat = (document.getElementById('seance-cat')||{}).value||'';
-  document.querySelectorAll('.seance-lib-card').forEach(card => {
-    const key = card.dataset.key||'';
-    const lbl = (card.dataset.label||'').toLowerCase();
-    const okSearch = !search || key.includes(search) || lbl.includes(search);
-    const okCat = !cat || key.includes(cat);
-    card.style.display = (okSearch && okCat) ? '' : 'none';
+// ══════════════════════════════════════════════════
+// SÉANCES BIBLIOTHÈQUE
+// ══════════════════════════════════════════════════
+function filterSeances(){
+  const q = (document.getElementById('seance-search')?.value||'').toLowerCase();
+  document.querySelectorAll('.seance-card').forEach(c=>{
+    const k = c.dataset.key||'', l = (c.dataset.label||'').toLowerCase();
+    c.style.display = (!q || k.includes(q) || l.includes(q)) ? '' : 'none';
   });
 }
 
-function buildSeancesGrid(){
-  if(!localNiveaux) return;
-  const list = document.getElementById('seances-list');
-  if(!list) return;
-  const cols = ['#3d8b5c','#2351a0','#c04040'];
-  const lbls = ['Debutant','Intermediaire','Confirme'];
-  const emojis = ['Green','Blue','Red'];
-
-  list.innerHTML = Object.entries(localNiveaux).map(([key, niv]) => {
-    const label = niv.label || key;
-    const notes = niv.notes || '';
-    return '<div class="seance-lib-card" data-key="'+key+'" data-label="'+label.replace(/"/g,"'")+'" style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.4rem">'
-      +'<div style="background:var(--surface2);padding:.6rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap">'
-      +'<div><span style="font-family:\'Syne\',sans-serif;font-size:.78rem;font-weight:800;color:var(--ab-blue)">'+label+'</span>'
-      +'<span style="font-family:\'Syne\',sans-serif;font-size:.58rem;color:var(--muted);margin-left:.5rem;background:rgba(27,58,107,.07);padding:.1rem .4rem;border-radius:3px">'+key+'</span></div>'
-      +'<button class="btn-edit-row" onclick="openSeanceEdit(\''+key+'\')">&#x270F;&#xFE0F; Modifier</button>'
-      +'</div>'
-      +'<div style="padding:.65rem 1rem">'
-      +'<div style="display:grid;grid-template-columns:115px 1fr 1fr 2fr;gap:.3rem;margin-bottom:.25rem">'
-      +'<div></div>'
-      +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase">R&#233;p.</div>'
-      +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase">R&#233;cup</div>'
-      +'<div style="font-family:\'Syne\',sans-serif;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:uppercase">Allure</div>'
-      +'</div>'
-      +[0,1,2].map(i =>
-        '<div style="display:grid;grid-template-columns:115px 1fr 1fr 2fr;gap:.3rem;margin-bottom:.2rem;align-items:baseline">'
-        +'<span style="font-family:\'Syne\',sans-serif;font-size:.65rem;font-weight:700;color:'+cols[i]+'">'+lbls[i]+'</span>'
-        +'<span style="font-size:.77rem">'+(niv.reps[i]||'&mdash;')+'</span>'
-        +'<span style="font-size:.77rem;color:var(--muted)">'+(niv.recup[i]||'&mdash;')+'</span>'
-        +'<span style="font-size:.74rem;color:var(--muted)">'+(niv.allure[i]||'&mdash;')+'</span>'
-        +'</div>'
-      ).join('')
-      +(notes?'<div style="margin-top:.4rem;padding:.3rem .6rem;background:rgba(212,137,58,.06);border-left:3px solid var(--ocre);font-size:.72rem;color:var(--muted)">'+notes+'</div>':'')
-      +'</div></div>';
-  }).join('');
+function buildSeancesList(){
+  const el = document.getElementById('seances-list');
+  if(!el) return;
+  el.innerHTML = Object.entries(L.seances).map(([k,s])=>`
+    <div class="seance-card" data-key="${k}" data-label="${(s.l||'').replace(/"/g,"'")}">
+      <div class="seance-card-hdr">
+        <div>
+          <span style="font-size:.78rem;font-weight:800;color:var(--navy)">${s.l||k}</span>
+          <span style="font-size:.55rem;color:var(--muted);margin-left:.4rem;background:rgba(27,58,107,.06);padding:.1rem .35rem;border-radius:3px">${k}</span>
+          <span style="font-size:.62rem;color:var(--gold);background:rgba(184,134,11,.12);padding:.1rem .3rem;border-radius:3px;margin-left:.3rem;font-weight:700">RPE ${s.rpe||'—'}</span>
+          <span style="font-size:.58rem;color:var(--muted);margin-left:.3rem">${s.c||''}</span>
+        </div>
+        <button class="btn-sm" onclick="openSeanceEdit('${k}')">✏️</button>
+      </div>
+      <div class="seance-card-body">
+        ${s.halage&&s.halage!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--navy);min-width:70px">🏞️ Halage</span><span>${s.halage}</span></div>`:''}
+        ${s.piste&&s.piste!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--blue);min-width:70px">🏟️ Piste</span><span>${s.piste}</span></div>`:''}
+        ${s.desc?`<div style="font-size:.68rem;color:var(--muted);font-style:italic;margin-top:.15rem">${s.desc.slice(0,100)}${s.desc.length>100?'…':''}</div>`:''}
+      </div>
+    </div>`).join('');
 }
 
-function openSeanceEdit(key){
-  editingSeanceKey = key;
-  const niv = localNiveaux[key];
-  if(!niv) return;
-  const label = niv.label || key;
-  const cols = ['#3d8b5c','#2351a0','#c04040'];
-  const seps = ['rgba(74,138,90,.06)','rgba(27,58,107,.05)','rgba(192,64,64,.05)'];
-  const sepB = ['rgba(74,138,90,.2)','rgba(27,58,107,.12)','rgba(192,64,64,.15)'];
-  const nivN = ['&#x1F7E2; D&#233;butant','&#x1F535; Interm&#233;diaire','&#x1F534; Confirm&#233;'];
-  document.getElementById('panel-title').textContent = label.substring(0,45);
-  document.getElementById('btn-reset-week').style.display = 'none';
+function openSeanceEdit(k){
+  editMode='seance'; editKey=k;
+  const s = L.seances[k];
+  if(!s) return;
+  document.getElementById('panel-title').textContent = (s.l||k).substring(0,45);
+  document.getElementById('btn-reset').style.display = 'none';
   document.getElementById('panel-body').innerHTML =
-    '<div class="field-group"><label class="field-label">Cl&#233;</label>'
-    +'<div style="font-family:\'Syne\',sans-serif;font-size:.75rem;font-weight:700;color:var(--ab-blue);background:rgba(27,58,107,.06);padding:.4rem .7rem;border-radius:6px">'+key+'</div></div>'
-    +'<div class="field-group"><label class="field-label">Label (nom affich&#233;)</label>'
-    +'<input class="field-input" id="es-label" value="'+(niv.label||label).replace(/"/g,'&quot;')+'"></div>'
-    +[0,1,2].map(i =>
-      '<span class="block-sep" style="background:'+seps[i]+';border-color:'+sepB[i]+';color:'+cols[i]+'">'+nivN[i]+'</span>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">'
-      +'<div class="field-group"><label class="field-label">R&#233;p&#233;titions</label>'
-      +'<input class="field-input" id="es-reps-'+i+'" value="'+(niv.reps[i]||'').replace(/"/g,'&quot;')+'"></div>'
-      +'<div class="field-group"><label class="field-label">R&#233;cup&#233;ration</label>'
-      +'<input class="field-input" id="es-recup-'+i+'" value="'+(niv.recup[i]||'').replace(/"/g,'&quot;')+'"></div></div>'
-      +'<div class="field-group"><label class="field-label">Allure / Intensit&#233;</label>'
-      +'<input class="field-input" id="es-allure-'+i+'" value="'+(niv.allure[i]||'').replace(/"/g,'&quot;')+'"></div>'
-    ).join('')
-    +'<div class="field-group"><label class="field-label">Notes coach</label>'
-    +'<textarea class="field-textarea" id="es-notes" rows="3">'+(niv.notes||'')+'</textarea></div>';
+    `<div class="field-group"><label class="field-label">Clé</label><div style="font-size:.75rem;font-weight:700;color:var(--navy);background:rgba(27,58,107,.06);padding:.35rem .6rem;border-radius:6px">${k}</div></div>`
+    +`<div class="field-group"><label class="field-label">Label</label><input class="field-input" id="se-l" value="${(s.l||'').replace(/"/g,'&quot;')}"></div>`
+    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
+    +`<div class="field-group"><label class="field-label">Catégorie</label><input class="field-input" id="se-c" value="${(s.c||'').replace(/"/g,'&quot;')}"></div>`
+    +`<div class="field-group"><label class="field-label">RPE</label><input class="field-input" id="se-rpe" value="${(s.rpe||'').replace(/"/g,'&quot;')}"></div>`
+    +`<div class="field-group"><label class="field-label">RPE num</label><input type="number" class="field-input" id="se-rn" value="${s.rn||0}" min="1" max="10"></div></div>`
+    +`<div class="field-group"><label class="field-label">UA (charge Foster)</label><input type="number" class="field-input" id="se-ua" value="${s.ua||0}"></div>`
+    +`<div class="field-group"><label class="field-label">🏞️ Halage (description)</label><input class="field-input" id="se-halage" value="${(s.halage||'—').replace(/"/g,'&quot;')}"></div>`
+    +`<div class="field-group"><label class="field-label">🏟️ Piste (équivalence)</label><input class="field-input" id="se-piste" value="${(s.piste||'—').replace(/"/g,'&quot;')}"></div>`
+    +`<div class="field-group"><label class="field-label">Explication</label><textarea class="field-textarea" id="se-desc" rows="3">${s.desc||''}</textarea></div>`;
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
 }
 
 function openNewSeance(){
-  editingSeanceKey = '__new__';
-  const cols = ['#3d8b5c','#2351a0','#c04040'];
-  const seps = ['rgba(74,138,90,.06)','rgba(27,58,107,.05)','rgba(192,64,64,.05)'];
-  const sepB = ['rgba(74,138,90,.2)','rgba(27,58,107,.12)','rgba(192,64,64,.15)'];
-  const nivN = ['&#x1F7E2; D&#233;butant','&#x1F535; Interm&#233;diaire','&#x1F534; Confirm&#233;'];
-  document.getElementById('panel-title').textContent = 'Nouvelle s\u00E9ance';
-  document.getElementById('btn-reset-week').style.display = 'none';
+  editMode='seance-new'; editKey=null;
+  document.getElementById('panel-title').textContent = 'Nouvelle séance';
+  document.getElementById('btn-reset').style.display = 'none';
   document.getElementById('panel-body').innerHTML =
-    '<div class="field-group"><label class="field-label">Cl&#233; (sans espaces)</label>'
-    +'<input class="field-input" id="es-new-key" placeholder="ma_seance"></div>'
-    +'<div class="field-group"><label class="field-label">Label (nom affich&#233;)</label>'
-    +'<input class="field-input" id="es-label" placeholder="ex: 6x1000m Halage R=2min"></div>'
-    +[0,1,2].map(i =>
-      '<span class="block-sep" style="background:'+seps[i]+';border-color:'+sepB[i]+';color:'+cols[i]+'">'+nivN[i]+'</span>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">'
-      +'<div class="field-group"><label class="field-label">R&#233;p&#233;titions</label>'
-      +'<input class="field-input" id="es-reps-'+i+'" placeholder="ex: 4x"></div>'
-      +'<div class="field-group"><label class="field-label">R&#233;cup&#233;ration</label>'
-      +'<input class="field-input" id="es-recup-'+i+'" placeholder="ex: 2min"></div></div>'
-      +'<div class="field-group"><label class="field-label">Allure / Intensit&#233;</label>'
-      +'<input class="field-input" id="es-allure-'+i+'" placeholder="ex: allure seuil"></div>'
-    ).join('')
-    +'<div class="field-group"><label class="field-label">Notes coach</label>'
-    +'<textarea class="field-textarea" id="es-notes" rows="3"></textarea></div>';
+    `<div class="field-group"><label class="field-label">Clé (sans espaces)</label><input class="field-input" id="se-key" placeholder="ma_seance"></div>`
+    +`<div class="field-group"><label class="field-label">Label</label><input class="field-input" id="se-l" placeholder="6×1000m Halage R=2'"></div>`
+    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
+    +`<div class="field-group"><label class="field-label">Catégorie</label><input class="field-input" id="se-c" placeholder="Seuil"></div>`
+    +`<div class="field-group"><label class="field-label">RPE</label><input class="field-input" id="se-rpe" placeholder="7-8"></div>`
+    +`<div class="field-group"><label class="field-label">RPE num</label><input type="number" class="field-input" id="se-rn" value="7" min="1" max="10"></div></div>`
+    +`<div class="field-group"><label class="field-label">UA (charge Foster)</label><input type="number" class="field-input" id="se-ua" value="0"></div>`
+    +`<div class="field-group"><label class="field-label">🏞️ Halage (description)</label><input class="field-input" id="se-halage" placeholder="10×30&quot;/30&quot; Halage"></div>`
+    +`<div class="field-group"><label class="field-label">🏟️ Piste (équivalence)</label><input class="field-input" id="se-piste" placeholder="10×200m piste"></div>`
+    +`<div class="field-group"><label class="field-label">Explication</label><textarea class="field-textarea" id="se-desc" rows="3"></textarea></div>`;
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
 }
 
-function saveSeance(){
-  if(!editingSeanceKey) return;
-  if(editingSeanceKey === '__new__'){
-    const key = (document.getElementById('es-new-key').value||'').trim().replace(/\s+/g,'_');
-    if(!key){ toast('La cl\u00E9 est obligatoire','error'); return; }
-    if(localNiveaux[key]){ toast('Cette cl\u00E9 existe d\u00E9j\u00E0','error'); return; }
-    localNiveaux[key] = {
-      label: document.getElementById('es-label').value.trim(),
-      reps:  [0,1,2].map(i=>document.getElementById('es-reps-'+i).value.trim()),
-      recup: [0,1,2].map(i=>document.getElementById('es-recup-'+i).value.trim()),
-      allure:[0,1,2].map(i=>document.getElementById('es-allure-'+i).value.trim()),
-      notes: document.getElementById('es-notes').value.trim(),
-    };
-  } else {
-    const key = editingSeanceKey;
-    localNiveaux[key].label = document.getElementById('es-label').value.trim();
-    localNiveaux[key].notes = document.getElementById('es-notes').value.trim();
-    for(let i=0;i<3;i++){
-      localNiveaux[key].reps[i]   = document.getElementById('es-reps-'+i).value.trim();
-      localNiveaux[key].recup[i]  = document.getElementById('es-recup-'+i).value.trim();
-      localNiveaux[key].allure[i] = document.getElementById('es-allure-'+i).value.trim();
-    }
-  }
-  editingSeanceKey = null;
-  saveLocal();
-  buildSeancesGrid();
-  closePanel();
-  toast('S\u00E9ance mise \u00E0 jour \u2014 pensez \u00E0 Publier \u2713','success');
+// ══════════════════════════════════════════════════
+// CALENDRIER & INFOS
+// ══════════════════════════════════════════════════
+function buildCalList(){
+  const el = document.getElementById('cal-list');
+  if(!el) return;
+  el.innerHTML = L.calFixed.map((c,i)=>`
+    <div style="display:flex;gap:.6rem;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.75rem;font-weight:600;min-width:90px">${c.date||''}</span>
+      <span style="font-size:.75rem;flex:1">${c.titre||c.title||''}</span>
+      <button class="btn-sm danger" onclick="L.calFixed.splice(${i},1);saveLocal();buildCalList()">✕</button>
+    </div>`).join('');
+}
+function addCalEvent(){
+  const d=document.getElementById('new-cal-date').value, t=document.getElementById('new-cal-titre').value.trim();
+  if(!d||!t){toast('Date et titre requis','error');return;}
+  L.calFixed.push({date:d,titre:t,type:document.getElementById('new-cal-type').value,description:document.getElementById('new-cal-desc').value.trim(),id:'cal_'+Date.now()});
+  saveLocal(); buildCalList(); toast('Sortie ajoutée','success');
+  document.getElementById('new-cal-titre').value=''; document.getElementById('new-cal-desc').value='';
 }
 
-// ════════════════════════════════════════════════
-// CONFIG GITHUB
-// ════════════════════════════════════════════════
+function buildInfosList(){
+  const el = document.getElementById('infos-list');
+  if(!el) return;
+  el.innerHTML = L.infosClub.map((m,i)=>`
+    <div style="display:flex;gap:.6rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.6rem;padding:.15rem .4rem;border-radius:3px;background:${m.type==='urgent'?'rgba(192,64,64,.1)':'rgba(42,93,160,.1)'};color:${m.type==='urgent'?'var(--rouge)':'var(--blue)'};font-weight:700">${m.type}</span>
+      <div style="flex:1"><div style="font-size:.78rem;font-weight:700">${m.titre||''}</div><div style="font-size:.7rem;color:var(--muted)">${m.texte||''}</div></div>
+      <button class="btn-sm danger" onclick="L.infosClub.splice(${i},1);saveLocal();buildInfosList()">✕</button>
+    </div>`).join('');
+}
+function addInfo(){
+  const t=document.getElementById('new-info-titre').value.trim();
+  if(!t){toast('Titre requis','error');return;}
+  L.infosClub.push({id:'msg_'+Date.now(),titre:t,texte:document.getElementById('new-info-texte').value.trim(),type:document.getElementById('new-info-type').value,dateFin:document.getElementById('new-info-fin').value||''});
+  saveLocal(); buildInfosList(); toast('Message ajouté','success');
+  document.getElementById('new-info-titre').value=''; document.getElementById('new-info-texte').value='';
+}
+// ══════════════════════════════════════════════════
+function buildObjList(){
+  const el = document.getElementById('obj-list');
+  if(!el) return;
+  el.innerHTML = L.objectifs.map((o,i)=>`
+    <div style="display:flex;gap:.6rem;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.68rem;font-weight:600;min-width:80px;color:var(--navy)">${o.s?semRange(o.s):''}</span>
+      <span style="font-size:.75rem;min-width:80px;color:var(--muted)">${o.date||''}</span>
+      <span style="font-size:.75rem;flex:1;font-weight:700">${o.nom||''}</span>
+      <span style="font-size:.65rem;text-transform:uppercase;color:var(--blue);min-width:50px">${o.type||''}</span>
+      <button class="btn-sm danger" onclick="L.objectifs.splice(${i},1);saveLocal();buildObjList()">✕</button>
+    </div>`).join('');
+}
+
+function addObj(){
+  const s = parseInt(document.getElementById('new-obj-s').value);
+  const d = document.getElementById('new-obj-date').value;
+  const n = document.getElementById('new-obj-nom').value.trim();
+  if(!s || !d || !n){ toast('Semaine, date et nom requis','error'); return; }
+  L.objectifs.push({s:s, nom:n, date:d, type:document.getElementById('new-obj-type').value});
+  L.objectifs.sort((a,b) => new Date(a.date) - new Date(b.date)); // Trie par date chrono
+  saveLocal(); buildObjList(); toast('Objectif ajouté','success');
+  document.getElementById('new-obj-nom').value='';
+}
+  
+// ══════════════════════════════════════════════════
+// CALCULATEUR ADMIN
+// ══════════════════════════════════════════════════
+function buildCalcAdmin(){
+  const form = document.getElementById('calc-textes-form');
+  if(form){
+    const fields = [['intro','Introduction'],['rpe_titre','Titre RPE'],['rpe_texte','Texte RPE'],['ua_titre','Titre UA'],['ua_texte','Texte UA'],['bloc_titre','Titre Bloc'],['bloc_texte','Texte Bloc']];
+    form.innerHTML = fields.map(([k,l])=>`<div class="field-group"><label class="field-label">${l}</label><textarea class="field-textarea" rows="2" oninput="L.calcTextes['${k}']=this.value;saveLocal()">${L.calcTextes[k]||''}</textarea></div>`).join('');
+  }
+  const sForm = document.getElementById('calc-seuils-form');
+  if(sForm){
+    sForm.innerHTML = L.chargeSeuils.map((s,i)=>`
+      <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.4rem;flex-wrap:wrap">
+        <div style="width:20px;height:20px;border-radius:50%;background:${s.couleur};flex-shrink:0"></div>
+        <input class="field-input" style="width:120px" value="${s.label}" oninput="L.chargeSeuils[${i}].label=this.value;saveLocal()">
+        <span style="font-size:.65rem;color:var(--muted)">UA max</span>
+        <input type="number" class="field-input" style="width:80px" value="${s.max}" oninput="L.chargeSeuils[${i}].max=parseInt(this.value)||0;saveLocal()" ${i===L.chargeSeuils.length-1?'disabled':''}>
+        <input class="field-input" style="flex:1;min-width:150px" value="${s.description||''}" placeholder="Description" oninput="L.chargeSeuils[${i}].description=this.value;saveLocal()">
+      </div>`).join('');
+  }
+}
+
+// ══════════════════════════════════════════════════
+// PANEL SAVE
+// ══════════════════════════════════════════════════
+function closePanel(){
+  document.getElementById('edit-panel').classList.remove('open');
+  document.getElementById('panel-overlay').style.display='none';
+  editMode=null; editKey=null;
+}
+
+function saveItem(){
+  if(editMode==='week'){
+    const idx = L.programme.findIndex(x=>x.s===editKey);
+    if(idx===-1) return;
+    L.programme[idx].m = document.getElementById('pw-m').value;
+    L.programme[idx].j = document.getElementById('pw-j').value;
+    L.programme[idx].wr = document.getElementById('pw-wr').value;
+    L.programme[idx].wt = document.getElementById('pw-wt').value;
+    L.programme[idx].ua = parseInt(document.getElementById('pw-ua').value)||0;
+    L.programme[idx].d = document.getElementById('pw-d').checked?1:0;
+    L.programme[idx].n = document.getElementById('pw-n').value.trim();
+    saveLocal(); buildAdminProg(); closePanel(); toast('Semaine S'+editKey+' mise à jour','success');
+  }
+  else if(editMode==='seance'){
+    const s = L.seances[editKey];
+    s.l = document.getElementById('se-l').value.trim();
+    s.c = document.getElementById('se-c').value.trim();
+    s.rpe = document.getElementById('se-rpe').value.trim();
+    s.rn = parseInt(document.getElementById('se-rn').value)||0;
+    s.ua = parseInt(document.getElementById('se-ua').value)||0;
+    s.halage = document.getElementById('se-halage').value.trim();
+    s.piste = document.getElementById('se-piste').value.trim();
+    s.desc = document.getElementById('se-desc').value.trim();
+    saveLocal(); buildSeancesList(); closePanel(); toast('Séance mise à jour','success');
+  }
+  else if(editMode==='seance-new'){
+    const k = (document.getElementById('se-key').value||'').trim().replace(/\s+/g,'_');
+    if(!k){toast('Clé obligatoire','error');return;}
+    if(L.seances[k]){toast('Clé existante','error');return;}
+    L.seances[k] = {
+      l:document.getElementById('se-l').value.trim(),
+      c:document.getElementById('se-c').value.trim(),
+      rpe:document.getElementById('se-rpe').value.trim(),
+      rn:parseInt(document.getElementById('se-rn').value)||0,
+      ua:parseInt(document.getElementById('se-ua').value)||0,
+      lieu:'halage',
+      halage:document.getElementById('se-halage').value.trim()||'—',
+      piste:document.getElementById('se-piste').value.trim()||'—',
+      desc:document.getElementById('se-desc').value.trim()
+    };
+    saveLocal(); buildSeancesList(); closePanel(); toast('Séance créée','success');
+  }
+}
+
+function resetItem(){
+  if(editMode==='week') resetWeek(editKey);
+  closePanel();
+}
+
+// ══════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════
 function loadConfig(){
   const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
   if(cfg.owner) document.getElementById('cfg-owner').value = cfg.owner;
-  if(cfg.repo)  document.getElementById('cfg-repo').value  = cfg.repo;
+  if(cfg.repo) document.getElementById('cfg-repo').value = cfg.repo;
   if(cfg.token) document.getElementById('cfg-token').value = cfg.token;
 }
-
 function saveConfig(){
-  const cfg = {
-    owner: document.getElementById('cfg-owner').value.trim(),
-    repo:  document.getElementById('cfg-repo').value.trim(),
-    token: document.getElementById('cfg-token').value.trim(),
-  };
-  localStorage.setItem('ab-admin-github', JSON.stringify(cfg));
-  toast('Configuration enregistrée ✓','success');
+  localStorage.setItem('ab-admin-github',JSON.stringify({
+    owner:document.getElementById('cfg-owner').value.trim(),
+    repo:document.getElementById('cfg-repo').value.trim(),
+    token:document.getElementById('cfg-token').value.trim()
+  }));
+  toast('Configuration sauvegardée','success');
 }
 
-async function testConnection(){
-  const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
-  if(!cfg.owner||!cfg.repo||!cfg.token){ toast('Configurez GitHub d\'abord','error'); return; }
-  try {
-    const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}`, {
-      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(r.ok) toast('✓ Connexion GitHub réussie !','success');
-    else toast('Erreur GitHub : '+r.status+' — vérifiez token et dépôt','error');
-  } catch(e){ toast('Erreur réseau : '+e.message,'error'); }
-}
+// ══════════════════════════════════════════════════
+// PUBLISH
+// ══════════════════════════════════════════════════
+function openPublish(){ document.getElementById('pub-overlay').classList.add('open'); }
+function closePub(){ document.getElementById('pub-overlay').classList.remove('open'); document.getElementById('pub-progress').style.display='none'; }
 
-// ════════════════════════════════════════════════
-// PUBLICATION GITHUB
-// ════════════════════════════════════════════════
-function openPublishModal(){
-  const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
-  document.getElementById('gh-steps-config').style.display = (cfg.owner&&cfg.repo&&cfg.token)?'none':'block';
-  document.getElementById('progress-bar').style.display='none';
-  document.getElementById('publish-status').textContent='';
-  document.getElementById('confirm-publish-btn').disabled=false;
-  document.getElementById('gh-modal-overlay').classList.add('open');
-}
-
-function closePublishModal(){
-  document.getElementById('gh-modal-overlay').classList.remove('open');
-}
-
-function setProgress(pct, msg){
-  document.getElementById('progress-bar').style.display='block';
-  document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('publish-status').textContent=msg;
-}
-
-// Génère le contenu de data.js à partir des données locales modifiées
-function generateDataJs(){
-  // On prend le data.js original et on remplace les sections programme et calFixed
-  const progJson = JSON.stringify(localProgramme, null, 2);
-  const calJson  = JSON.stringify(localCalFixed, null, 2);
-
-  // Reconstruct data.js with updated values
-  // We'll fetch the current data.js content and replace the arrays
-  return null; // handled async in doPublish
+function replaceJsConst(src,name,json){
+  const re = new RegExp('(const\\s+'+name+'\\s*=\\s*)([\\s\\S]*?)(;\\s*(?:\\/\\/|const\\s|$))');
+  return src.replace(re, '$1'+json+'$3');
 }
 
 async function doPublish(){
   const cfg = JSON.parse(localStorage.getItem('ab-admin-github')||'{}');
-  if(!cfg.owner||!cfg.repo||!cfg.token){
-    toast('Configurez GitHub dans l\'onglet Configuration','error');
-    closePublishModal();
-    return;
-  }
+  if(!cfg.owner||!cfg.repo||!cfg.token){toast('Configurez GitHub dans Config','error');closePub();return;}
+  document.getElementById('pub-btn').disabled=true;
+  document.getElementById('pub-progress').style.display='block';
+  const bar = document.getElementById('pub-bar'), msg = document.getElementById('pub-msg');
 
-  document.getElementById('confirm-publish-btn').disabled=true;
-
-  try {
-    // Step 1: Get current data.js from GitHub
-    setProgress(15, '📥 Récupération de data.js depuis GitHub...');
+  try{
+    bar.style.width='15%'; msg.textContent='📥 Récupération data.js…';
+    const headers = {'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};
     const fileUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data.js`;
-    const headers = {
-      'Authorization':'token '+cfg.token,
-      'Accept':'application/vnd.github.v3+json',
-      'Content-Type':'application/json'
-    };
-    const getResp = await fetch(fileUrl, {headers});
-    if(!getResp.ok) throw new Error(`Impossible de récupérer data.js (${getResp.status})`);
-    const fileData = await getResp.json();
-    const sha = fileData.sha;
-    let currentContent = atob(fileData.content.replace(/\n/g,''));
+    const r1 = await fetch(fileUrl,{headers});
+    if(!r1.ok) throw new Error('Impossible de récupérer data.js ('+r1.status+')');
+    const fd = await r1.json();
 
-    setProgress(40, '✏️ Application des modifications...');
+    bar.style.width='40%'; msg.textContent='✏️ Application des modifications…';
+    let content = decodeURIComponent(escape(atob(fd.content.replace(/\n/g,''))));
+    content = replaceJsConst(content,'programme',JSON.stringify(L.programme,null,2));
+    content = replaceJsConst(content,'seancesData',JSON.stringify(L.seances,null,2));
+    content = replaceJsConst(content,'calFixed',JSON.stringify(L.calFixed,null,2));
+    content = replaceJsConst(content,'infosClub',JSON.stringify(L.infosClub,null,2));
+    content = replaceJsConst(content,'calculateurTextes',JSON.stringify(L.calcTextes,null,2));
+    content = replaceJsConst(content,'chargeHebdoSeuils',JSON.stringify(L.chargeSeuils,null,2));
+    content = replaceJsConst(content,'objectifs',JSON.stringify(L.objectifs,null,2));
+    // Publish socle config
+    const socleData = getSocleFromUI();
+    content = replaceJsConst(content,'socleConfig',JSON.stringify(socleData,null,2));
 
-    // Replace programme array in data.js
-    currentContent = replaceJsConst(currentContent, 'programme', JSON.stringify(localProgramme, null, 2));
-    // Replace calFixed array in data.js
-    currentContent = replaceJsConst(currentContent, 'calFixed', JSON.stringify(localCalFixed, null, 2));
-    // Replace niveauxData in data.js
-    currentContent = replaceJsConst(currentContent, 'niveauxData', JSON.stringify(localNiveaux, null, 2));
-
-    setProgress(65, '📤 Envoi vers GitHub...');
-
-    // Step 2: Push updated data.js
+    bar.style.width='65%'; msg.textContent='📤 Envoi vers GitHub…';
     const now = new Date().toLocaleString('fr-FR');
-    const pushResp = await fetch(fileUrl, {
-      method:'PUT',
-      headers,
-      body: JSON.stringify({
-        message: `[Admin] Mise à jour programme & calendrier — ${now}`,
-        content: btoa(unescape(encodeURIComponent(currentContent))),
-        sha: sha
-      })
-    });
+    const r2 = await fetch(fileUrl,{method:'PUT',headers,body:JSON.stringify({message:`[Admin] MAJ — ${now}`,content:btoa(unescape(encodeURIComponent(content))),sha:fd.sha})});
+    if(!r2.ok) throw new Error((await r2.json()).message||r2.status);
 
-    if(!pushResp.ok){
-      const err = await pushResp.json();
-      throw new Error(err.message || pushResp.status);
-    }
-
-    // Mise à jour de index.html pour casser le cache de data.js
-    setProgress(85, '\uD83D\uDD04 Mise \u00E0 jour du cache...');
-    try {
+    bar.style.width='85%'; msg.textContent='🔄 Cache busting…';
+    try{
       const idxUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/index.html`;
-      const idxGet = await fetch(idxUrl, {headers});
-      if(idxGet.ok){
-        const idxData = await idxGet.json();
-        let idxContent = decodeURIComponent(escape(atob(idxData.content.replace(/\n/g,''))));
-        idxContent = idxContent.replace(/data\.js\?v=\d+/, 'data.js?v='+Date.now());
-        await fetch(idxUrl, {method:'PUT', headers, body: JSON.stringify({
-          message: '[Admin] Cache bust',
-          content: btoa(unescape(encodeURIComponent(idxContent))),
-          sha: idxData.sha,
-        })});
+      const r3 = await fetch(idxUrl,{headers});
+      if(r3.ok){
+        const id = await r3.json();
+        let ic = decodeURIComponent(escape(atob(id.content.replace(/\n/g,''))));
+        ic = ic.replace(/data\.js\?v=\d+/,'data.js?v='+Date.now()).replace(/data\.js(?!\?)/,'data.js?v='+Date.now());
+        await fetch(idxUrl,{method:'PUT',headers,body:JSON.stringify({message:`[Admin] cache bust — ${now}`,content:btoa(unescape(encodeURIComponent(ic))),sha:id.sha})});
       }
-    } catch(e){ console.warn('Cache bust failed:', e); }
+    }catch(e){}
 
-    setProgress(100, '\u2705 Publi\u00E9 avec succ\u00E8s ! Le site sera mis \u00E0 jour dans 1-2 minutes.');
-
-    // Clear pending
-    localStorage.removeItem('ab-admin-pending');
-    pendingChanges = false;
-    localProgramme = JSON.parse(JSON.stringify(localProgramme));
-    localCalFixed  = JSON.parse(JSON.stringify(localCalFixed));
-    localNiveaux   = JSON.parse(JSON.stringify(localNiveaux));
-    updateStatusBar();
-    buildProgTable();
-    buildCalList();
-    if(document.getElementById('tab-seances').classList.contains('active')) buildSeancesGrid();
-
-    setTimeout(closePublishModal, 3000);
-
-  } catch(e){
-    setProgress(0, '');
-    document.getElementById('publish-status').textContent = '❌ Erreur : '+e.message;
-    document.getElementById('publish-status').style.color='var(--rouge)';
-    document.getElementById('confirm-publish-btn').disabled=false;
-    console.error(e);
+    bar.style.width='100%'; msg.textContent='✅ Publié avec succès !';
+    toast('Publication réussie','success');
+    setTimeout(closePub,2000);
+  }catch(e){
+    msg.textContent='❌ Erreur : '+e.message;
+    toast('Erreur : '+e.message,'error');
   }
+  document.getElementById('pub-btn').disabled=false;
 }
 
-// Replace a JS const array/object in source text
-function replaceJsConst(source, name, newValue){
-  // Find "const name = " then find the matching bracket
-  const marker = `const ${name} = `;
-  const startIdx = source.indexOf(marker);
-  if(startIdx === -1) return source;
-  const valueStart = startIdx + marker.length;
-  const openCh = source[valueStart];
-  const closeCh = openCh === '[' ? ']' : '}';
-  let depth = 0, i = valueStart;
-  while(i < source.length){
-    if(source[i]===openCh) depth++;
-    else if(source[i]===closeCh){ depth--; if(depth===0){i++;break;} }
-    i++;
-  }
-  // Skip semicolon
-  if(source[i]===';') i++;
-  return source.slice(0, startIdx) + marker + newValue + ';\n' + source.slice(i);
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+function initApp(){
+  getLocal(); loadSocle(); buildAdminProg(); loadConfig(); updateStatus();
 }
-
-// ════════════════════════════════════════════════
-// TOAST
-// ════════════════════════════════════════════════
-let toastTimer;
-function toast(msg, type='success'){
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show '+type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.className='', 3500);
-}
+if(localStorage.getItem('ab-auth')==='1') initApp();
 </script>
 </body>
 </html>
