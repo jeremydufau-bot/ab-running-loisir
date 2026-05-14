@@ -566,9 +566,56 @@ function fosterACWR(){
 }
 
 // ══════════════════════════════════════════════════
-// INIT — auto-render based on which page is loaded
+// LOADER
 // ══════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', function(){
+function showLoader(){
+  let el = document.getElementById('page-loader');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'page-loader';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(242,245,250,.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Lora,serif;font-size:.85rem;color:#1B3A6B;gap:.6rem';
+    el.innerHTML = '<div style="width:22px;height:22px;border:3px solid #7BC3E5;border-top-color:#1B3A6B;border-radius:50%;animation:spin .7s linear infinite"></div> Chargement…';
+    if(!document.getElementById('spin-style')){
+      const s = document.createElement('style');
+      s.id='spin-style';
+      s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+      document.head.appendChild(s);
+    }
+    document.body.appendChild(el);
+  }
+  el.style.display = 'flex';
+}
+function hideLoader(){
+  const el = document.getElementById('page-loader');
+  if(el) el.style.display = 'none';
+}
+
+// ══════════════════════════════════════════════════
+// INIT — chargement Firebase puis rendu
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async function(){
+  const needsFirebase = document.getElementById('infosClubZone') ||
+                        document.getElementById('acc-grid')       ||
+                        document.getElementById('progBody');
+
+  if(needsFirebase && typeof fbLoadPageData !== 'undefined'){
+    showLoader();
+    try {
+      const data = await fbLoadPageData(
+        ['programme','seances','socle','infosClub','objectifs']
+      );
+      if(data.programme) programme   = data.programme;
+      if(data.seances)   seancesData = data.seances;
+      if(data.socle)     socleConfig = data.socle;
+      if(data.infosClub) infosClub   = data.infosClub;
+      if(data.objectifs) objectifs   = data.objectifs;
+    } catch(e){
+      console.error('Erreur chargement Firebase:', e);
+    } finally {
+      hideLoader();
+    }
+  }
+
   if(document.getElementById('infosClubZone')) renderInfosClub();
   if(document.getElementById('acc-grid')) renderAccueil();
   if(document.getElementById('progBody')) buildProg();
