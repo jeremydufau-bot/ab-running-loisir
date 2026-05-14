@@ -1,6 +1,5 @@
-// l=label c=cat rpe=display rn=numeric ua=charge(Foster) lieu=terrain
-// halage=description halage piste=equivalence piste desc=explication
-const seancesData = {
+// seances-default : assignation sans déclaration, data.js déclare déjà seancesData
+seancesData = {
   "S001": {
     "l": "2\u00d7(8\u00d730\"/30\") R3'",
     "c": "VMA Courte",

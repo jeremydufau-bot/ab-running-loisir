@@ -3,7 +3,73 @@
 // calFixed, socleConfig) sont stockées dans Firebase Firestore.
 
 // ── Variables globales (remplies par Firebase + main.js) ──
-let programme = [];
+let programme = [
+  // ── REPRISE (S1–S4, sep. 2026) ──────────────────
+  {s:1,  p:'Reprise',          m:'S107',                j:'S043',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:2,  p:'Reprise',          m:'S108',                j:'S046',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:3,  p:'Reprise',          m:'S011',                j:'S043',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:4,  p:'Reprise',          m:'S107',                j:'S046',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── BASE ROUTE (S5–S8, oct. 2026) ───────────────
+  {s:5,  p:'Base route',       m:'S101',                j:'S020',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:6,  p:'Base route',       m:'S102',                j:'S021',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:7,  p:'Base route',       m:'S011',                j:'S116',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:8,  p:'Base route',       m:'S108',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── BASE (S9–S16, oct.–déc. 2026) ───────────────
+  {s:9,  p:'Base',             m:'S012',                j:'S117',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:10, p:'Base',             m:'S005',                j:'S021',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:11, p:'Base',             m:'S014',                j:'S134',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:12, p:'Base',             m:'S102',                j:'S116',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  {s:13, p:'Base',             m:'S001',                j:'S135',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:14, p:'Base',             m:'S012',                j:'S022',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:15, p:'Base',             m:'S002',                j:'S023',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:16, p:'Base',             m:'S101',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── TRÊVE NOËL (S17, déc. 2026) ─────────────────
+  {s:17, p:'Trêve Noël',       m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true, n:'Trêve de Noël — entraînement libre'},
+  // ── BASE (S18–S20, jan. 2027) ────────────────────
+  {s:18, p:'Base',             m:'S011',                j:'S020',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:19, p:'Base',             m:'S002',                j:'S117',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:20, p:'Base',             m:'S001',                j:'S023',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // ── BLOC CROSS (S21–S24, jan.–fév. 2027) ────────
+  {s:21, p:'Bloc cross',       m:'S044',                j:'S047',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:22, p:'Bloc cross',       m:'S045',                j:'S048',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:23, p:'Bloc cross',       m:'S137',                j:'S049',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:24, p:'Bloc cross',       m:'S043',                j:'S046',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── SPÉCIFIQUE (S25–S32, fév.–avr. 2027) ────────
+  {s:25, p:'Spécifique',       m:'S001',                j:'S035',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:26, p:'Spécifique',       m:'S003',                j:'S036',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:27, p:'Spécifique',       m:'P13',                 j:'S038',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:28, p:'Spécifique',       m:'S001',                j:'S034',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  {s:29, p:'Spécifique',       m:'S008',                j:'S039',             wr:'allure_marathon', wt:'sortie_longue'},
+  {s:30, p:'Spécifique',       m:'S026',                j:'S040',             wr:'allure_marathon', wt:'sortie_longue'},
+  {s:31, p:'Spécifique',       m:'S013',                j:'S036',             wr:'allure_marathon', wt:'sortie_longue'},
+  {s:32, p:'Spécifique',       m:'S005',                j:'S029',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── AFFÛTAGE (S33–S34, avr. 2027) ───────────────
+  {s:33, p:'Affûtage',         m:'S002',                j:'S041',             wr:'allure_marathon', wt:'sortie_longue'},
+  {s:34, p:'Affûtage',         m:'vitesse_5x100_veille',j:'S034',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── COMPÉTITION (S35–S40, avr.–mai 2027) ────────
+  {s:35, p:'Compétition',      m:'S005',                j:'S041',             wr:'S039',            wt:'sortie_longue'},
+  {s:36, p:'Compétition',      m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'—',               wt:'—',             d:true, n:'Course le weekend'},
+  {s:37, p:'Compétition',      m:'S012',                j:'S029',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:38, p:'Compétition',      m:'S107',                j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  {s:39, p:'Compétition',      m:'S005',                j:'S034',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:40, p:'Compétition',      m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'—',               wt:'—',             d:true, n:'Course le weekend'},
+  // ── DÉVELOPPEMENT (S41–S44, mai–juin 2027) ───────
+  {s:41, p:'Développement',    m:'S001',                j:'S135',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:42, p:'Développement',    m:'S002',                j:'S033',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:43, p:'Développement',    m:'S047',                j:'S035',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:44, p:'Développement',    m:'S011',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── SPÉCIFIQUE TRAIL (S45–S48, juin–juil. 2027) ──
+  {s:45, p:'Spécifique trail', m:'S050',                j:'circuit_douves',   wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:46, p:'Spécifique trail', m:'S049',                j:'fartlek_pyramid_girouettes', wr:'sortie_longue', wt:'sortie_longue'},
+  {s:47, p:'Spécifique trail', m:'S045',                j:'S050',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:48, p:'Spécifique trail', m:'S043',                j:'circuit_douves',   wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── AFFÛTAGE TRAIL (S49–S50, juil. 2027) ─────────
+  {s:49, p:'Affûtage',         m:'S044',                j:'cote_1min30',      wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:50, p:'Affûtage',         m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── COUPURE (S51–S52, août 2027) ────────────────
+  {s:51, p:'Coupure',          m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  {s:52, p:'Coupure',          m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+];
 let seancesData = {};
 let socleConfig = { lundi:{dur:60,rpe:4}, mercredi:{dur:50,rpe:3}, weRoute:{dur:60,rpe:4}, weTrail:{dur:90,rpe:4} };
 let infosClub = [];

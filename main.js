@@ -604,11 +604,11 @@ document.addEventListener('DOMContentLoaded', async function(){
       const data = await fbLoadPageData(
         ['programme','seances','socle','infosClub','objectifs']
       );
-      if(data.programme) programme   = data.programme;
-      if(data.seances)   seancesData = data.seances;
-      if(data.socle)     socleConfig = data.socle;
-      if(data.infosClub) infosClub   = data.infosClub;
-      if(data.objectifs) objectifs   = data.objectifs;
+      if(data.programme && data.programme.length)               programme   = data.programme;
+      if(data.seances   && Object.keys(data.seances).length)   seancesData = data.seances;
+      if(data.socle)                                            socleConfig = data.socle;
+      if(data.infosClub && data.infosClub.length)              infosClub   = data.infosClub;
+      if(data.objectifs && data.objectifs.length)              objectifs   = data.objectifs;
     } catch(e){
       console.error('Erreur chargement Firebase:', e);
     } finally {
