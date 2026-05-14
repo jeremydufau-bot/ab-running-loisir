@@ -89,6 +89,11 @@ let chargeHebdoSeuils = [];
 // ── Config statique terrains et phases ──
 
 const terrainLabel = {
+  // Catégories génériques v3
+  Route:{icon:'🛣️',label:'Route',cls:'tag-sky'},
+  Piste:{icon:'🏟️',label:'Piste',cls:'tag-blue'},
+  Trail:{icon:'🌲',label:'Trail',cls:'tag-green'},
+  // Terrains spécifiques v2 (fallback)
   halage:{icon:'🏞️',label:'Halage',cls:'tag-sky'},
   stades:{icon:'🏟️',label:'Stade / Piste',cls:'tag-blue'},
   intramuros:{icon:'🏘️',label:'Intra-muros',cls:'tag-blue'},

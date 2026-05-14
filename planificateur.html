@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AB Running - Admin Séances</title>
+    <style>
+        :root { --primary: #e63946; --secondary: #1d3557; --accent: #457b9d; --bg: #f4f7f6; --fb-orange: #FFA000; --rest-color: #2a9d8f; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .info-card { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e0e0e0; }
+        .header-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+        
+        .serie-block { background: #e9ecef; border: 2px solid var(--secondary); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .serie-header { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; background: #dee2e6; padding: 10px; border-radius: 6px; }
+        
+        .rest-block { background: #e8f5f3; border: 2px dashed var(--rest-color); border-radius: 10px; padding: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
+        
+        .step-row { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 1fr 0.4fr; gap: 10px; background: white; padding: 12px; border-radius: 6px; margin-bottom: 8px; border-left: 5px solid var(--accent); align-items: center; }
+        
+        .stats-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; padding: 20px; background: var(--secondary); color: white; border-radius: 12px; }
+        .stat-value { font-size: 1.6em; font-weight: bold; color: #a8dadc; display: block; }
+
+        button { cursor: pointer; border: none; border-radius: 6px; padding: 10px 15px; font-weight: bold; transition: 0.3s; }
+        .btn-add-serie { background: var(--secondary); color: white; }
+        .btn-add-rest { background: var(--rest-color); color: white; }
+        .btn-save { background: var(--fb-orange); color: white; width: 100%; margin-top: 20px; font-size: 1.2em; text-transform: uppercase; }
+        .btn-save:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-remove { background: #ff4d4d; color: white; padding: 5px 10px; }
+        
+        input, select, textarea { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; box-sizing: border-box; }
+        label { font-weight: bold; font-size: 0.75em; color: #555; text-transform: uppercase; display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚀 Créer une séance (AB Running)</h1>
+
+    <div class="info-card">
+        <div class="header-grid">
+            <div><label>Titre de la séance</label><input type="text" id="title" placeholder="ex: 2x(8x30/30) R3'"></div>
+            <div><label>Catégorie</label>
+                <select id="category">
+                    <option>VMA Courte</option>
+                    <option>VMA Longue</option>
+                    <option>Seuil</option>
+                    <option>Allure Marathon</option>
+                    <option>Allure Spécifique</option>
+                    <option>Côtes</option>
+                    <option>Puissance Montée</option>
+                    <option>Technique Descente</option>
+                    <option>Spécificité Trail</option>
+                    <option>Volume Endurance</option>
+                    <option>Récupération</option>
+                    <option>Mixte</option>
+                    <option>Activation</option>
+                </select>
+            </div>
+            <div><label>Terrain</label>
+                <select id="terrain">
+                    <option value="Route">Route</option>
+                    <option value="Piste">Piste</option>
+                    <option value="Trail">Trail</option>
+                </select>
+            </div>
+        </div>
+        <textarea id="description" rows="2" placeholder="Consignes pour les licenciés..."></textarea>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 15px; margin-bottom: 20px; background: #fff3f3; padding: 15px; border-radius: 8px;">
+        <div><label>Échauffement (sec)</label><input type="number" id="warmupSec" value="1200" oninput="calculateAll()"></div>
+        <div><label>Retour calme (sec)</label><input type="number" id="cooldownSec" value="600" oninput="calculateAll()"></div>
+        <div>
+            <label>RPE Global (Foster): <span id="rpe-display" style="color:var(--primary)">7</span>/10</label>
+            <input type="range" id="rpeGlobal" min="1" max="10" value="7" oninput="document.getElementById('rpe-display').innerText=this.value; calculateAll()">
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <button class="btn-add-serie" onclick="addSerie()">+ Ajouter Bloc Travail</button>
+        <button class="btn-add-rest" onclick="addRestBlock()">+ Ajouter Repos Inter-Blocs</button>
+    </div>
+
+    <div id="main-container"></div>
+
+    <div class="stats-box">
+        <div style="text-align:center"><span>DURÉE TOTALE</span><span id="totalDuration" class="stat-value">0</span> min</div>
+        <div style="text-align:center"><span>DISTANCE EST.</span><span id="totalDistance" class="stat-value">0</span> km</div>
+        <div style="text-align:center"><span>CHARGE (UA)</span><span id="totalUA" class="stat-value">0</span></div>
+    </div>
+
+    <button id="btnSave" class="btn-save" onclick="saveWorkout()">Enregistrer dans Firebase</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBmKsHSsdBWIVjdO050VKUIWWT3-AG6l_U",
+        authDomain: "ab-running-e8c95.firebaseapp.com",
+        projectId: "ab-running-e8c95",
+        storageBucket: "ab-running-e8c95.firebasestorage.app",
+        messagingSenderId: "452828499029",
+        appId: "1:452828499029:web:61f0a592ccb3315fa398dc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.saveWorkout = async function() {
+        const btn = document.getElementById('btnSave');
+        const title = document.getElementById('title').value;
+        if(!title) return alert("Donne un titre à la séance !");
+
+        btn.disabled = true;
+        btn.innerText = "Enregistrement...";
+
+        const workout = {
+            title: title,
+            category: document.getElementById('category').value,
+            terrain: document.getElementById('terrain').value,
+            description: document.getElementById('description').value,
+            warmupSec: parseInt(document.getElementById('warmupSec').value),
+            cooldownSec: parseInt(document.getElementById('cooldownSec').value),
+            rpe_foster: parseInt(document.getElementById('rpeGlobal').value),
+            totalDuration: parseInt(document.getElementById('totalDuration').innerText),
+            totalDistance: parseFloat(document.getElementById('totalDistance').innerText),
+            totalUA: parseInt(document.getElementById('totalUA').innerText),
+            createdAt: new Date().toISOString(),
+            series: []
+        };
+
+        document.querySelectorAll('.item-to-export').forEach(item => {
+            if(item.dataset.type === 'work') {
+                const steps = [];
+                item.querySelectorAll('.step-row').forEach(s => steps.push({
+                    stepReps: parseInt(s.querySelector('.step-reps').value),
+                    value: parseFloat(s.querySelector('.value').value),
+                    unit: s.querySelector('.unit').value,
+                    rest: parseInt(s.querySelector('.rest').value)
+                }));
+                workout.series.push({
+                    type: "work",
+                    serieReps: parseInt(item.querySelector('.serieReps').value),
+                    interSerieRest: parseInt(item.querySelector('.interSerieRest').value),
+                    innerReps: parseInt(item.querySelector('.innerReps').value),
+                    steps: steps
+                });
+            } else {
+                workout.series.push({
+                    type: "rest_block",
+                    value: parseInt(item.querySelector('.rest-val').value)
+                });
+            }
+        });
+
+        try {
+            const docRef = await addDoc(collection(db, "workouts"), workout);
+            alert("Séance enregistrée avec succès !");
+            location.reload(); 
+        } catch (e) {
+            console.error("Erreur Firebase:", e);
+            alert("Erreur lors de l'enregistrement.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Enregistrer dans Firebase";
+        }
+    };
+</script>
+
+<script>
+    // Logique de calcul (Speed base 4:00/km)
+    const SPEED_MS = 4.166;
+
+    function addSerie() {
+        const id = Date.now();
+        const html = `
+            <div class="serie-block item-to-export" data-type="work" id="item-${id}">
+                <div class="serie-header">
+                    <div style="width: 80px;"><label>Nb Séries</label><input type="number" class="serieReps" value="1" oninput="calculateAll()"></div>
+                    <div style="width: 130px;"><label>Repos Inter</label><input type="number" class="interSerieRest" value="180" oninput="calculateAll()"></div>
+                    <div style="flex-grow: 1;"><label>Répét. Internes</label><input type="number" class="innerReps" value="10" oninput="calculateAll()"></div>
+                    <button class="btn-remove" onclick="document.getElementById('item-${id}').remove(); calculateAll()">✕</button>
+                </div>
+                <div class="steps-list"></div>
+                <button onclick="addStepToSerie(${id})" style="background:var(--accent); color:white; font-size:0.7em;">+ Ajouter Segment</button>
+            </div>
+        `;
+        document.getElementById('main-container').insertAdjacentHTML('beforeend', html);
+        addStepToSerie(id);
+    }
+
+    function addRestBlock() {
+        const id = Date.now();
+        const html = `
+            <div class="rest-block item-to-export" data-type="rest" id="item-${id}">
+                <div style="font-weight:bold; color:var(--rest-color);">☕ REPOS INTER-BLOCS :</div>
+                <div style="width: 120px;"><input type="number" class="rest-val" value="300" oninput="calculateAll()"></div>
+                <span>secondes</span>
+                <button class="btn-remove" style="margin-left:auto" onclick="document.getElementById('item-${id}').remove(); calculateAll()">✕</button>
+            </div>
+        `;
+        document.getElementById('main-container').insertAdjacentHTML('beforeend', html);
+        calculateAll();
+    }
+
+    function addStepToSerie(serieId) {
+        const list = document.getElementById(`item-${serieId}`).querySelector('.steps-list');
+        const stepHtml = `
+            <div class="step-row">
+                <div><label>Nb</label><input type="number" class="step-reps" value="1" oninput="calculateAll()"></div>
+                <div><label>Effort</label><input type="number" class="value" value="30" oninput="calculateAll()"></div>
+                <div><label>Unité</label><select class="unit" onchange="calculateAll()"><option value="s">sec (")</option><option value="min">min (')</option><option value="m">m</option><option value="km">km</option></select></div>
+                <div><label>Récup (sec)</label><input type="number" class="rest" value="30" oninput="calculateAll()"></div>
+                <button style="background:none; color:red;" onclick="this.parentElement.remove(); calculateAll()">✕</button>
+            </div>
+        `;
+        list.insertAdjacentHTML('beforeend', stepHtml);
+        calculateAll();
+    }
+
+    function calculateAll() {
+        let warmupS = parseFloat(document.getElementById('warmupSec').value) || 0;
+        let cooldownS = parseFloat(document.getElementById('cooldownSec').value) || 0;
+        let rpe = parseInt(document.getElementById('rpeGlobal').value);
+        let totalS = warmupS + cooldownS;
+        let totalM = (warmupS + cooldownS) * 2.77;
+
+        document.querySelectorAll('.item-to-export').forEach(item => {
+            if(item.dataset.type === 'work') {
+                let sReps = parseFloat(item.querySelector('.serieReps').value) || 1;
+                let iReps = parseFloat(item.querySelector('.innerReps').value) || 1;
+                let sRest = parseFloat(item.querySelector('.interSerieRest').value) || 0;
+                let serieS = 0; let serieM = 0;
+                item.querySelectorAll('.step-row').forEach(step => {
+                    let n = parseFloat(step.querySelector('.step-reps').value) || 1;
+                    let val = parseFloat(step.querySelector('.value').value) || 0;
+                    const u = step.querySelector('.unit').value;
+                    let s, m;
+                    if      (u === 's')   { s = val;                    m = val * SPEED_MS; }
+                    else if (u === 'min') { s = val * 60;               m = val * 60 * SPEED_MS; }
+                    else if (u === 'm')   { s = val / SPEED_MS;         m = val; }
+                    else if (u === 'km')  { s = val * 1000 / SPEED_MS;  m = val * 1000; }
+                    else                  { s = val;                    m = val * SPEED_MS; }
+                    serieS += (s + parseFloat(step.querySelector('.rest').value || 0)) * n;
+                    serieM += m * n;
+                });
+                totalS += ((serieS * iReps) * sReps) + (sRest * (sReps - 1));
+                totalM += (serieM * iReps) * sReps;
+            } else {
+                totalS += parseFloat(item.querySelector('.rest-val').value) || 0;
+            }
+        });
+        let durMin = totalS / 60;
+        document.getElementById('totalDuration').innerText = Math.round(durMin);
+        document.getElementById('totalDistance').innerText = (totalM / 1000).toFixed(2);
+        document.getElementById('totalUA').innerText = Math.round(durMin * rpe);
+    }
+    window.onload = addSerie;
+</script>
+</body>
+</html>

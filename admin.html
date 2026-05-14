@@ -111,6 +111,22 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 #pub-overlay{display:none;position:fixed;inset:0;background:rgba(20,35,70,.6);z-index:250;align-items:center;justify-content:center}
 #pub-overlay.open{display:flex}
 .pub-box{background:var(--surface);border-radius:14px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+
+/* Planificateur */
+#tab-planner .planner-grid{display:grid;grid-template-columns:360px 1fr;gap:1rem;align-items:start}
+#tab-planner .pl-panel{border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
+#tab-planner .pl-panel-hdr{padding:.55rem .9rem;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+#tab-planner .pl-form-hdr{padding:.6rem .9rem;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center}
+#tab-planner .pl-form-body{padding:.9rem;overflow-y:auto;max-height:calc(100vh - 180px)}
+.pl-serie-block{background:rgba(27,58,107,.04);border:1.5px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.5rem}
+.pl-rest-block{background:rgba(74,138,90,.06);border:1.5px dashed rgba(74,138,90,.4);border-radius:8px;padding:.5rem .7rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.pl-step-row{display:grid;grid-template-columns:.55fr 1fr 1fr .9fr .3fr;gap:.35rem;background:var(--surface2);padding:.35rem .45rem;border-radius:5px;margin-bottom:.3rem;border-left:3px solid var(--light);align-items:end}
+.pl-stat-box{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;background:var(--navy);color:#fff;padding:.7rem 1rem;border-radius:8px;margin:.7rem 0;text-align:center}
+.pl-stat-val{font-size:1.3rem;font-weight:700;color:#a8dadc}
+.pl-list-item{display:flex;align-items:center;gap:.4rem;padding:.35rem .5rem;border-radius:6px;border-bottom:1px solid var(--border);font-size:.75rem}
+.pl-list-item:hover{background:rgba(42,93,160,.05)}
+.pl-list-item.active-edit{background:rgba(42,93,160,.1);border-color:var(--blue)}
+@media(max-width:820px){#tab-planner .planner-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -142,7 +158,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 
   <div class="tabs">
     <button class="tab active" onclick="showTab('tab-prog',this)">📅 Programme</button>
-    <button class="tab" onclick="showTab('tab-seances',this)">📋 Séances</button>
+    <button class="tab" onclick="showTab('tab-planner',this)">📋 Séances</button>
     <button class="tab" onclick="showTab('tab-cal',this)">🗓 Calendrier</button>
     <button class="tab" onclick="showTab('tab-infos',this)">📢 Infos Club</button>
     <button class="tab" onclick="showTab('tab-calc',this)">📊 Calculateur</button>
@@ -271,16 +287,6 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
     </div>
   </div>
 
-  <!-- TAB SÉANCES -->
-  <div class="admin-page" id="tab-seances">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h2 style="font-size:1rem;color:var(--navy)">Bibliothèque des séances</h2>
-      <button class="btn-sm" onclick="openNewSeance()">＋ Nouvelle séance</button>
-    </div>
-    <input class="field-input" id="seance-search" placeholder="Rechercher par clé ou nom…" oninput="filterSeances()" style="margin-bottom:.8rem;max-width:400px">
-    <div id="seances-list"></div>
-  </div>
-
   <!-- TAB CALENDRIER -->
   <div class="admin-page" id="tab-cal">
     <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Calendrier des sorties</h2>
@@ -373,6 +379,27 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
         <div style="font-size:.75rem;color:var(--muted)">Projet : <strong>ab-running-e8c95</strong></div>
         <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Les modifications sont sauvegardées directement sur Firestore.</div>
       </div>
+      <div style="background:rgba(27,58,107,.05);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem">
+        <div style="font-size:.72rem;font-weight:700;color:var(--navy);margin-bottom:.4rem">Import — Collection <code>seances_v3</code></div>
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.7rem">Alimente la collection Firestore <strong>seances_v3</strong> depuis le fichier <code>ab_running_workouts.json</code> (207 séances). Chaque document utilise <code>id_original</code> comme identifiant.</div>
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <button class="btn-sm" id="btn-import-v3" onclick="doImportSeancesV3()">📤 Importer seances_v3</button>
+          <span id="import-v3-status" style="font-size:.72rem;color:var(--muted)"></span>
+        </div>
+        <div id="import-v3-progress" style="margin-top:.6rem;display:none">
+          <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div id="import-v3-bar" style="height:100%;background:var(--navy);width:0;transition:width .3s"></div></div>
+          <div id="import-v3-msg" style="font-size:.7rem;color:var(--muted);margin-top:.3rem"></div>
+        </div>
+      </div>
+
+      <div style="background:rgba(42,93,160,.06);border:1px solid rgba(42,93,160,.25);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem">
+        <div style="font-size:.72rem;font-weight:700;color:var(--navy);margin-bottom:.3rem">📅 Programme 2026-2027 — Pré-construit</div>
+        <div style="font-size:.74rem;color:var(--muted);margin-bottom:.7rem">52 semaines · 13 blocs Foster (3 sem. progressif + 1 décharge) · saisonnalité route &amp; trail · 8 semaines montagne · bibliothèque séances_v3.</div>
+        <div style="font-size:.72rem;color:var(--rouge);background:rgba(192,64,64,.07);border:1px solid rgba(192,64,64,.15);border-radius:5px;padding:.4rem .6rem;margin-bottom:.7rem">⚠️ Remplace intégralement le programme actuel.</div>
+        <button class="btn-sm" style="background:var(--navy);color:#fff;border-color:var(--navy)" onclick="doLoadPrebuiltProgramme()">📅 Charger le programme 2026-2027</button>
+        <span id="prebuilt-prog-status" style="font-size:.7rem;color:var(--muted);margin-left:.5rem"></span>
+      </div>
+
       <div id="migration-box" style="background:rgba(212,137,58,.06);border:1px solid rgba(212,137,58,.3);border-radius:10px;padding:1rem 1.2rem;display:none">
         <div style="font-size:.72rem;font-weight:700;color:var(--ocre);margin-bottom:.4rem">📦 Migration depuis sauvegarde locale</div>
         <div style="font-size:.75rem;color:var(--muted);margin-bottom:.7rem" id="migration-info">Une sauvegarde locale a été détectée dans votre navigateur. Cliquez pour migrer ces données vers Firestore.</div>
@@ -383,6 +410,134 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
         <div id="migration-progress" style="margin-top:.5rem;font-size:.72rem;color:var(--muted);display:none"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- TAB PLANIFICATEUR -->
+<div class="admin-page" id="tab-planner">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h2 style="font-size:1rem;color:var(--navy)">Planificateur — <code style="font-size:.8rem;color:var(--blue)">seances_v3</code></h2>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn-sm" onclick="plannerLoadList()">↻ Actualiser</button>
+      <button class="topbar-btn" style="font-size:.72rem;background:var(--blue);border-color:var(--blue)" onclick="plannerNewSeance()">+ Nouvelle séance</button>
+    </div>
+  </div>
+
+  <div class="planner-grid">
+
+    <!-- LISTE -->
+    <div class="pl-panel">
+      <div class="pl-panel-hdr">
+        <span style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy)">Séances</span>
+        <span id="planner-list-count" style="font-size:.6rem;color:var(--muted)"></span>
+      </div>
+      <div style="padding:.4rem .5rem;border-bottom:1px solid var(--border);display:flex;gap:.35rem">
+        <input class="field-input" id="planner-search" placeholder="Rechercher…" style="font-size:.72rem" oninput="plannerRenderList()">
+        <select class="field-select" id="planner-cat-filter" style="font-size:.72rem;width:auto;min-width:110px" onchange="plannerRenderList()">
+          <option value="">Toutes</option>
+          <option>VMA Courte</option>
+          <option>VMA Longue</option>
+          <option>Seuil</option>
+          <option>Allure Marathon</option>
+          <option>Allure Spécifique</option>
+          <option>Côtes</option>
+          <option>Puissance Montée</option>
+          <option>Technique Descente</option>
+          <option>Spécificité Trail</option>
+          <option>Volume Endurance</option>
+          <option>Récupération</option>
+          <option>Mixte</option>
+          <option>Activation</option>
+        </select>
+      </div>
+      <div id="planner-list-inner" style="max-height:65vh;overflow-y:auto;padding:.3rem .4rem">
+        <div style="color:var(--muted);font-size:.74rem;padding:.5rem">Cliquez sur Actualiser pour charger les séances.</div>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE -->
+    <div class="pl-panel" id="planner-form-panel" style="display:none">
+      <div class="pl-form-hdr">
+        <span id="planner-form-title" style="font-size:.85rem;font-weight:700">Nouvelle séance</span>
+        <button style="background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:1.1rem;line-height:1" onclick="plannerCloseForm()">✕</button>
+      </div>
+      <div class="pl-form-body">
+
+        <!-- ID / Titre / Catégorie / Terrain -->
+        <div style="display:grid;grid-template-columns:110px 1fr 130px 110px;gap:.5rem;margin-bottom:.6rem">
+          <div class="field-group">
+            <span class="field-label">ID <small style="font-weight:400;text-transform:none;color:var(--muted)">(doc key)</small></span>
+            <input class="field-input" id="planner-id" placeholder="S208">
+          </div>
+          <div class="field-group">
+            <span class="field-label">Titre</span>
+            <input class="field-input" id="planner-title" placeholder="2×(8×30″/30″) R3′">
+          </div>
+          <div class="field-group">
+            <span class="field-label">Catégorie</span>
+            <select class="field-select" id="planner-category">
+              <option>VMA Courte</option><option>VMA Longue</option><option>Seuil</option>
+              <option>Allure Marathon</option><option>Allure Spécifique</option><option>Côtes</option>
+              <option>Puissance Montée</option><option>Technique Descente</option><option>Spécificité Trail</option>
+              <option>Volume Endurance</option><option>Récupération</option><option>Mixte</option><option>Activation</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <span class="field-label">Terrain</span>
+            <select class="field-select" id="planner-terrain">
+              <option>Route</option><option>Piste</option><option>Trail</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="field-group">
+          <span class="field-label">Description / consignes</span>
+          <textarea class="field-textarea" id="planner-description" rows="2" placeholder="Consignes pour les licenciés…"></textarea>
+        </div>
+
+        <!-- Warmup / Cooldown / RPE -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:.5rem;background:rgba(27,58,107,.04);padding:.6rem;border-radius:8px;margin-bottom:.6rem">
+          <div class="field-group" style="margin-bottom:0">
+            <span class="field-label">Écht. (sec)</span>
+            <input type="number" class="field-input" id="planner-warmup" value="1200" oninput="plannerCalculate()">
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <span class="field-label">R.Calme (sec)</span>
+            <input type="number" class="field-input" id="planner-cooldown" value="600" oninput="plannerCalculate()">
+          </div>
+          <div class="field-group" style="margin-bottom:0">
+            <span class="field-label">RPE Foster : <span id="planner-rpe-display" style="color:var(--rouge);font-weight:700">7</span>/10</span>
+            <input type="range" id="planner-rpe" min="1" max="10" value="7" style="width:100%;margin-top:.35rem;accent-color:var(--navy)" oninput="document.getElementById('planner-rpe-display').textContent=this.value;plannerCalculate()">
+          </div>
+        </div>
+
+        <!-- Boutons ajout blocs -->
+        <div style="display:flex;gap:.4rem;margin-bottom:.6rem">
+          <button class="btn-sm" style="background:var(--navy);color:#fff;border-color:var(--navy)" onclick="plannerAddSerie()">+ Bloc Travail</button>
+          <button class="btn-sm" style="background:var(--mousse);color:#fff;border-color:var(--mousse)" onclick="plannerAddRestBlock()">+ Repos inter-blocs</button>
+        </div>
+
+        <!-- Blocs dynamiques -->
+        <div id="planner-blocks"></div>
+
+        <!-- Stats calculées -->
+        <div class="pl-stat-box">
+          <div>
+            <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7">Durée totale</div>
+            <div class="pl-stat-val"><span id="planner-stat-duration">0</span> <small style="font-size:.7rem;opacity:.8">min</small></div>
+          </div>
+          <div>
+            <div style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7">Charge (UA)</div>
+            <div class="pl-stat-val"><span id="planner-stat-ua">0</span></div>
+          </div>
+        </div>
+
+        <!-- Bouton sauvegarder -->
+        <button id="planner-save-btn" style="width:100%;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.65rem;font-family:'Lora',serif;font-size:.82rem;font-weight:700;cursor:pointer" onclick="plannerSaveSeance()">💾 Enregistrer dans seances_v3</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -423,6 +578,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 <script src="firebase.js"></script>
 <script src="data.js"></script>
 <script src="_seancesData_new.js"></script>
+<script src="ab_running_workouts_data.js"></script>
 <script>
 // ══════════════════════════════════════════════════
 // AUTH — Firebase Email/Password
@@ -533,11 +689,11 @@ function showTab(id,btn){
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
   if(id==='tab-prog') buildAdminProg();
-  if(id==='tab-seances') buildSeancesList();
   if(id==='tab-cal') buildCalList();
   if(id==='tab-infos') buildInfosList();
   if(id==='tab-calc') buildCalcAdmin();
   if(id==='tab-obj') buildObjList();
+  if(id==='tab-planner') plannerLoadList();
 }
 
 // ══════════════════════════════════════════════════
@@ -657,7 +813,17 @@ return `
   };
 
   document.getElementById('panel-body').innerHTML =
-    `<span class="block-sep">🏋️ LUNDI — Renforcement</span>`
+    `<div class="field-group" style="background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;margin-bottom:.8rem">
+      <label class="field-label">🏷️ Nom de la phase (bloc)</label>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <input class="field-input" id="pw-p" value="${w.p}" style="max-width:220px">
+        <label style="display:flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--navy);cursor:pointer;white-space:nowrap">
+          <input type="checkbox" id="pw-p-bloc" checked>
+          Appliquer à tout le bloc (${L.programme.filter(x=>x.p===w.p).length} sem.)
+        </label>
+      </div>
+    </div>`
+    +`<span class="block-sep">🏋️ LUNDI — Renforcement</span>`
     +`<div class="field-group"><label class="field-label">Séance (vide = socle ${socle.lundi} UA)</label>${picker('pw-lun', w.lun||'', `<option value="">Socle — Renforcement (${socle.lundi} UA)</option>`)}</div>`
     +'<span class="block-sep">📅 MARDI</span>'
     +`<div class="field-group"><label class="field-label">Séance</label>${picker('pw-m',w.m)}</div>`
@@ -861,210 +1027,8 @@ function updateSeancePreview(elementId) {
   previewDiv.innerHTML = html;
   previewDiv.style.display = 'block';
 }
-// ══════════════════════════════════════════════════
-// SÉANCES BIBLIOTHÈQUE
-// ══════════════════════════════════════════════════
-function filterSeances(){
-  const q = (document.getElementById('seance-search')?.value||'').toLowerCase();
-  document.querySelectorAll('.seance-card').forEach(c=>{
-    const k = c.dataset.key||'', l = (c.dataset.label||'').toLowerCase();
-    c.style.display = (!q || k.includes(q) || l.includes(q)) ? '' : 'none';
-  });
-  document.querySelectorAll('.cat-group-hdr').forEach(hdr=>{
-    let sib = hdr.nextElementSibling, hasVisible = false;
-    while(sib && !sib.classList.contains('cat-group-hdr')){
-      if(sib.style.display !== 'none') hasVisible = true;
-      sib = sib.nextElementSibling;
-    }
-    hdr.style.display = hasVisible ? '' : 'none';
-  });
-}
-
-function buildSeancesList(){
-  const el = document.getElementById('seances-list');
-  if(!el) return;
-  const COTES = ['vw','floride','voulgre','vvf','escaliers'];
-  const CAT_ORDER = ['VMA Courte','VMA Longue','Seuil','Allure Marathon','Allure Spécifique','Côtes','Puissance Montée','Technique Descente','Spécificité Trail','Volume Endurance','Récupération','Mixte','Activation'];
-  const CAT_ICON  = {'VMA Courte':'🔥','VMA Longue':'🔥','Seuil':'⚡','Allure Marathon':'🏁','Allure Spécifique':'🎯','Côtes':'⛰️','Puissance Montée':'🏔️','Technique Descente':'🎿','Spécificité Trail':'🌲','Volume Endurance':'🏃','Récupération':'🌿','Mixte':'🔄','Activation':'⚡','Autres':'📋'};
-
-  const groups = {};
-  [...CAT_ORDER, 'Autres'].forEach(c => groups[c] = []);
-  Object.entries(L.seances).forEach(([k,s])=>{
-    const cat = CAT_ORDER.includes(s.c) ? s.c : 'Autres';
-    groups[cat].push([k,s]);
-  });
-  Object.values(groups).forEach(arr => arr.sort((a,b)=>(b[1].ua||0)-(a[1].ua||0)));
-
-  const cardHtml = ([k,s])=>{
-    const t = terrainLabel[s.lieu];
-    const terrainBadge = t ? `<span style="font-size:.58rem;padding:.1rem .35rem;border-radius:3px;background:rgba(27,58,107,.07);margin-left:.3rem">${t.icon} ${t.label}</span>` : '';
-    const isCoteLieu = COTES.includes(s.lieu);
-    const halageTxt = (s.halage||'').toLowerCase();
-    const lienIncoh = !isCoteLieu && s.lieu==='halage' && (halageTxt.includes('côte')||halageTxt.includes('cote')||halageTxt.includes('voulgre')||halageTxt.includes(' vw'));
-    const lbl1 = isCoteLieu ? `${t?.icon||'📍'} ${t?.label||'Terrain'}` : '🏞️ Halage';
-    return `<div class="seance-card" data-key="${k}" data-label="${(s.l||'').replace(/"/g,"'")}">
-      <div class="seance-card-hdr">
-        <div>
-          <span style="font-size:.78rem;font-weight:800;color:var(--navy)">${s.l||k}</span>
-          <span style="font-size:.55rem;color:var(--muted);margin-left:.4rem;background:rgba(27,58,107,.06);padding:.1rem .35rem;border-radius:3px">${k}</span>
-          <span style="font-size:.62rem;color:var(--gold);background:rgba(184,134,11,.12);padding:.1rem .3rem;border-radius:3px;margin-left:.3rem;font-weight:700">RPE ${s.rpe||'—'} · ${s.ua||0} UA</span>
-          ${terrainBadge}
-          ${lienIncoh?`<span title="Terrain principal peut-être incorrect" style="font-size:.6rem;color:var(--ocre);margin-left:.3rem;cursor:help">⚠️ lieu ?</span>`:''}
-        </div>
-        <button class="btn-sm" onclick="openSeanceEdit('${k}')">✏️</button>
-      </div>
-      <div class="seance-card-body">
-        ${s.halage&&s.halage!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--navy);min-width:80px">${lbl1}</span><span>${s.halage}</span></div>`:''}
-        ${s.piste&&s.piste!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--blue);min-width:80px">🏟️ Piste</span><span>${s.piste}</span></div>`:''}
-        ${s.desc?`<div style="font-size:.68rem;color:var(--muted);font-style:italic;margin-top:.15rem">${s.desc.slice(0,100)}${s.desc.length>100?'…':''}</div>`:''}
-      </div>
-    </div>`;
-  };
-
-  el.innerHTML = [...CAT_ORDER, 'Autres'].filter(cat=>groups[cat].length).map(cat=>`
-    <div class="cat-group-hdr" data-cat="${cat}">
-      <span>${CAT_ICON[cat]} ${cat}</span>
-      <span>${groups[cat].length} séance${groups[cat].length>1?'s':''}</span>
-    </div>
-    ${groups[cat].map(cardHtml).join('')}
-  `).join('');
-}
-
-const TERRAIN_OPTS = [
-  {v:'halage',    l:'🏞️ Halage'},
-  {v:'stades',    l:'🏟️ Piste / Stade'},
-  {v:'intramuros',l:'🏘️ Route / Intramuros'},
-  {v:'floride',   l:'⛰️ Côte La Floride'},
-  {v:'voulgre',   l:'⛰️ Côte du Voulgre'},
-  {v:'vw',        l:'⛰️ Côte VW'},
-  {v:'vvf',       l:'⛰️ Côte VVF Anglet'},
-  {v:'escaliers', l:'🪜 Escaliers Biarritz'},
-  {v:'chiberta',  l:'🌲 Forêt Chiberta'},
-  {v:'girouettes',l:'🌿 Parc Girouettes'},
-  {v:'douves',    l:'🏰 Les Douves'},
-  {v:'plage',     l:'🏖️ Plage'},
-  {v:'montagne',  l:'🏔️ Montagne'},
-];
-function terrainSelect(cur){
-  return `<select class="field-select" id="se-lieu">${TERRAIN_OPTS.map(t=>`<option value="${t.v}"${t.v===cur?' selected':''}>${t.l}</option>`).join('')}</select>`;
-}
-
+// calcSeanceUA utilisé par l'éditeur de programme (dropdown séances)
 function calcSeanceUA(s, defaultDur = 60){ return s ? (s.ua || (s.rn||0) * (s.d||defaultDur)) : 0; }
-
-function parseEffortMin(str){
-  if(!str) return 1;
-  str = str.trim().toLowerCase();
-  const ms = str.match(/(\d+)[''`](\d+)/);
-  if(ms) return parseInt(ms[1]) + parseInt(ms[2])/60;
-  const sec = str.match(/^(\d+)[""s]/);
-  if(sec) return parseInt(sec[1])/60;
-  const min = str.match(/^(\d+)['`m]/);
-  if(min) return parseInt(min[1]);
-  const km = str.match(/(\d+\.?\d*)km/);
-  if(km) return parseFloat(km[1]) * 5;
-  const mtr = str.match(/(\d+)m/);
-  if(mtr) return parseInt(mtr[1])/200;
-  return 1;
-}
-function parseRecupMin(str){
-  if(!str) return 0;
-  str = str.trim().toLowerCase();
-  const ms = str.match(/(\d+)[''`](\d+)/);
-  if(ms) return parseInt(ms[1]) + parseInt(ms[2])/60;
-  const sec = str.match(/(\d+)[""s]/);
-  if(sec) return parseInt(sec[1])/60;
-  const min = str.match(/(\d+)['`m]/);
-  if(min) return parseInt(min[1]);
-  return 0;
-}
-function estimerDureeSeance(){
-  const rn        = parseInt(document.getElementById('se-rn').value)||7;
-  const nbSeries  = Math.max(1, parseInt(document.getElementById('se-nb-series').value)||1);
-  const nbRep     = Math.max(1, parseInt(document.getElementById('se-nb-rep').value)||1);
-  const effortMin = parseEffortMin(document.getElementById('se-effort').value);
-  const recupRep  = parseRecupMin(document.getElementById('se-recup-rep').value);
-  const recupSerie= parseRecupMin(document.getElementById('se-recup-serie').value);
-  const work = nbSeries * (nbRep * effortMin + Math.max(0, nbRep-1) * recupRep) + Math.max(0, nbSeries-1) * recupSerie;
-  const warmup = rn >= 7 ? 15 : 10;
-  document.getElementById('se-d').value = Math.max(15, Math.round(work + warmup));
-  updateSeanceUA();
-}
-function updateSeanceUA(){
-  const rn = parseInt(document.getElementById('se-rn').value)||0;
-  const d  = parseInt(document.getElementById('se-d').value)||0;
-  if(d > 0) document.getElementById('se-ua').value = rn * d;
-}
-
-function seanceFormHtml(s){
-  const v = s || {};
-  return `<span class="block-sep">🏷️ Identité</span>`
-    +`<div class="field-group"><label class="field-label">Label (nom court affiché)</label><input class="field-input" id="se-l" value="${(v.l||'').replace(/"/g,'&quot;')}" placeholder="6×1000m Halage R=2'"></div>`
-    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
-    +`<div class="field-group"><label class="field-label">Catégorie</label>${catSelect(v.c||'Seuil')}</div>`
-    +`<div class="field-group"><label class="field-label">RPE (texte)</label><input class="field-input" id="se-rpe" value="${(v.rpe||'').replace(/"/g,'&quot;')}" placeholder="7-8"></div>`
-    +`<div class="field-group"><label class="field-label">RPE (num)</label><input type="number" class="field-input" id="se-rn" value="${v.rn||7}" min="1" max="10" oninput="updateSeanceUA()"></div></div>`
-    +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">`
-    +`<div class="field-group"><label class="field-label">Durée séance (min)</label><div style="display:flex;gap:.4rem;align-items:center"><input type="number" class="field-input" id="se-d" value="${v.d||''}" min="1" placeholder="ex: 55" oninput="updateSeanceUA()"><button type="button" class="btn-sm" onclick="estimerDureeSeance()" title="Estimer à partir de la structure">⚡ Estimer</button></div></div>`
-    +`<div class="field-group"><label class="field-label">UA — charge Foster (RPE × durée)</label><input type="number" class="field-input" id="se-ua" value="${v.ua||0}"></div></div>`
-    +`<span class="block-sep">🔢 Structure de la séance</span>`
-    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
-    +`<div class="field-group"><label class="field-label">Nb séries</label><input type="number" class="field-input" id="se-nb-series" value="${v.nb_series||1}" min="1"></div>`
-    +`<div class="field-group"><label class="field-label">Nb répétitions</label><input type="number" class="field-input" id="se-nb-rep" value="${v.nb_repetition||0}" min="0"></div>`
-    +`<div class="field-group"><label class="field-label">Effort (durée/dist)</label><input class="field-input" id="se-effort" value="${(v.effort||'').replace(/"/g,'&quot;')}" placeholder="1' / 200m / 30&quot;"></div></div>`
-    +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">`
-    +`<div class="field-group"><label class="field-label">Récup inter-répétition</label><input class="field-input" id="se-recup-rep" value="${(v.recup_inter_rep||'').replace(/"/g,'&quot;')}" placeholder="descente rapide / 1'30&quot;"></div>`
-    +`<div class="field-group"><label class="field-label">Récup inter-série</label><input class="field-input" id="se-recup-serie" value="${(v.recup_inter_serie||'').replace(/"/g,'&quot;')}" placeholder="3' récup active"></div></div>`
-    +`<span class="block-sep">📍 Terrain & variantes</span>`
-    +`<div class="field-group"><label class="field-label">Terrain principal</label>${terrainSelect(v.lieu||'halage')}</div>`
-    +`<div class="field-group"><label class="field-label">📍 Version Halage / Côte <span style="font-weight:400;color:var(--muted);text-transform:none;font-size:.6rem">(description pour ce terrain)</span></label><input class="field-input" id="se-halage" value="${(v.halage||'').replace(/"/g,'&quot;')}" placeholder="8×1' côte VW / 10×30&quot;/30&quot; halage"></div>`
-    +`<div class="field-group"><label class="field-label">🏟️ Version Piste / Stade <span style="font-weight:400;color:var(--muted);text-transform:none;font-size:.6rem">(pour ceux qui préfèrent le stade)</span></label><input class="field-input" id="se-piste" value="${(v.piste||'').replace(/"/g,'&quot;')}" placeholder="8×1' talus stade / 10×200m piste"></div>`
-    +`<span class="block-sep">📝 Explication</span>`
-    +`<div class="field-group"><textarea class="field-textarea" id="se-desc" rows="4">${v.desc||''}</textarea></div>`;
-}
-
-function getSeanceFromForm(){
-  return {
-    l:               document.getElementById('se-l').value.trim(),
-    c:               document.getElementById('se-c').value,
-    rpe:             document.getElementById('se-rpe').value.trim(),
-    rn:              parseInt(document.getElementById('se-rn').value)||0,
-    d:               parseInt(document.getElementById('se-d').value)||null,
-    ua:              parseInt(document.getElementById('se-ua').value)||0,
-    nb_series:       parseInt(document.getElementById('se-nb-series').value)||1,
-    nb_repetition:   parseInt(document.getElementById('se-nb-rep').value)||0,
-    effort:          document.getElementById('se-effort').value.trim(),
-    recup_inter_rep: document.getElementById('se-recup-rep').value.trim(),
-    recup_inter_serie:document.getElementById('se-recup-serie').value.trim(),
-    lieu:            document.getElementById('se-lieu').value,
-    halage:          document.getElementById('se-halage').value.trim()||'—',
-    piste:           document.getElementById('se-piste').value.trim()||'—',
-    desc:            document.getElementById('se-desc').value.trim(),
-  };
-}
-
-function openSeanceEdit(k){
-  editMode='seance'; editKey=k;
-  const s = L.seances[k];
-  if(!s) return;
-  document.getElementById('panel-title').textContent = (s.l||k).substring(0,45);
-  document.getElementById('btn-reset').style.display = 'none';
-  document.getElementById('panel-body').innerHTML =
-    `<div class="field-group"><label class="field-label">Clé</label><div style="font-size:.75rem;font-weight:700;color:var(--navy);background:rgba(27,58,107,.06);padding:.35rem .6rem;border-radius:6px">${k}</div></div>`
-    + seanceFormHtml(s);
-  document.getElementById('edit-panel').classList.add('open');
-  document.getElementById('panel-overlay').style.display='block';
-}
-
-function openNewSeance(){
-  editMode='seance-new'; editKey=null;
-  document.getElementById('panel-title').textContent = 'Nouvelle séance';
-  document.getElementById('btn-reset').style.display = 'none';
-  document.getElementById('panel-body').innerHTML =
-    `<div class="field-group"><label class="field-label">Clé (sans espaces, ex: S201)</label><input class="field-input" id="se-key" placeholder="ma_seance"></div>`
-    + seanceFormHtml(null);
-  document.getElementById('edit-panel').classList.add('open');
-  document.getElementById('panel-overlay').style.display='block';
-}
 
 // ══════════════════════════════════════════════════
 // CALENDRIER & INFOS
@@ -1098,9 +1062,6 @@ function buildInfosList(){
     </div>`).join('');
 }
 // ── EMOJI PICKER ──
-const SEANCE_CATS = ['VMA Courte','VMA Longue','Seuil','Allure Marathon','Allure Spécifique','Côtes','Puissance Montée','Technique Descente','Spécificité Trail','Volume Endurance','Récupération','Mixte','Activation'];
-function catSelect(cur){ return `<select class="field-select" id="se-c">${SEANCE_CATS.map(c=>`<option value="${c}"${c===cur?' selected':''}>${c}</option>`).join('')}</select>`; }
-
 const EMOJI_CATS = {
   sport: ['🏃','🏃‍♀️','🏃‍♂️','🚶','🎽','👟','🏅','🥇','🥈','🥉','🏆','🏁','⛰️','🏔️','🌲','🛣️','💪','⏱️','🚴','🏊','🧘','🤸','⛹️','🏋️','🏇','🧗','🏄','🚵','🤾','🥊','🎯','🏹'],
   humeur: ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','🥰','😘','🙂','🤗','🤩','🥳','😏','😔','😟','🙁','😣','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','😱','😨','😰','😥','🤔','🤭','🤫','😶','😐','😬','🙄','😯','😲','🥱','😴','🤐','🥴','🤢','🤧','🥵','🥶','😈','👿','💀'],
@@ -1243,18 +1204,17 @@ function saveItem(){
     L.programme[idx].ua  = parseInt(document.getElementById('pw-ua').value)||0;
     L.programme[idx].d   = document.getElementById('pw-d').checked?1:0;
     L.programme[idx].n   = document.getElementById('pw-n').value.trim();
+    const newPhase = document.getElementById('pw-p').value.trim();
+    if(newPhase){
+      const oldPhase = L.programme[idx].p;
+      const applyBloc = document.getElementById('pw-p-bloc').checked;
+      if(applyBloc && newPhase !== oldPhase){
+        L.programme.forEach(w=>{ if(w.p===oldPhase) w.p=newPhase; });
+      } else {
+        L.programme[idx].p = newPhase;
+      }
+    }
     saveLocal(); buildAdminProg(); closePanel(); toast('Semaine S'+editKey+' mise à jour','success');
-  }
-  else if(editMode==='seance'){
-    Object.assign(L.seances[editKey], getSeanceFromForm());
-    saveLocal(); buildSeancesList(); closePanel(); toast('Séance mise à jour','success');
-  }
-  else if(editMode==='seance-new'){
-    const k = (document.getElementById('se-key').value||'').trim().replace(/\s+/g,'_');
-    if(!k){toast('Clé obligatoire','error');return;}
-    if(L.seances[k]){toast('Clé existante','error');return;}
-    L.seances[k] = getSeanceFromForm();
-    saveLocal(); buildSeancesList(); closePanel(); toast('Séance créée','success');
   }
 }
 
@@ -1279,19 +1239,16 @@ async function doPublish(){
   const msg = document.getElementById('pub-msg');
 
   try {
-    bar.style.width = '10%'; msg.textContent = '🔄 Sauvegarde du programme…';
+    bar.style.width = '15%'; msg.textContent = '🔄 Sauvegarde du programme…';
     await fbSaveProgramme(L.programme);
 
-    bar.style.width = '25%'; msg.textContent = '🔄 Sauvegarde des séances…';
-    await fbSaveSeances(L.seances);
-
-    bar.style.width = '40%'; msg.textContent = '🔄 Sauvegarde du socle…';
+    bar.style.width = '35%'; msg.textContent = '🔄 Sauvegarde du socle…';
     await fbSaveSocle(getSocleFromUI());
 
-    bar.style.width = '55%'; msg.textContent = '🔄 Infos Club…';
+    bar.style.width = '52%'; msg.textContent = '🔄 Infos Club…';
     await fbSaveInfosClub(L.infosClub);
 
-    bar.style.width = '68%'; msg.textContent = '🔄 Objectifs…';
+    bar.style.width = '67%'; msg.textContent = '🔄 Objectifs…';
     await fbSaveObjectifs(L.objectifs);
 
     bar.style.width = '80%'; msg.textContent = '🔄 Calendrier…';
@@ -1366,6 +1323,439 @@ async function doMigrateFromLocal(){
     toast('Erreur migration : ' + e.message, 'error');
   }
   if(btn) btn.disabled = false;
+}
+
+// ══════════════════════════════════════════════════
+// PLANIFICATEUR — seances_v3
+// ══════════════════════════════════════════════════
+
+let plannerCurrentId = null;  // doc ID en cours d'édition (null = nouvelle séance)
+let plannerSeancesList = [];   // cache local
+let _plannerBlockIdx = 0;      // compteur d'IDs pour les blocs dynamiques
+
+async function plannerLoadList() {
+  const inner = document.getElementById('planner-list-inner');
+  if (inner) inner.innerHTML = '<div style="color:var(--muted);font-size:.74rem;padding:.5rem">Chargement…</div>';
+  try {
+    plannerSeancesList = await fbLoadSeancesV3();
+    plannerRenderList();
+  } catch(e) {
+    if (inner) inner.innerHTML = '<div style="color:var(--rouge);font-size:.74rem;padding:.5rem">Erreur : ' + e.message + '</div>';
+    toast('Erreur chargement seances_v3 : ' + e.message, 'error');
+  }
+}
+
+const PLANNER_CAT_ORDER = ['VMA Courte','VMA Longue','Seuil','Allure Marathon','Allure Spécifique','Côtes','Puissance Montée','Technique Descente','Spécificité Trail','Volume Endurance','Récupération','Mixte','Activation'];
+const PLANNER_CAT_ICON  = {'VMA Courte':'🔥','VMA Longue':'🔥','Seuil':'⚡','Allure Marathon':'🏁','Allure Spécifique':'🎯','Côtes':'⛰️','Puissance Montée':'🏔️','Technique Descente':'🎿','Spécificité Trail':'🌲','Volume Endurance':'🏃','Récupération':'🌿','Mixte':'🔄','Activation':'⚡'};
+
+function plannerRenderList() {
+  const cat = (document.getElementById('planner-cat-filter')?.value) || '';
+  const q   = ((document.getElementById('planner-search')?.value) || '').toLowerCase().trim();
+  let items = plannerSeancesList;
+  if (cat) items = items.filter(s => s.category === cat);
+  if (q)   items = items.filter(s =>
+    (s.title||'').toLowerCase().includes(q) ||
+    (s.id_original||'').toLowerCase().includes(q) ||
+    (s.description||'').toLowerCase().includes(q)
+  );
+
+  const countEl = document.getElementById('planner-list-count');
+  if (countEl) countEl.textContent = items.length + ' / ' + plannerSeancesList.length;
+
+  const inner = document.getElementById('planner-list-inner');
+  if (!inner) return;
+  if (!items.length) {
+    inner.innerHTML = '<div style="color:var(--muted);font-size:.74rem;padding:.5rem">Aucune séance.</div>';
+    return;
+  }
+
+  // Grouper par catégorie dans l'ordre défini
+  const groups = {};
+  [...PLANNER_CAT_ORDER, 'Autres'].forEach(c => groups[c] = []);
+  items.forEach(s => {
+    const c = PLANNER_CAT_ORDER.includes(s.category) ? s.category : 'Autres';
+    groups[c].push(s);
+  });
+  // Tri UA décroissant dans chaque groupe
+  Object.values(groups).forEach(arr => arr.sort((a, b) => (b.totalUA||0) - (a.totalUA||0)));
+
+  let html = '';
+  [...PLANNER_CAT_ORDER, 'Autres'].filter(grp => groups[grp].length).forEach(grp => {
+    const icon = PLANNER_CAT_ICON[grp] || '📋';
+    html += `<div class="cat-group-hdr" style="margin:.5rem 0 .3rem"><span>${icon} ${grp}</span><span>${groups[grp].length}</span></div>`;
+    groups[grp].forEach(s => {
+      const active = plannerCurrentId === s._docId;
+      const ua = s.totalUA || 0;
+      html += `<div class="pl-list-item${active ? ' active-edit' : ''}">
+        <span style="font-size:.6rem;color:var(--muted);font-weight:700;min-width:36px">${s.id_original||'—'}</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem">${s.title||'Sans titre'}</span>
+        <span style="font-size:.6rem;color:var(--gold);background:rgba(184,134,11,.1);padding:.1rem .3rem;border-radius:3px;font-weight:700;white-space:nowrap">${ua} UA</span>
+        <button class="btn-sm" style="padding:.2rem .45rem;font-size:.62rem" onclick="plannerEditSeance('${s._docId}')">✏️</button>
+        <button class="btn-sm danger" style="padding:.2rem .4rem;font-size:.62rem" onclick="plannerDeleteSeance('${s._docId}','${(s.title||'').replace(/'/g,"\\'")}')">✕</button>
+      </div>`;
+    });
+  });
+  inner.innerHTML = html;
+}
+
+function plannerNewSeance() {
+  plannerCurrentId = null;
+  document.getElementById('planner-form-title').textContent = 'Nouvelle séance';
+  document.getElementById('planner-id').value = 'S' + Date.now().toString().slice(-5);
+  document.getElementById('planner-id').readOnly = false;
+  document.getElementById('planner-title').value = '';
+  document.getElementById('planner-category').value = 'VMA Courte';
+  document.getElementById('planner-terrain').value = 'Route';
+  document.getElementById('planner-description').value = '';
+  document.getElementById('planner-warmup').value = 1200;
+  document.getElementById('planner-cooldown').value = 600;
+  document.getElementById('planner-rpe').value = 7;
+  document.getElementById('planner-rpe-display').textContent = '7';
+  document.getElementById('planner-blocks').innerHTML = '';
+  plannerCalculate();
+  document.getElementById('planner-form-panel').style.display = 'block';
+  plannerRenderList();
+}
+
+function plannerEditSeance(docId) {
+  const s = plannerSeancesList.find(x => x._docId === docId);
+  if (!s) return;
+  plannerCurrentId = docId;
+
+  document.getElementById('planner-form-title').textContent = 'Modifier — ' + (s.id_original || docId);
+  document.getElementById('planner-id').value = s.id_original || docId;
+  document.getElementById('planner-id').readOnly = true;
+  document.getElementById('planner-title').value = s.title || '';
+  document.getElementById('planner-category').value = s.category || 'VMA Courte';
+  document.getElementById('planner-terrain').value = s.terrain || 'Route';
+  document.getElementById('planner-description').value = s.description || '';
+  document.getElementById('planner-warmup').value = s.warmupSec || 1200;
+  document.getElementById('planner-cooldown').value = s.cooldownSec || 600;
+  const rpe = s.rpe_foster || 7;
+  document.getElementById('planner-rpe').value = rpe;
+  document.getElementById('planner-rpe-display').textContent = rpe;
+
+  document.getElementById('planner-blocks').innerHTML = '';
+  (s.series || []).forEach(serie => {
+    if (serie.type === 'work')       plannerAddSerie(serie);
+    else if (serie.type === 'rest_block') plannerAddRestBlock(serie.value);
+  });
+  plannerCalculate();
+  document.getElementById('planner-form-panel').style.display = 'block';
+  plannerRenderList();
+}
+
+function plannerCloseForm() {
+  plannerCurrentId = null;
+  document.getElementById('planner-form-panel').style.display = 'none';
+  plannerRenderList();
+}
+
+async function plannerDeleteSeance(docId, title) {
+  if (!confirm('Supprimer la séance "' + title + '" ?')) return;
+  try {
+    await fbDeleteSeanceV3(docId);
+    toast('Séance supprimée', 'success');
+    if (plannerCurrentId === docId) plannerCloseForm();
+    await plannerLoadList();
+  } catch(e) {
+    toast('Erreur suppression : ' + e.message, 'error');
+  }
+}
+
+async function plannerSaveSeance() {
+  const id    = (document.getElementById('planner-id').value || '').trim();
+  const title = (document.getElementById('planner-title').value || '').trim();
+  if (!id)    return toast('ID de séance requis', 'error');
+  if (!title) return toast('Titre de séance requis', 'error');
+
+  const series = [];
+  document.querySelectorAll('#planner-blocks .planner-item').forEach(item => {
+    if (item.dataset.type === 'work') {
+      const steps = [];
+      item.querySelectorAll('.pl-step-row').forEach(r => {
+        steps.push({
+          stepReps: parseInt(r.querySelector('.ps-reps')?.value)  || 1,
+          value:    parseFloat(r.querySelector('.ps-val')?.value)  || 0,
+          unit:     r.querySelector('.ps-unit')?.value || 's',
+          rest:     parseInt(r.querySelector('.ps-rest')?.value)  || 0
+        });
+      });
+      series.push({
+        type:          'work',
+        serieReps:     parseInt(item.querySelector('.ps-serie-reps')?.value) || 1,
+        interSerieRest:parseInt(item.querySelector('.ps-inter-rest')?.value) || 0,
+        innerReps:     parseInt(item.querySelector('.ps-inner-reps')?.value) || 1,
+        steps
+      });
+    } else {
+      series.push({ type: 'rest_block', value: parseInt(item.querySelector('.ps-rest-val')?.value) || 0 });
+    }
+  });
+
+  const workout = {
+    id_original:   id,
+    title,
+    category:      document.getElementById('planner-category').value,
+    terrain:       document.getElementById('planner-terrain').value,
+    description:   (document.getElementById('planner-description').value || '').trim(),
+    warmupSec:     parseInt(document.getElementById('planner-warmup').value)   || 1200,
+    cooldownSec:   parseInt(document.getElementById('planner-cooldown').value) || 600,
+    rpe_foster:    parseInt(document.getElementById('planner-rpe').value)      || 7,
+    totalDuration: parseInt(document.getElementById('planner-stat-duration').textContent) || 0,
+    totalUA:       parseInt(document.getElementById('planner-stat-ua').textContent)       || 0,
+    series
+  };
+
+  const btn = document.getElementById('planner-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enregistrement…';
+  const isNew = !plannerCurrentId;
+  try {
+    await fbSaveSeanceV3(id, workout);
+    plannerCurrentId = id;
+    document.getElementById('planner-id').readOnly = true;
+    document.getElementById('planner-form-title').textContent = 'Modifier — ' + id;
+    toast((isNew ? 'Séance créée' : 'Séance mise à jour') + ' : ' + id, 'success');
+    await plannerLoadList();
+  } catch(e) {
+    toast('Erreur enregistrement : ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = '💾 Enregistrer dans seances_v3';
+}
+
+// ── Blocs dynamiques ──
+
+function plannerAddSerie(data) {
+  const idx = ++_plannerBlockIdx;
+  const sr  = data?.serieReps    ?? 1;
+  const ir  = data?.innerReps    ?? 10;
+  const isr = data?.interSerieRest ?? 180;
+
+  const html = `<div class="pl-serie-block planner-item" data-type="work" id="pb-${idx}">
+    <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.5rem">
+      <div style="min-width:65px" class="field-group" style="margin:0"><span class="field-label">Séries</span><input type="number" class="field-input ps-serie-reps" value="${sr}" min="1" oninput="plannerCalculate()"></div>
+      <div style="min-width:95px" class="field-group" style="margin:0"><span class="field-label">Repos inter (s)</span><input type="number" class="field-input ps-inter-rest" value="${isr}" min="0" oninput="plannerCalculate()"></div>
+      <div style="flex:1;min-width:75px" class="field-group" style="margin:0"><span class="field-label">Répét. internes</span><input type="number" class="field-input ps-inner-reps" value="${ir}" min="1" oninput="plannerCalculate()"></div>
+      <button class="btn-sm danger" style="align-self:flex-end;padding:.25rem .45rem" onclick="document.getElementById('pb-${idx}').remove();plannerCalculate()">✕</button>
+    </div>
+    <div id="pb-steps-${idx}"></div>
+    <button class="btn-sm" style="font-size:.62rem;margin-top:.2rem" onclick="plannerAddStep(${idx})">+ Segment</button>
+  </div>`;
+  document.getElementById('planner-blocks').insertAdjacentHTML('beforeend', html);
+  (data?.steps?.length ? data.steps : [null]).forEach(step => plannerAddStep(idx, step));
+  plannerCalculate();
+}
+
+function plannerAddRestBlock(value) {
+  const idx = ++_plannerBlockIdx;
+  const v   = value ?? 300;
+  const html = `<div class="pl-rest-block planner-item" data-type="rest" id="pb-${idx}">
+    <span style="font-size:.7rem;font-weight:700;color:var(--mousse);white-space:nowrap">☕ Repos</span>
+    <input type="number" class="field-input ps-rest-val" value="${v}" style="width:80px" oninput="plannerCalculate()">
+    <span style="font-size:.7rem;color:var(--muted)">sec</span>
+    <button class="btn-sm danger" style="margin-left:auto;padding:.2rem .4rem" onclick="document.getElementById('pb-${idx}').remove();plannerCalculate()">✕</button>
+  </div>`;
+  document.getElementById('planner-blocks').insertAdjacentHTML('beforeend', html);
+  plannerCalculate();
+}
+
+function plannerAddStep(serieIdx, data) {
+  const sr   = data?.stepReps ?? 1;
+  const val  = data?.value    ?? 30;
+  const unit = data?.unit     ?? 's';
+  const rest = data?.rest     ?? 30;
+  const html = `<div class="pl-step-row">
+    <div><span class="field-label">Nb</span><input type="number" class="field-input ps-reps" value="${sr}" min="1" oninput="plannerCalculate()"></div>
+    <div><span class="field-label">Effort</span><input type="number" class="field-input ps-val" value="${val}" step="0.1" min="0" oninput="plannerCalculate()"></div>
+    <div><span class="field-label">Unité</span><select class="field-select ps-unit" onchange="plannerCalculate()"><option value="s"${unit==='s'?' selected':''}>sec (")</option><option value="min"${unit==='min'?' selected':''}>min (')</option><option value="m"${unit==='m'?' selected':''}>m</option><option value="km"${unit==='km'?' selected':''}>km</option></select></div>
+    <div><span class="field-label">Récup (s)</span><input type="number" class="field-input ps-rest" value="${rest}" min="0" oninput="plannerCalculate()"></div>
+    <button class="btn-sm danger" style="align-self:flex-end;padding:.2rem .35rem" onclick="this.closest('.pl-step-row').remove();plannerCalculate()">✕</button>
+  </div>`;
+  document.getElementById('pb-steps-' + serieIdx).insertAdjacentHTML('beforeend', html);
+  plannerCalculate();
+}
+
+function plannerCalculate() {
+  const SPEED_MS = 4.166;
+  let warmupS   = parseFloat(document.getElementById('planner-warmup')?.value)   || 0;
+  let cooldownS = parseFloat(document.getElementById('planner-cooldown')?.value) || 0;
+  let rpe       = parseInt(document.getElementById('planner-rpe')?.value)        || 7;
+  let totalS    = warmupS + cooldownS;
+
+  document.querySelectorAll('#planner-blocks .planner-item').forEach(item => {
+    if (item.dataset.type === 'work') {
+      const sReps = parseFloat(item.querySelector('.ps-serie-reps')?.value) || 1;
+      const iReps = parseFloat(item.querySelector('.ps-inner-reps')?.value) || 1;
+      const sRest = parseFloat(item.querySelector('.ps-inter-rest')?.value) || 0;
+      let serieS  = 0;
+      item.querySelectorAll('.pl-step-row').forEach(row => {
+        const n    = parseFloat(row.querySelector('.ps-reps')?.value) || 1;
+        const val  = parseFloat(row.querySelector('.ps-val')?.value)  || 0;
+        const u    = row.querySelector('.ps-unit')?.value;
+        let effortSec;
+        if      (u === 's')   effortSec = val;
+        else if (u === 'min') effortSec = val * 60;
+        else if (u === 'm')   effortSec = val / SPEED_MS;
+        else if (u === 'km')  effortSec = val * 1000 / SPEED_MS;
+        else                  effortSec = val;
+        const rS   = parseFloat(row.querySelector('.ps-rest')?.value) || 0;
+        serieS    += (effortSec + rS) * n;
+      });
+      totalS += (serieS * iReps * sReps) + (sRest * (sReps - 1));
+    } else {
+      totalS += parseFloat(item.querySelector('.ps-rest-val')?.value) || 0;
+    }
+  });
+
+  const durMin = Math.round(totalS / 60);
+  const ua     = Math.round(durMin * rpe);
+  const elDur  = document.getElementById('planner-stat-duration');
+  const elUA   = document.getElementById('planner-stat-ua');
+  if (elDur) elDur.textContent = durMin;
+  if (elUA)  elUA.textContent  = ua;
+}
+
+// ══════════════════════════════════════════════════
+// PROGRAMME PRÉCONÇU 2026-2027
+// ══════════════════════════════════════════════════
+// wr=null → sortie longue route (socle, durée en notes)
+// wr=M_séance → sortie montagne (tous groupes)
+// wt=null → sortie longue trail (socle)
+// wt=L01/L02 → boucle trail montagne (trail/ultra)
+// UA = 240(lun) + m + 150(mer) + j + wr(240 si null) · progression ~+10%/sem
+const PROGRAMME_2026_2027 = [
+  // ── BLOC 1 · REPRISE (S1-S4 · Sep 2026) ─────────────────────────────────────────
+  {s:1,  p:"Reprise",               m:"S004", j:"S034", wr:"—",   wt:"—",   ua:1288, d:0, n:"Sortie longue 1h — retour progressif après l'été"},
+  {s:2,  p:"Reprise",               m:"S001", j:"S029", wr:"—",   wt:"—",   ua:1435, d:0, n:"Sortie longue 1h10 (+11%)"},
+  {s:3,  p:"Reprise",               m:"S002", j:"S133", wr:"—",   wt:"—",   ua:1550, d:0, n:"Sortie longue 1h15 (+8%)"},
+  {s:4,  p:"Reprise",               m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge"},
+  // ── BLOC 2 · BASE ROUTE (S5-S8 · Oct 2026) ──────────────────────────────────────
+  {s:5,  p:"Base route",            m:"S012", j:"S032", wr:"—",   wt:"—",   ua:1394, d:0, n:"Sortie longue 1h15"},
+  {s:6,  p:"Base route",            m:"S202", j:"S133", wr:"—",   wt:"—",   ua:1510, d:0, n:"Sortie longue 1h20 (+8%) · Mar : 8×200m piste"},
+  {s:7,  p:"Base route",            m:"S012", j:"S032", wr:"M02", wt:"M02", ua:1616, d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+ (+7%)"},
+  {s:8,  p:"Base route",            m:"S108", j:"—",    wr:"—",   wt:"—",   ua:910,  d:1, n:"Décharge"},
+  // ── BLOC 3 · DÉVELOPPEMENT AUTOMNE (S9-S12 · Nov 2026) ──────────────────────────
+  {s:9,  p:"Développement automne", m:"S205", j:"S029", wr:"—",   wt:"—",   ua:1539, d:0, n:"Sortie longue 1h20 · Prépa marathon / semi automne"},
+  {s:10, p:"Développement automne", m:"S205", j:"S135", wr:"—",   wt:"—",   ua:1670, d:0, n:"Sortie longue 1h25 (+8.5%)"},
+  {s:11, p:"Développement automne", m:"S003", j:"S030", wr:"—",   wt:"—",   ua:1823, d:0, n:"Sortie longue 1h30 (+9.2%)"},
+  {s:12, p:"Développement automne", m:"S011", j:"—",    wr:"—",   wt:"—",   ua:924,  d:1, n:"Décharge"},
+  // ── BLOC 4 · TRANSITION HIVER (S13-S16 · Déc 2026) ──────────────────────────────
+  {s:13, p:"Transition hiver",      m:"S001", j:"S029", wr:"—",   wt:"—",   ua:1435, d:0, n:"Sortie longue 1h20 — allègement post-automne"},
+  {s:14, p:"Transition hiver",      m:"S012", j:"S135", wr:"—",   wt:"—",   ua:1574, d:0, n:"Sortie longue 1h25 (+9.7%)"},
+  {s:15, p:"Transition hiver",      m:"S012", j:"S133", wr:"M02", wt:"M02", ua:1748, d:0, n:"🏔️ Sortie montagne hiver — 4×6' seuil D+ (+11%)"},
+  {s:16, p:"Transition hiver",      m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge fin d'année"},
+  // ── BLOC 5 · CONSTRUCTION HIVER (S17-S20 · Jan 2027) ────────────────────────────
+  {s:17, p:"Construction hiver",    m:"S209", j:"S133", wr:"—",   wt:"—",   ua:1566, d:0, n:"Sortie longue 1h25 — reprise après fêtes · Mar : 7×400m piste"},
+  {s:18, p:"Construction hiver",    m:"S210", j:"S135", wr:"—",   wt:"—",   ua:1646, d:0, n:"Sortie longue 1h30 (+5%)"},
+  {s:19, p:"Construction hiver",    m:"S012", j:"S135", wr:"M02", wt:"M02", ua:1796, d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+ (+9%)"},
+  {s:20, p:"Construction hiver",    m:"S108", j:"—",    wr:"—",   wt:"—",   ua:910,  d:1, n:"Décharge"},
+  // ── BLOC 6 · PRÉPA SEMI / MARATHON PRINTEMPS (S21-S24 · Fév 2027) ──────────────
+  {s:21, p:"Prépa printemps",       m:"S215", j:"S133", wr:"—",   wt:"—",   ua:1646, d:0, n:"Sortie longue 1h30 · Mar : 8×600m piste — allure marathon introduction"},
+  {s:22, p:"Prépa printemps",       m:"S074", j:"S135", wr:"—",   wt:"—",   ua:1750, d:0, n:"Sortie longue 1h35 (+6%)"},
+  {s:23, p:"Prépa printemps",       m:"S074", j:"S030", wr:"—",   wt:"—",   ua:1886, d:0, n:"Sortie longue 1h40 (+8%)"},
+  {s:24, p:"Prépa printemps",       m:"S011", j:"—",    wr:"—",   wt:"—",   ua:924,  d:1, n:"Décharge — repos avant compétitions printemps"},
+  // ── BLOC 7 · PRÉPA TRAIL PRINTEMPS (S25-S28 · Mar 2027) ─────────────────────────
+  {s:25, p:"Prépa trail printemps", m:"S216", j:"S135", wr:"—",   wt:"L01", ua:1734, d:0, n:"Route : sortie 1h40 · Trail : rando-course 2h30 D+"},
+  {s:26, p:"Prépa trail printemps", m:"S019", j:"S030", wr:"—",   wt:"L01", ua:1870, d:0, n:"Route : sortie 1h45 (+8%) · Trail : rando-course 3h D+"},
+  {s:27, p:"Prépa trail printemps", m:"S013", j:"S031", wr:"M02", wt:"M02", ua:2085, d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+ (+11%)"},
+  {s:28, p:"Prépa trail printemps", m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
+  // ── BLOC 8 · DÉVELOPPEMENT TRAIL (S29-S32 · Avr 2027) ───────────────────────────
+  {s:29, p:"Développement trail",   m:"S215", j:"S030", wr:"—",   wt:"L01", ua:1830, d:0, n:"Route : sortie 1h45 · Trail : rando-course 2h30-3h D+"},
+  {s:30, p:"Développement trail",   m:"S022", j:"S030", wr:"—",   wt:"L01", ua:1902, d:0, n:"Route : sortie 1h50 (+4%) · Trail : 3h D+"},
+  {s:31, p:"Développement trail",   m:"S022", j:"S031", wr:"M03", wt:"M03", ua:2161, d:0, n:"🏔️ Sortie montagne — Pyramide D+ 1'-2'-3'-2'-1' (+14%)"},
+  {s:32, p:"Développement trail",   m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
+  // ── BLOC 9 · SPÉCIFICITÉ TRAIL (S33-S36 · Mai 2027) ─────────────────────────────
+  {s:33, p:"Spécificité trail",     m:"S019", j:"S031", wr:"—",   wt:"L01", ua:1937, d:0, n:"Route : sortie 1h50 · Trail : 25km / 1200D+"},
+  {s:34, p:"Spécificité trail",     m:"S022", j:"S036", wr:"—",   wt:"L02", ua:2062, d:0, n:"Route : sortie 1h55 (+6.5%) · Trail : boucle 25km 1200D+"},
+  {s:35, p:"Spécificité trail",     m:"S008", j:"S031", wr:"M05", wt:"M05", ua:2262, d:0, n:"🏔️ KV simulation 30' — semaine de charge max (+9.7%)"},
+  {s:36, p:"Spécificité trail",     m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
+  // ── BLOC 10 · PIC TRAIL ÉTÉ (S37-S40 · Juin 2027) ──────────────────────────────
+  {s:37, p:"Pic été",               m:"S024", j:"S036", wr:"—",   wt:"L02", ua:2046, d:0, n:"Route : sortie 2h · Trail : boucle 25km 1200D+"},
+  {s:38, p:"Pic été",               m:"S019", j:"S087", wr:"—",   wt:"L02", ua:2110, d:0, n:"Route : sortie 2h (+3%) · Trail : 30km 1500D+"},
+  {s:39, p:"Pic été",               m:"S022", j:"S031", wr:"M05", wt:"M05", ua:2314, d:0, n:"🏔️ KV simulation — semaine pic absolue (+9.7%)"},
+  {s:40, p:"Pic été",               m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
+  // ── BLOC 11 · MAINTIEN ÉTÉ (S41-S44 · Juil 2027) ───────────────────────────────
+  {s:41, p:"Maintien été",          m:"S214", j:"S030", wr:"—",   wt:"L01", ua:1798, d:0, n:"Route : sortie 1h55 · Trail : rando-course 2h30"},
+  {s:42, p:"Maintien été",          m:"S215", j:"S031", wr:"—",   wt:"L01", ua:1997, d:0, n:"Route : sortie 2h (+11%) · Trail : boucle 25km"},
+  {s:43, p:"Maintien été",          m:"S022", j:"S031", wr:"M03", wt:"M03", ua:2161, d:0, n:"🏔️ Sortie montagne — Pyramide D+ (+8%)"},
+  {s:44, p:"Maintien été",          m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
+  // ── BLOC 12 · RELÂCHE ÉTÉ (S45-S48 · Aoû 2027) ─────────────────────────────────
+  {s:45, p:"Relâche été",           m:"S201", j:"S029", wr:"—",   wt:"—",   ua:1351, d:0, n:"Sortie légère 1h30 — réduction de charge"},
+  {s:46, p:"Relâche été",           m:"S204", j:"S133", wr:"—",   wt:"—",   ua:1518, d:0, n:"Sortie 1h35 (+12%)"},
+  {s:47, p:"Relâche été",           m:"S014", j:"S033", wr:"—",   wt:"—",   ua:1606, d:0, n:"Sortie 1h40 (+6%)"},
+  {s:48, p:"Relâche été",           m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge — bilan de saison"},
+  // ── BLOC 13 · TRANSITION NOUVELLE SAISON (S49-S52 · Sep 2027) ───────────────────
+  {s:49, p:"Reprise",               m:"S004", j:"S034", wr:"—",   wt:"—",   ua:1288, d:0, n:"Début saison 2027-2028 — sortie 1h"},
+  {s:50, p:"Reprise",               m:"S001", j:"S029", wr:"—",   wt:"—",   ua:1435, d:0, n:"Sortie 1h10 (+11%)"},
+  {s:51, p:"Reprise",               m:"S002", j:"S133", wr:"—",   wt:"—",   ua:1550, d:0, n:"Sortie 1h15 (+8%)"},
+  {s:52, p:"Reprise",               m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge — clôture saison"},
+];
+
+async function doLoadPrebuiltProgramme() {
+  if (!confirm('Remplacer le programme actuel par le programme 2026-2027 (52 semaines) ?')) return;
+  const status = document.getElementById('prebuilt-prog-status');
+  status.textContent = 'Enregistrement…';
+  status.style.color = 'var(--muted)';
+  try {
+    L.programme = JSON.parse(JSON.stringify(PROGRAMME_2026_2027));
+    await fbSaveProgramme(L.programme);
+    FB_ORIGIN.programme = JSON.parse(JSON.stringify(L.programme));
+    saveLocal();
+    buildAdminProg();
+    updateStatus();
+    status.textContent = '✅ Programme chargé !';
+    status.style.color = 'var(--mousse)';
+    toast('Programme 2026-2027 chargé — 52 semaines', 'success');
+    showTab('tab-prog', document.querySelector('.tab'));
+  } catch(e) {
+    status.textContent = '❌ ' + e.message;
+    status.style.color = 'var(--rouge)';
+    toast('Erreur : ' + e.message, 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════
+// IMPORT SEANCES_V3
+// ══════════════════════════════════════════════════
+async function doImportSeancesV3(){
+  const btn    = document.getElementById('btn-import-v3');
+  const status = document.getElementById('import-v3-status');
+  const prog   = document.getElementById('import-v3-progress');
+  const bar    = document.getElementById('import-v3-bar');
+  const msg    = document.getElementById('import-v3-msg');
+
+  btn.disabled = true;
+  prog.style.display = 'block';
+  status.textContent = '';
+  bar.style.width = '0';
+  msg.textContent = 'Chargement du fichier JSON…';
+
+  try {
+    if (typeof AB_RUNNING_WORKOUTS === 'undefined') throw new Error('Variable AB_RUNNING_WORKOUTS non chargée — vérifiez ab_running_workouts_data.js');
+    const workouts = AB_RUNNING_WORKOUTS;
+
+    msg.textContent = '0 / ' + workouts.length + ' documents écrits…';
+    bar.style.width = '0';
+
+    await fbImportSeancesV3(workouts, (done, total) => {
+      const pct = Math.round(done / total * 100);
+      bar.style.width = pct + '%';
+      msg.textContent = done + ' / ' + total + ' documents écrits…';
+    });
+
+    bar.style.width = '100%';
+    msg.textContent = '✅ ' + workouts.length + ' séances importées dans seances_v3.';
+    status.textContent = '✓ Import terminé';
+    toast(workouts.length + ' séances importées dans seances_v3', 'success');
+  } catch(e) {
+    msg.textContent = '❌ Erreur : ' + e.message;
+    status.textContent = '✗ Échec';
+    toast('Erreur import : ' + e.message, 'error');
+  }
+
+  btn.disabled = false;
 }
 
 // ══════════════════════════════════════════════════

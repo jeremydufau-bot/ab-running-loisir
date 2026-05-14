@@ -33,8 +33,34 @@ async function fbLoadProgramme() {
 }
 
 async function fbLoadSeances() {
-  const doc = await db.collection('config').doc('seances').get();
-  return doc.exists ? (doc.data().data || {}) : {};
+  try {
+    const snap = await db.collection('seances_v3').get();
+    if (snap.empty) return {};
+    const result = {};
+    snap.docs.forEach(d => {
+      const v = d.data();
+      const id = v.id_original || d.id;
+      result[id] = {
+        // Champs compatibles v2 (utilisés par le reste du site)
+        l:           v.title         || '',
+        c:           v.category      || '',
+        rpe:         v.rpe_foster    || 0,
+        ua:          v.totalUA       || 0,
+        d:           v.totalDuration || 0,
+        lieu:        v.terrain       || 'Route',
+        desc:        v.description   || '',
+        // Champs v3 pour affichage enrichi (seanceBlock, modal détail)
+        series:      v.series        || [],
+        warmupSec:   v.warmupSec     || 0,
+        cooldownSec: v.cooldownSec   || 0,
+        id_original: id
+      };
+    });
+    return result;
+  } catch(e) {
+    console.error('fbLoadSeances → seances_v3 :', e);
+    return {};
+  }
 }
 
 async function fbLoadSocle() {
@@ -157,6 +183,46 @@ async function fbSaveCalculateur(textes) {
 
 async function fbSaveSeuils(seuils) {
   await db.collection('config').doc('seuils').set({ seuils });
+}
+
+// ══════════════════════════════════════════════════
+// SEANCES_V3 — Planificateur
+// ══════════════════════════════════════════════════
+
+async function fbLoadSeancesV3() {
+  try {
+    const snap = await db.collection('seances_v3').orderBy('id_original').get();
+    return snap.docs.map(d => ({ _docId: d.id, ...d.data() }));
+  } catch(e) {
+    const snap = await db.collection('seances_v3').get();
+    return snap.docs.map(d => ({ _docId: d.id, ...d.data() }))
+      .sort((a, b) => (a.id_original || '').localeCompare(b.id_original || ''));
+  }
+}
+
+async function fbSaveSeanceV3(id, data) {
+  await db.collection('seances_v3').doc(id).set(data);
+}
+
+async function fbDeleteSeanceV3(id) {
+  await db.collection('seances_v3').doc(id).delete();
+}
+
+// Import séances_v3 depuis un tableau JSON (utilise id_original comme doc ID)
+async function fbImportSeancesV3(workouts, onProgress) {
+  const CHUNK = 490; // limite batch Firestore = 500
+  let done = 0;
+  for (let i = 0; i < workouts.length; i += CHUNK) {
+    const chunk = workouts.slice(i, i + CHUNK);
+    const batch = db.batch();
+    chunk.forEach(w => {
+      const ref = db.collection('seances_v3').doc(w.id_original);
+      batch.set(ref, w);
+    });
+    await batch.commit();
+    done += chunk.length;
+    if (onProgress) onProgress(done, workouts.length);
+  }
 }
 
 // Publication complète — pousse tout L vers Firestore

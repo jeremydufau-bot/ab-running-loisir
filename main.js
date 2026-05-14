@@ -256,6 +256,35 @@ function buildProg(){
 // ══════════════════════════════════════════════════
 // DETAIL MODAL
 // ══════════════════════════════════════════════════
+
+// Formate les blocs série v3 en chips lisibles
+function formatSeriesHtml(series) {
+  if (!series || !series.length) return '';
+  return series.map(bloc => {
+    if (bloc.type === 'rest_block') {
+      const dur = (bloc.value || 0) >= 60
+        ? Math.round(bloc.value / 60) + 'min'
+        : (bloc.value || 0) + 's';
+      return `<span style="font-size:.68rem;padding:.22rem .55rem;border-radius:4px;background:rgba(74,138,90,.1);color:var(--mousse);font-weight:600;white-space:nowrap">☕ ${dur}</span>`;
+    }
+    const unitLabel = { s: '"', min: "'", m: 'm', km: 'km' };
+    const steps = (bloc.steps || []).map(s => {
+      const eff  = s.value + (unitLabel[s.unit] || s.unit || '"');
+      const n    = (s.stepReps > 1) ? s.stepReps + '×' : '';
+      const rStr = s.rest ? '/r' + s.rest + '"' : '';
+      return `${n}${eff}${rStr}`;
+    }).join(', ');
+    const sr   = (bloc.serieReps || 1) > 1 ? `${bloc.serieReps}×` : '';
+    const ir   = (bloc.innerReps || 1) > 1 ? `${bloc.innerReps}×` : '';
+    const rest = bloc.interSerieRest
+      ? (bloc.interSerieRest >= 60
+          ? ` R${Math.round(bloc.interSerieRest / 60)}min`
+          : ` R${bloc.interSerieRest}s`)
+      : '';
+    return `<span style="font-size:.68rem;padding:.22rem .55rem;border-radius:4px;background:rgba(27,58,107,.08);color:var(--navy);font-weight:600;white-space:nowrap">${sr}(${ir}${steps})${rest}</span>`;
+  }).join('');
+}
+
 function openDetail(sn){
   const w = programme.find(x=>x.s===sn);
   if(!w) return;
@@ -264,40 +293,63 @@ function openDetail(sn){
 
   function seanceBlock(data){
     if(!data) return '<p style="color:var(--muted)">Repos / Pas de séance</p>';
-    const hasPiste = data.piste && data.piste !== '—';
+    const hasV3     = Array.isArray(data.series) && data.series.length > 0;
+    const hasPiste  = data.piste  && data.piste  !== '—';
     const hasHalage = data.halage && data.halage !== '—';
-    const isTrailOnly = data.lieu === 'montagne' || data.lieu === 'douves' || data.lieu === 'girouettes';
+    const isTrailOnly = ['montagne','douves','girouettes','Trail'].includes(data.lieu);
     const isCote = ['vw','floride','voulgre','vvf','escaliers','plage','chiberta'].includes(data.lieu);
-    const isPiste = data.lieu === 'stades';
+    const isPiste = data.lieu === 'stades' || data.lieu === 'Piste';
+
+    // Structure v2 legacy (nb_series, etc.)
     const hasStructure = data.nb_series || data.nb_repetition || data.effort;
     const structureHtml = hasStructure ? `<div style="display:flex;gap:.35rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem">
       ${(data.nb_series||0)>1 ? `<span style="font-size:.68rem;background:rgba(27,58,107,.07);border-radius:4px;padding:.1rem .45rem;font-weight:600">${data.nb_series} séries</span>` : ''}
       ${data.nb_repetition ? `<span style="font-size:.68rem;background:rgba(42,93,160,.09);border-radius:4px;padding:.1rem .45rem;font-weight:600">${data.nb_repetition}×${data.effort?'&nbsp;'+data.effort:''}</span>` : (data.effort ? `<span style="font-size:.68rem;background:rgba(42,93,160,.09);border-radius:4px;padding:.1rem .45rem">${data.effort}</span>` : '')}
-      ${data.recup_inter_rep ? `<span style="font-size:.63rem;color:var(--muted)">r: ${data.recup_inter_rep}</span>` : ''}
-      ${data.recup_inter_serie ? `<span style="font-size:.63rem;color:var(--muted)">R: ${data.recup_inter_serie}</span>` : ''}
+      ${data.recup_inter_rep  ? `<span style="font-size:.63rem;color:var(--muted)">r: ${data.recup_inter_rep}</span>`  : ''}
+      ${data.recup_inter_serie? `<span style="font-size:.63rem;color:var(--muted)">R: ${data.recup_inter_serie}</span>`: ''}
       ${data.d ? `<span style="font-size:.63rem;color:var(--muted);margin-left:.2rem">⏱ ${data.d} min</span>` : ''}
     </div>` : '';
+
+    // Bloc structure v3 (séries/étapes du planificateur)
+    const v3StructureHtml = hasV3 ? `<div style="margin-bottom:.6rem">
+      ${(data.warmupSec || data.cooldownSec) ? `<div style="font-size:.65rem;color:var(--muted);margin-bottom:.35rem">
+        🏃 Écht.&nbsp;${Math.round((data.warmupSec||0)/60)}&thinsp;min
+        &nbsp;·&nbsp;R.calme&nbsp;${Math.round((data.cooldownSec||0)/60)}&thinsp;min
+        ${data.d ? `&nbsp;·&nbsp;⏱&nbsp;${data.d}&thinsp;min` : ''}
+      </div>` : ''}
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">${formatSeriesHtml(data.series)}</div>
+    </div>` : '';
+
+    // Section terrain : v3 → chips série ; v2 → cases halage/piste
+    const terrainSection = hasV3 ? v3StructureHtml
+      : !isTrailOnly ? (() => {
+          if (isPiste) {
+            return hasPiste
+              ? `<div style="padding:.55rem .75rem;background:rgba(74,122,204,.06);border:1px solid var(--border);border-radius:6px;margin-bottom:.6rem"><div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.25rem">🏟️ Piste / Stade</div><div style="font-size:.78rem;font-weight:600;color:var(--text)">${data.piste}</div></div>`
+              : '';
+          }
+          const lbl1 = isCote
+            ? { icon:'📍', txt:(terrainLabel[data.lieu]?.label||'Terrain'), col:'var(--navy)' }
+            : { icon:'🏞️', txt:'Halage', col:'var(--navy)' };
+          return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem">
+            <div style="padding:.55rem .75rem;background:rgba(27,58,107,.06);border:1px solid var(--border);border-radius:6px">
+              <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:${lbl1.col};margin-bottom:.25rem">${lbl1.icon} ${lbl1.txt}</div>
+              <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasHalage?data.halage:'—'}</div>
+            </div>
+            <div style="padding:.55rem .75rem;background:rgba(74,122,204,.06);border:1px solid var(--border);border-radius:6px">
+              <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.25rem">🏟️ Piste / Stade</div>
+              <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasPiste?data.piste:'—'}</div>
+            </div>
+          </div>`;
+        })()
+      : '';
+
     return `
       <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem">
         ${tTag(data.lieu)} <span class="rpe-pill">RPE ${data.rpe}</span> <span style="font-size:.68rem;color:var(--muted)">${data.c}</span>
       </div>
       ${structureHtml}
-      ${!isTrailOnly ? (() => {
-        if(isPiste){
-          return hasPiste ? `<div style="padding:.55rem .75rem;background:rgba(74,122,204,.06);border:1px solid var(--border);border-radius:6px;margin-bottom:.6rem"><div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.25rem">🏟️ Piste / Stade</div><div style="font-size:.78rem;font-weight:600;color:var(--text)">${data.piste}</div></div>` : '';
-        }
-        const lbl1 = isCote ? { icon:'📍', txt: (terrainLabel[data.lieu]?.label || 'Terrain'), col:'var(--navy)' } : { icon:'🏞️', txt:'Halage', col:'var(--navy)' };
-        return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem">
-          <div style="padding:.55rem .75rem;background:rgba(27,58,107,.06);border:1px solid var(--border);border-radius:6px">
-            <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:${lbl1.col};margin-bottom:.25rem">${lbl1.icon} ${lbl1.txt}</div>
-            <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasHalage?data.halage:'—'}</div>
-          </div>
-          <div style="padding:.55rem .75rem;background:rgba(74,122,204,.06);border:1px solid var(--border);border-radius:6px">
-            <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.25rem">🏟️ Piste / Stade</div>
-            <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasPiste?data.piste:'—'}</div>
-          </div>
-        </div>`;
-      })() : ''}
+      ${terrainSection}
       ${data.desc?`<div style="font-size:.74rem;line-height:1.55;color:var(--text);background:rgba(27,58,107,.03);border-left:3px solid var(--border);padding:.5rem .7rem;border-radius:0 6px 6px 0;margin-bottom:.3rem">${data.desc}</div>`:''}
     `;
   }
@@ -622,7 +674,9 @@ document.addEventListener('DOMContentLoaded', async function(){
         ['programme','seances','socle','infosClub','objectifs']
       );
       if(data.programme && data.programme.length)               programme   = data.programme;
-      if(data.seances   && Object.keys(data.seances).length)   seancesData = data.seances;
+      // Fusion : v3 écrase les séances existantes mais conserve les entrées spéciales
+      // (sortie_longue, sortie_recup…) issues du fallback _seancesData_new.js
+      if(data.seances && Object.keys(data.seances).length)    seancesData = { ...seancesData, ...data.seances };
       if(data.socle)                                            socleConfig = data.socle;
       if(data.infosClub && data.infosClub.length)              infosClub   = data.infosClub;
       if(data.objectifs && data.objectifs.length)              objectifs   = data.objectifs;
