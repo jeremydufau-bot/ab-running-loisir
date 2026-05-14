@@ -72,8 +72,16 @@ let programme = [
 ];
 let seancesData = {};
 let socleConfig = { lundi:{dur:60,rpe:4}, mercredi:{dur:50,rpe:3}, weRoute:{dur:60,rpe:4}, weTrail:{dur:90,rpe:4} };
-let infosClub = [];
-let objectifs = [];
+let infosClub = [
+  { id:'msg_default_1', titre:'Bienvenue saison 2025-2026 !', texte:'Entraînements mardi et jeudi à 18h30 au halage. Bonne saison à tous !', type:'info', dateFin:'' }
+];
+let objectifs = [
+  { s:36, nom:'Semi-marathon de Bayonne',       date:'2026-05-10', type:'route' },
+  { s:38, nom:'Corrida de Biarritz',             date:'2026-05-24', type:'route' },
+  { s:40, nom:'10km du Pays Basque',             date:'2026-06-07', type:'route' },
+  { s:46, nom:'Trail des Contrebandiers',        date:'2026-07-19', type:'trail' },
+  { s:48, nom:'Kross de Chiberta',               date:'2026-08-02', type:'cross' },
+];
 let calFixed = [];
 let calculateurTextes = {};
 let chargeHebdoSeuils = [];

@@ -521,8 +521,8 @@ function fosterWeek(key){
   html+=`<div class="foster-week-total">${total}</div></div>`;
   document.getElementById('f-week-display').innerHTML=html;
 
-  const monoColor=mono>2?'var(--rouge)':'var(--sky)';
-  const strainColor=strain>3000?'var(--rouge)':'var(--sky)';
+  const monoColor=mono>2?'var(--rouge)':'#1B3A6B';
+  const strainColor=strain>3000?'var(--rouge)':'#1B3A6B';
   document.getElementById('f-week-metrics').innerHTML=`
     <div class="foster-metric"><div class="foster-metric-name">Charge totale</div><div class="foster-metric-val">${total}</div></div>
     <div class="foster-metric"><div class="foster-metric-name">Monotonie</div><div class="foster-metric-val" style="color:${monoColor}">${mono.toFixed(1)}</div></div>
