@@ -267,6 +267,8 @@ function openDetail(sn){
     const hasPiste = data.piste && data.piste !== '—';
     const hasHalage = data.halage && data.halage !== '—';
     const isTrailOnly = data.lieu === 'montagne' || data.lieu === 'douves' || data.lieu === 'girouettes';
+    const isCote = ['vw','floride','voulgre','vvf','escaliers','plage','chiberta'].includes(data.lieu);
+    const isPiste = data.lieu === 'stades';
     const hasStructure = data.nb_series || data.nb_repetition || data.effort;
     const structureHtml = hasStructure ? `<div style="display:flex;gap:.35rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem">
       ${(data.nb_series||0)>1 ? `<span style="font-size:.68rem;background:rgba(27,58,107,.07);border-radius:4px;padding:.1rem .45rem;font-weight:600">${data.nb_series} séries</span>` : ''}
@@ -280,17 +282,22 @@ function openDetail(sn){
         ${tTag(data.lieu)} <span class="rpe-pill">RPE ${data.rpe}</span> <span style="font-size:.68rem;color:var(--muted)">${data.c}</span>
       </div>
       ${structureHtml}
-      ${!isTrailOnly ? `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem">
-        <div style="padding:.55rem .75rem;background:rgba(27,58,107,.06);border:1px solid var(--border);border-radius:6px">
-          <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--navy);margin-bottom:.25rem">🏞️ Halage</div>
-          <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasHalage?data.halage:'—'}</div>
-        </div>
-        <div style="padding:.55rem .75rem;background:rgba(74,122,204,.06);border:1px solid var(--border);border-radius:6px">
-          <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.25rem">🏟️ Piste</div>
-          <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasPiste?data.piste:'—'}</div>
-        </div>
-      </div>` : ''}
+      ${!isTrailOnly ? (() => {
+        if(isPiste){
+          return hasPiste ? `<div style="padding:.55rem .75rem;background:rgba(74,122,204,.06);border:1px solid var(--border);border-radius:6px;margin-bottom:.6rem"><div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.25rem">🏟️ Piste / Stade</div><div style="font-size:.78rem;font-weight:600;color:var(--text)">${data.piste}</div></div>` : '';
+        }
+        const lbl1 = isCote ? { icon:'📍', txt: (terrainLabel[data.lieu]?.label || 'Terrain'), col:'var(--navy)' } : { icon:'🏞️', txt:'Halage', col:'var(--navy)' };
+        return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem">
+          <div style="padding:.55rem .75rem;background:rgba(27,58,107,.06);border:1px solid var(--border);border-radius:6px">
+            <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:${lbl1.col};margin-bottom:.25rem">${lbl1.icon} ${lbl1.txt}</div>
+            <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasHalage?data.halage:'—'}</div>
+          </div>
+          <div style="padding:.55rem .75rem;background:rgba(74,122,204,.06);border:1px solid var(--border);border-radius:6px">
+            <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.25rem">🏟️ Piste / Stade</div>
+            <div style="font-size:.78rem;font-weight:600;color:var(--text)">${hasPiste?data.piste:'—'}</div>
+          </div>
+        </div>`;
+      })() : ''}
       ${data.desc?`<div style="font-size:.74rem;line-height:1.55;color:var(--text);background:rgba(27,58,107,.03);border-left:3px solid var(--border);padding:.5rem .7rem;border-radius:0 6px 6px 0;margin-bottom:.3rem">${data.desc}</div>`:''}
     `;
   }

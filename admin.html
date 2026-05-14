@@ -59,6 +59,9 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 .emoji-cat:hover{background:rgba(27,58,107,.06);color:var(--navy)}
 .emoji-cat.active{background:rgba(42,93,160,.12);border-color:var(--blue);color:var(--navy)}
 .block-sep{display:block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .8rem;margin:.8rem 0 .6rem;background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:6px;color:var(--navy)}
+.cat-group-hdr{display:flex;justify-content:space-between;align-items:center;margin:1.2rem 0 .5rem;padding:.35rem .6rem;border-left:3px solid var(--blue);background:rgba(42,93,160,.05);border-radius:0 6px 6px 0}
+.cat-group-hdr span:first-child{font-size:.72rem;font-weight:700;color:var(--navy)}
+.cat-group-hdr span:last-child{font-size:.6rem;color:var(--muted)}
 
 /* Prog table */
 .admin-table{width:100%;border-collapse:collapse}
@@ -261,7 +264,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
     <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
       <table class="admin-table">
         <thead><tr>
-          <th>Sem</th><th>Phase</th><th>🏋️ Lun</th><th>🏃 Mar</th><th>🚶 Mer</th><th>🏃 Jeu</th><th>🛣️ Sam</th><th>🌅 Dim</th><th>UA Total</th><th>Δ%</th><th></th>
+          <th>Sem</th><th>Phase</th><th>🏃 Mar</th><th>🏃 Jeu</th><th>🛣️ Sam</th><th>🌅 Dim</th><th>UA Total</th><th>Δ%</th><th></th>
         </tr></thead>
         <tbody id="admin-prog-body"></tbody>
       </table>
@@ -562,6 +565,14 @@ function buildAdminProg(){
     return `<div style="font-size:.65rem;color:var(--navy);line-height:1.2">${(lbl||'—').substring(0,22)}</div>`
           +`<div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`;
   };
+  const clubCell = (seance, uaVal) => {
+    if(!seance) return `<div style="font-size:.65rem;color:var(--muted)">—</div><div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`;
+    const t = terrainLabel[seance.lieu];
+    const lieuLbl = t ? `${t.icon} ${t.label}` : (seance.lieu||'');
+    return `<div style="font-size:.65rem;color:var(--navy);line-height:1.2">${(seance.l||'').substring(0,22)}</div>`
+          +`<div style="font-size:.58rem;color:var(--muted)">${lieuLbl}</div>`
+          +`<div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`;
+  };
 
 document.getElementById('admin-prog-body').innerHTML = rows.map(w=>{
     const lunD = w.lun ? L.seances[w.lun] : null;
@@ -592,10 +603,8 @@ document.getElementById('admin-prog-body').innerHTML = rows.map(w=>{
     return `<tr class="${w.d?'dec':''}">
       <td><strong style="font-size:.62rem;color:var(--navy)">${semRangeLun(w.s)}</strong><div style="font-size:.58rem;color:var(--muted)">${semRangeDim(w.s)}</div></td>
       <td><span style="font-size:.68rem;font-weight:600;color:var(--navy)">${w.p}</span>${w.d?'<div style="font-size:.58rem;color:var(--mousse)">Décharge</div>':''}${changed?'<span class="modified-flag">✏️</span>':''}</td>
-      <td>${dayCell(lunD, uaLun, 'Renforcement')}</td>
-      <td>${dayCell(mD,   uaMar, '—')}</td>
-      <td>${dayCell(merD, uaMer, 'Footing récup')}</td>
-      <td>${dayCell(jD,   uaJeu, '—')}</td>
+      <td>${clubCell(mD,   uaMar)}</td>
+      <td>${clubCell(jD,   uaJeu)}</td>
       <td>${dayCell(samD, uaSam, '—')}</td>
       <td>${dayCell(dimD, uaDim, 'Repos')}</td>
       <td style="text-align:center;font-weight:700;color:var(--navy)">${uaReel}</td>
@@ -861,28 +870,64 @@ function filterSeances(){
     const k = c.dataset.key||'', l = (c.dataset.label||'').toLowerCase();
     c.style.display = (!q || k.includes(q) || l.includes(q)) ? '' : 'none';
   });
+  document.querySelectorAll('.cat-group-hdr').forEach(hdr=>{
+    let sib = hdr.nextElementSibling, hasVisible = false;
+    while(sib && !sib.classList.contains('cat-group-hdr')){
+      if(sib.style.display !== 'none') hasVisible = true;
+      sib = sib.nextElementSibling;
+    }
+    hdr.style.display = hasVisible ? '' : 'none';
+  });
 }
 
 function buildSeancesList(){
   const el = document.getElementById('seances-list');
   if(!el) return;
-  el.innerHTML = Object.entries(L.seances).map(([k,s])=>`
-    <div class="seance-card" data-key="${k}" data-label="${(s.l||'').replace(/"/g,"'")}">
+  const COTES = ['vw','floride','voulgre','vvf','escaliers'];
+  const CAT_ORDER = ['VMA Courte','VMA Longue','Seuil','Allure Marathon','Allure Spécifique','Côtes','Puissance Montée','Technique Descente','Spécificité Trail','Volume Endurance','Récupération','Mixte','Activation'];
+  const CAT_ICON  = {'VMA Courte':'🔥','VMA Longue':'🔥','Seuil':'⚡','Allure Marathon':'🏁','Allure Spécifique':'🎯','Côtes':'⛰️','Puissance Montée':'🏔️','Technique Descente':'🎿','Spécificité Trail':'🌲','Volume Endurance':'🏃','Récupération':'🌿','Mixte':'🔄','Activation':'⚡','Autres':'📋'};
+
+  const groups = {};
+  [...CAT_ORDER, 'Autres'].forEach(c => groups[c] = []);
+  Object.entries(L.seances).forEach(([k,s])=>{
+    const cat = CAT_ORDER.includes(s.c) ? s.c : 'Autres';
+    groups[cat].push([k,s]);
+  });
+  Object.values(groups).forEach(arr => arr.sort((a,b)=>(b[1].ua||0)-(a[1].ua||0)));
+
+  const cardHtml = ([k,s])=>{
+    const t = terrainLabel[s.lieu];
+    const terrainBadge = t ? `<span style="font-size:.58rem;padding:.1rem .35rem;border-radius:3px;background:rgba(27,58,107,.07);margin-left:.3rem">${t.icon} ${t.label}</span>` : '';
+    const isCoteLieu = COTES.includes(s.lieu);
+    const halageTxt = (s.halage||'').toLowerCase();
+    const lienIncoh = !isCoteLieu && s.lieu==='halage' && (halageTxt.includes('côte')||halageTxt.includes('cote')||halageTxt.includes('voulgre')||halageTxt.includes(' vw'));
+    const lbl1 = isCoteLieu ? `${t?.icon||'📍'} ${t?.label||'Terrain'}` : '🏞️ Halage';
+    return `<div class="seance-card" data-key="${k}" data-label="${(s.l||'').replace(/"/g,"'")}">
       <div class="seance-card-hdr">
         <div>
           <span style="font-size:.78rem;font-weight:800;color:var(--navy)">${s.l||k}</span>
           <span style="font-size:.55rem;color:var(--muted);margin-left:.4rem;background:rgba(27,58,107,.06);padding:.1rem .35rem;border-radius:3px">${k}</span>
-          <span style="font-size:.62rem;color:var(--gold);background:rgba(184,134,11,.12);padding:.1rem .3rem;border-radius:3px;margin-left:.3rem;font-weight:700">RPE ${s.rpe||'—'}</span>
-          <span style="font-size:.58rem;color:var(--muted);margin-left:.3rem">${s.c||''}</span>
+          <span style="font-size:.62rem;color:var(--gold);background:rgba(184,134,11,.12);padding:.1rem .3rem;border-radius:3px;margin-left:.3rem;font-weight:700">RPE ${s.rpe||'—'} · ${s.ua||0} UA</span>
+          ${terrainBadge}
+          ${lienIncoh?`<span title="Terrain principal peut-être incorrect" style="font-size:.6rem;color:var(--ocre);margin-left:.3rem;cursor:help">⚠️ lieu ?</span>`:''}
         </div>
         <button class="btn-sm" onclick="openSeanceEdit('${k}')">✏️</button>
       </div>
       <div class="seance-card-body">
-        ${s.halage&&s.halage!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--navy);min-width:70px">🏞️ Halage</span><span>${s.halage}</span></div>`:''}
-        ${s.piste&&s.piste!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--blue);min-width:70px">🏟️ Piste</span><span>${s.piste}</span></div>`:''}
+        ${s.halage&&s.halage!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--navy);min-width:80px">${lbl1}</span><span>${s.halage}</span></div>`:''}
+        ${s.piste&&s.piste!=='—'?`<div style="display:flex;gap:.4rem;font-size:.74rem;margin-bottom:.15rem"><span style="font-weight:700;color:var(--blue);min-width:80px">🏟️ Piste</span><span>${s.piste}</span></div>`:''}
         ${s.desc?`<div style="font-size:.68rem;color:var(--muted);font-style:italic;margin-top:.15rem">${s.desc.slice(0,100)}${s.desc.length>100?'…':''}</div>`:''}
       </div>
-    </div>`).join('');
+    </div>`;
+  };
+
+  el.innerHTML = [...CAT_ORDER, 'Autres'].filter(cat=>groups[cat].length).map(cat=>`
+    <div class="cat-group-hdr" data-cat="${cat}">
+      <span>${CAT_ICON[cat]} ${cat}</span>
+      <span>${groups[cat].length} séance${groups[cat].length>1?'s':''}</span>
+    </div>
+    ${groups[cat].map(cardHtml).join('')}
+  `).join('');
 }
 
 const TERRAIN_OPTS = [
@@ -971,8 +1016,8 @@ function seanceFormHtml(s){
     +`<div class="field-group"><label class="field-label">Récup inter-série</label><input class="field-input" id="se-recup-serie" value="${(v.recup_inter_serie||'').replace(/"/g,'&quot;')}" placeholder="3' récup active"></div></div>`
     +`<span class="block-sep">📍 Terrain & variantes</span>`
     +`<div class="field-group"><label class="field-label">Terrain principal</label>${terrainSelect(v.lieu||'halage')}</div>`
-    +`<div class="field-group"><label class="field-label">🏞️ Description Halage</label><input class="field-input" id="se-halage" value="${(v.halage||'').replace(/"/g,'&quot;')}" placeholder="10×30&quot;/30&quot; Halage"></div>`
-    +`<div class="field-group"><label class="field-label">🏟️ Équivalent Piste</label><input class="field-input" id="se-piste" value="${(v.piste||'').replace(/"/g,'&quot;')}" placeholder="10×200m piste"></div>`
+    +`<div class="field-group"><label class="field-label">📍 Version Halage / Côte <span style="font-weight:400;color:var(--muted);text-transform:none;font-size:.6rem">(description pour ce terrain)</span></label><input class="field-input" id="se-halage" value="${(v.halage||'').replace(/"/g,'&quot;')}" placeholder="8×1' côte VW / 10×30&quot;/30&quot; halage"></div>`
+    +`<div class="field-group"><label class="field-label">🏟️ Version Piste / Stade <span style="font-weight:400;color:var(--muted);text-transform:none;font-size:.6rem">(pour ceux qui préfèrent le stade)</span></label><input class="field-input" id="se-piste" value="${(v.piste||'').replace(/"/g,'&quot;')}" placeholder="8×1' talus stade / 10×200m piste"></div>`
     +`<span class="block-sep">📝 Explication</span>`
     +`<div class="field-group"><textarea class="field-textarea" id="se-desc" rows="4">${v.desc||''}</textarea></div>`;
 }
