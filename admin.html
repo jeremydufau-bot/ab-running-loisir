@@ -53,6 +53,11 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 .btn-sm{font-family:'Lora',serif;font-size:.68rem;font-weight:600;padding:.3rem .6rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}
 .btn-sm:hover{border-color:var(--light);color:var(--navy)}
 .btn-sm.danger{color:var(--rouge);border-color:rgba(192,64,64,.3)}
+.emoji-btn{background:none;border:none;cursor:pointer;font-size:1.15rem;padding:3px 4px;border-radius:4px;line-height:1;transition:.1s}
+.emoji-btn:hover{background:rgba(27,58,107,.1);transform:scale(1.25)}
+.emoji-cat{background:none;border:1px solid transparent;font-family:'Lora',serif;font-size:.62rem;font-weight:600;padding:.2rem .45rem;border-radius:5px;cursor:pointer;color:var(--muted);transition:.12s}
+.emoji-cat:hover{background:rgba(27,58,107,.06);color:var(--navy)}
+.emoji-cat.active{background:rgba(42,93,160,.12);border-color:var(--blue);color:var(--navy)}
 .block-sep{display:block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .8rem;margin:.8rem 0 .6rem;background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:6px;color:var(--navy)}
 
 /* Prog table */
@@ -124,6 +129,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
   <div class="topbar">
     <h1>Admin — AB Running</h1>
     <div class="topbar-right">
+      <a href="index.html" class="topbar-btn" style="text-decoration:none">← Accueil</a>
       <span id="status-msg" style="font-size:.65rem;color:rgba(255,255,255,.6)">Prêt</span>
       <button class="topbar-btn pub" id="btn-publish" onclick="openPublish()">📤 Sauvegarder</button>
       <button class="topbar-btn" onclick="doLogout()">Déconnexion</button>
@@ -294,13 +300,33 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
     <div class="block-sep">Ajouter un message</div>
     <div style="max-width:500px">
       <div class="field-group"><label class="field-label">Titre</label><input class="field-input" id="new-info-titre" placeholder="🎉 Bienvenue…"></div>
-      <div class="field-group"><label class="field-label">Texte</label><textarea class="field-textarea" id="new-info-texte" rows="2"></textarea></div>
+      <div class="field-group">
+        <label class="field-label">Texte</label>
+        <textarea class="field-textarea" id="new-info-texte" rows="2"></textarea>
+        <div style="margin-top:.3rem">
+          <button type="button" class="btn-sm" id="emoji-toggle-btn" onclick="toggleEmojiPicker()">😀 Emojis</button>
+          <div id="emoji-picker" style="display:none;margin-top:.3rem;border:1px solid var(--border);border-radius:8px;background:#fff;box-shadow:0 4px 16px rgba(27,58,107,.12);overflow:hidden;max-width:400px">
+            <div style="display:flex;gap:2px;padding:.35rem .4rem;background:rgba(27,58,107,.04);border-bottom:1px solid var(--border);flex-wrap:wrap">
+              <button type="button" class="emoji-cat active" onclick="showEmojiCat('sport',this)">🏃 Sport</button>
+              <button type="button" class="emoji-cat" onclick="showEmojiCat('humeur',this)">😀 Humeur</button>
+              <button type="button" class="emoji-cat" onclick="showEmojiCat('coeurs',this)">❤️ Cœurs</button>
+              <button type="button" class="emoji-cat" onclick="showEmojiCat('nature',this)">🌿 Nature</button>
+              <button type="button" class="emoji-cat" onclick="showEmojiCat('infos',this)">📢 Infos</button>
+              <button type="button" class="emoji-cat" onclick="showEmojiCat('divers',this)">🎉 Divers</button>
+            </div>
+            <div id="emoji-grid-wrap" style="padding:.4rem;display:flex;flex-wrap:wrap;gap:1px;max-height:140px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
         <div class="field-group"><label class="field-label">Type</label>
           <select class="field-select" id="new-info-type"><option value="info">Info</option><option value="urgent">Urgent</option></select></div>
         <div class="field-group"><label class="field-label">Date fin (optionnel)</label><input type="date" class="field-input" id="new-info-fin"></div>
       </div>
-      <button class="btn-sm" onclick="addInfo()" style="margin-top:.3rem">Ajouter</button>
+      <div style="display:flex;gap:.5rem;align-items:center;margin-top:.3rem">
+        <button class="btn-sm" onclick="addInfo()">Ajouter</button>
+        <span style="font-size:.65rem;color:var(--muted)">Les emojis s'insèrent dans le texte</span>
+      </div>
     </div>
   </div>
 
@@ -907,15 +933,77 @@ function buildInfosList(){
     <div style="display:flex;gap:.6rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
       <span style="font-size:.6rem;padding:.15rem .4rem;border-radius:3px;background:${m.type==='urgent'?'rgba(192,64,64,.1)':'rgba(42,93,160,.1)'};color:${m.type==='urgent'?'var(--rouge)':'var(--blue)'};font-weight:700">${m.type}</span>
       <div style="flex:1"><div style="font-size:.78rem;font-weight:700">${m.titre||''}</div><div style="font-size:.7rem;color:var(--muted)">${m.texte||''}</div></div>
-      <button class="btn-sm danger" onclick="L.infosClub.splice(${i},1);saveLocal();buildInfosList()">✕</button>
+      <button class="btn-sm danger" onclick="deleteInfo(${i})">✕</button>
     </div>`).join('');
 }
-function addInfo(){
+// ── EMOJI PICKER ──
+const EMOJI_CATS = {
+  sport: ['🏃','🏃‍♀️','🏃‍♂️','🚶','🎽','👟','🏅','🥇','🥈','🥉','🏆','🏁','⛰️','🏔️','🌲','🛣️','💪','⏱️','🚴','🏊','🧘','🤸','⛹️','🏋️','🏇','🧗','🏄','🚵','🤾','🥊','🎯','🏹'],
+  humeur: ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','🥰','😘','🙂','🤗','🤩','🥳','😏','😔','😟','🙁','😣','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','😱','😨','😰','😥','🤔','🤭','🤫','😶','😐','😬','🙄','😯','😲','🥱','😴','🤐','🥴','🤢','🤧','🥵','🥶','😈','👿','💀'],
+  coeurs: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔶','🔷','🔸','🔹','🔺','🔻','💠','🔘','🔲','🔳','▪️','▫️','◾','◽','◼️','◻️','⬛','⬜'],
+  nature: ['🌿','🌱','🌲','🌳','🌴','🌵','🌾','🍀','🍁','🍂','🍃','🌺','🌸','🌼','🌻','🌞','🌝','🌙','⭐','🌟','💫','✨','☀️','🌤️','⛅','🌥️','☁️','🌦️','🌧️','⛈️','🌩️','🌨️','❄️','⛄','🌬️','💨','🌈','☔','⚡','🌊','🌀','🌫️','🌡️','💧','🔥','🌍','🌎','🌏','🏔️','🗻','🌋','🏝️','🏜️','🌅','🌄','🌃','🏙️'],
+  infos: ['📢','📣','🔔','🔕','📅','📆','🗓️','📋','📌','📍','📎','🔗','📝','✏️','✔️','❌','❎','⚠️','🚫','⛔','🆕','🆙','🆒','🆓','ℹ️','🔍','🔎','💡','🔦','📊','📈','📉','📑','📃','📄','📜','🗒️','🗓️','📬','📭','📮','📯','📻','📺','💻','📱','☎️','📞','📟','📠'],
+  divers: ['🎉','🎊','🎈','🎁','🎀','🎗️','🎟️','🎫','🏳️','🚩','🎌','🏁','🏴','🎭','🎨','🖼️','🎬','🎤','🎧','🎼','🎵','🎶','🎹','🎸','🎺','🎻','🥁','🎲','🎯','🎮','🕹️','🧩','♟️','🎠','🎡','🎢','🎪','🤹','🎭','👋','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','🤙','👈','👉','👆','👇','☝️','👏','🙌','🤲','🙏','💪','🦵','🦶','👂','👃','👀','👁️','👅','🦷','🫀','🧠']
+};
+let _emojiTarget = null;
+
+function toggleEmojiPicker(){
+  const p = document.getElementById('emoji-picker');
+  const open = p.style.display === 'none';
+  p.style.display = open ? 'block' : 'none';
+  if(open) showEmojiCat('sport', document.querySelector('.emoji-cat.active') || document.querySelector('.emoji-cat'));
+}
+
+function showEmojiCat(cat, btn){
+  document.querySelectorAll('.emoji-cat').forEach(b=> b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const wrap = document.getElementById('emoji-grid-wrap');
+  wrap.innerHTML = EMOJI_CATS[cat].map(e=>
+    `<button type="button" class="emoji-btn" title="${e}">${e}</button>`
+  ).join('');
+  wrap.querySelectorAll('.emoji-btn').forEach(b=>{
+    b.addEventListener('mousedown', ev=> ev.preventDefault());
+    b.addEventListener('click', ()=> insertEmoji(b.textContent));
+  });
+}
+
+function insertEmoji(emoji){
+  const target = _emojiTarget || document.getElementById('new-info-texte');
+  const s = target.selectionStart ?? target.value.length;
+  const e = target.selectionEnd   ?? target.value.length;
+  target.value = target.value.slice(0,s) + emoji + target.value.slice(e);
+  target.selectionStart = target.selectionEnd = s + [...emoji].length;
+  target.focus();
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  ['new-info-titre','new-info-texte'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('focus', ()=> _emojiTarget = el);
+  });
+  showEmojiCat('sport', null);
+});
+async function deleteInfo(i){
+  L.infosClub.splice(i,1);
+  buildInfosList();
+  try {
+    await fbSaveInfosClub(L.infosClub);
+    FB_ORIGIN.infosClub = JSON.parse(JSON.stringify(L.infosClub));
+    updateStatus();
+  } catch(e){ toast('Erreur suppression : '+e.message,'error'); }
+}
+async function addInfo(){
   const t=document.getElementById('new-info-titre').value.trim();
   if(!t){toast('Titre requis','error');return;}
   L.infosClub.push({id:'msg_'+Date.now(),titre:t,texte:document.getElementById('new-info-texte').value.trim(),type:document.getElementById('new-info-type').value,dateFin:document.getElementById('new-info-fin').value||''});
-  saveLocal(); buildInfosList(); toast('Message ajouté','success');
+  buildInfosList();
   document.getElementById('new-info-titre').value=''; document.getElementById('new-info-texte').value='';
+  try {
+    await fbSaveInfosClub(L.infosClub);
+    FB_ORIGIN.infosClub = JSON.parse(JSON.stringify(L.infosClub));
+    updateStatus();
+    toast('Message sauvegardé','success');
+  } catch(e){ toast('Erreur sauvegarde : '+e.message,'error'); }
 }
 // ══════════════════════════════════════════════════
 function buildObjList(){
