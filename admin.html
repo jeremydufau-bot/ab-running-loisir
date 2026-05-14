@@ -533,10 +533,13 @@ function buildAdminProg(){
 document.getElementById('admin-prog-body').innerHTML = rows.map(w=>{
     const mD = L.seances[w.m], jD = L.seances[w.j];
     const weR = L.seances[w.wr];
+    const mRpe = mD ? mD.rn : 0;
+    const jRpe = jD ? jD.rn : 0;
     const uaMardi = mD ? (mD.ua || mD.rn*(mD.d||60)) : 0;
     const uaJeudi = jD ? (jD.ua || jD.rn*(jD.d||60)) : 0;
     const uaWE = weR ? (weR.ua || weR.rn*(weR.d||90)) : socle.weRoute;
     const uaReel = socle.lundi + uaMardi + socle.mercredi + uaJeudi + uaWE;
+    const uaClub = uaMardi + uaJeudi;
     
     // On s'assure de mettre à jour la valeur dans l'objet pour les calculs suivants (important pour le delta)
     w.ua = uaReel; 
@@ -577,19 +580,23 @@ function openWeekEdit(sn){
  
   const picker = (id,cur)=>{
     let html = '<option value="—">— Repos —</option>';
-    const cats = [{l:'⛰️ Côtes',fn:k=>k.startsWith('cote')||k==='circuit_douves'||k==='escaliers'||k.includes('vvf')},
-      {l:'🌀 Fartlek',fn:k=>k.includes('fartlek')},{l:'📐 Pyramides',fn:k=>k.startsWith('pyramid')},
-      {l:'⚡ Seuil',fn:k=>['3x15_r5','3x7_r130','3x8_r1','8x3_r130','5x1000_halage','4x2000_r2'].includes(k)||/^\d+min$/.test(k)},
-      {l:'🔥 VMA',fn:k=>k.includes('3030')||k.includes('30_30')||k.includes('2020')||k==='8x50s_vma'},
-      {l:'💨 Vitesse',fn:k=>k.startsWith('vitesse')||k.startsWith('piste')},
-      {l:'🏃 Sortie',fn:k=>['sortie_longue','sortie_recup','allure_marathon','allure_semi','ppg_seance'].includes(k)},
-      {l:'📦 Autres',fn:()=>true}];
+    const cats = [
+      {l:'🔥 VMA Courte',       fn:(k,v)=>v.c==='VMA Courte'},
+      {l:'🔥 VMA Longue',       fn:(k,v)=>v.c==='VMA Longue'},
+      {l:'⚡ Seuil',             fn:(k,v)=>v.c==='Seuil'},
+      {l:'🏁 Allure Marathon',   fn:(k,v)=>v.c==='Allure Marathon'||v.c==='Allure Spécifique'},
+      {l:'⛰️ Côtes',             fn:(k,v)=>v.c==='Côtes'},
+      {l:'🏔️ Montagne / Trail',  fn:(k,v)=>v.c==='Puissance Montée'||v.c==='Technique Descente'||v.c==='Spécificité Trail'||v.c==='Volume Endurance'},
+      {l:'🏃 Sortie / Récup',    fn:(k,v)=>v.c==='Récupération'||v.c==='Mixte'},
+      {l:'⚡ Activation',        fn:(k,v)=>v.c==='Activation'},
+      {l:'📦 Autres',            fn:()=>true}
+    ];
     const used = new Set();
     for(const cat of cats){
-      const grp = Object.keys(L.seances).filter(k=>!used.has(k)&&cat.fn(k));
+      const grp = Object.keys(L.seances).filter(k=>!used.has(k)&&cat.fn(k, L.seances[k])).sort((a,b)=>(L.seances[b].ua??0)-(L.seances[a].ua??0));
       if(!grp.length) continue;
       html += `<optgroup label="${cat.l}">`;
-      grp.forEach(k=>{ used.add(k); html += `<option value="${k}" ${k===cur?'selected':''}>${(L.seances[k].l||k).substring(0,55)}</option>`; });
+      grp.forEach(k=>{ used.add(k); const v=L.seances[k]; html += `<option value="${k}" ${k===cur?'selected':''}>${(v.l||k).substring(0,40)} — RPE ${v.rpe??'?'} — ${v.ua??'?'} UA</option>`; });
       html += '</optgroup>';
 
     }
