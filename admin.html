@@ -261,7 +261,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
     <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
       <table class="admin-table">
         <thead><tr>
-          <th>Sem</th><th>Phase</th><th>Mardi</th><th>RPE</th><th>Jeudi</th><th>RPE</th><th>Club</th><th>Total</th><th>Δ%</th><th></th>
+          <th>Sem</th><th>Phase</th><th>🏋️ Lun</th><th>🏃 Mar</th><th>🚶 Mer</th><th>🏃 Jeu</th><th>🛣️ Sam</th><th>🌅 Dim</th><th>UA Total</th><th>Δ%</th><th></th>
         </tr></thead>
         <tbody id="admin-prog-body"></tbody>
       </table>
@@ -557,40 +557,48 @@ function buildAdminProg(){
     });
   }
 
+  const dayCell = (seance, uaVal, defaultLbl) => {
+    const lbl = seance ? seance.l : defaultLbl;
+    return `<div style="font-size:.65rem;color:var(--navy);line-height:1.2">${(lbl||'—').substring(0,22)}</div>`
+          +`<div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`;
+  };
+
 document.getElementById('admin-prog-body').innerHTML = rows.map(w=>{
-    const mD = L.seances[w.m], jD = L.seances[w.j];
-    const weR = L.seances[w.wr];
-    const mRpe = mD ? mD.rn : 0;
-    const jRpe = jD ? jD.rn : 0;
-    const uaMardi = mD ? (mD.ua || mD.rn*(mD.d||60)) : 0;
-    const uaJeudi = jD ? (jD.ua || jD.rn*(jD.d||60)) : 0;
-    const uaWE = weR ? (weR.ua || weR.rn*(weR.d||90)) : socle.weRoute;
-    const uaReel = socle.lundi + uaMardi + socle.mercredi + uaJeudi + uaWE;
-    const uaClub = uaMardi + uaJeudi;
-    
-    // On s'assure de mettre à jour la valeur dans l'objet pour les calculs suivants (important pour le delta)
-    w.ua = uaReel; 
+    const lunD = w.lun ? L.seances[w.lun] : null;
+    const mD   = L.seances[w.m];
+    const merD = w.mer ? L.seances[w.mer] : null;
+    const jD   = L.seances[w.j];
+    const samD = L.seances[w.wr];
+    const dimD = w.dim && w.dim!=='—' ? L.seances[w.dim] : null;
+
+    const uaLun = lunD ? calcSeanceUA(lunD)     : socle.lundi;
+    const uaMar = calcSeanceUA(mD);
+    const uaMer = merD ? calcSeanceUA(merD)     : socle.mercredi;
+    const uaJeu = calcSeanceUA(jD);
+    const uaSam = samD ? calcSeanceUA(samD, 90) : socle.weRoute;
+    const uaDim = dimD ? calcSeanceUA(dimD)     : 0;
+    const uaReel = uaLun + uaMar + uaMer + uaJeu + uaSam + uaDim;
+    w.ua = uaReel;
 
     const orig = (FB_ORIGIN.programme || []).find(x=>x.s===w.s);
     const changed = orig && JSON.stringify(w)!==JSON.stringify(orig);
     const prev = L.programme.find(x=>x.s===w.s-1);
     let delta = '';
     if(prev && prev.ua>0){
-      // Le calcul se fait maintenant sur la nouvelle charge réelle (uaReel)
       const d = Math.round((uaReel-prev.ua)/prev.ua*100);
       const col = d>15?'var(--rouge)':d>10?'var(--ocre)':d>5?'var(--blue)':d<-5?'var(--mousse)':'var(--muted)';
       delta = `<span style="color:${col};font-weight:700">${d>0?'+':''}${d}%</span>`;
     }
-    const d = new Date(+S1+(w.s-1)*7*864e5);
     return `<tr class="${w.d?'dec':''}">
       <td><strong style="font-size:.62rem;color:var(--navy)">${semRangeLun(w.s)}</strong><div style="font-size:.58rem;color:var(--muted)">${semRangeDim(w.s)}</div></td>
-      <td><span style="font-size:.68rem;font-weight:600;color:var(--navy)">${w.p}</span>${w.d?'<div style="font-size:.58rem;color:var(--mousse)">Décharge</div>':''}</td>
-      <td style="font-size:.75rem">${mD?mD.l:'—'}${changed?'<span class="modified-flag">✏️</span>':''}</td>
-      <td style="text-align:center;font-size:.82rem;font-weight:700;color:${mRpe>=8?'var(--rouge)':mRpe>=6?'var(--navy)':'var(--mousse)'}">${mRpe||'—'}</td>
-      <td style="font-size:.75rem">${jD?jD.l:'—'}</td>
-      <td style="text-align:center;font-size:.82rem;font-weight:700;color:${jRpe>=8?'var(--rouge)':jRpe>=6?'var(--navy)':'var(--mousse)'}">${jRpe||'—'}</td>
-      <td style="text-align:center;font-size:.72rem;color:var(--muted)">${uaClub}</td>
-      <td style="text-align:center;font-weight:700;color:var(--navy)">${w.ua}</td>
+      <td><span style="font-size:.68rem;font-weight:600;color:var(--navy)">${w.p}</span>${w.d?'<div style="font-size:.58rem;color:var(--mousse)">Décharge</div>':''}${changed?'<span class="modified-flag">✏️</span>':''}</td>
+      <td>${dayCell(lunD, uaLun, 'Renforcement')}</td>
+      <td>${dayCell(mD,   uaMar, '—')}</td>
+      <td>${dayCell(merD, uaMer, 'Footing récup')}</td>
+      <td>${dayCell(jD,   uaJeu, '—')}</td>
+      <td>${dayCell(samD, uaSam, '—')}</td>
+      <td>${dayCell(dimD, uaDim, 'Repos')}</td>
+      <td style="text-align:center;font-weight:700;color:var(--navy)">${uaReel}</td>
       <td style="text-align:center;font-size:.72rem">${delta||'—'}</td>
       <td><button class="btn-sm" onclick="openWeekEdit(${w.s})">✏️</button>${changed?`<button class="btn-sm danger" style="margin-left:.2rem" onclick="resetWeek(${w.s})">↺</button>`:''}</td>
     </tr>`;
@@ -605,8 +613,9 @@ function openWeekEdit(sn){
   const origW = (FB_ORIGIN.programme || []).find(x=>x.s===sn);
   document.getElementById('btn-reset').style.display = JSON.stringify(w)!==JSON.stringify(origW)?'block':'none';
  
-  const picker = (id,cur)=>{
-    let html = '<option value="—">— Repos —</option>';
+  const socle = getSocleUA();
+  const picker = (id, cur, firstOpt='<option value="—">— Repos —</option>')=>{
+    let html = firstOpt;
     const cats = [
       {l:'🔥 VMA Courte',       fn:(k,v)=>v.c==='VMA Courte'},
       {l:'🔥 VMA Longue',       fn:(k,v)=>v.c==='VMA Longue'},
@@ -639,13 +648,19 @@ return `
   };
 
   document.getElementById('panel-body').innerHTML =
-    '<span class="block-sep">📅 MARDI</span>'
+    `<span class="block-sep">🏋️ LUNDI — Renforcement</span>`
+    +`<div class="field-group"><label class="field-label">Séance (vide = socle ${socle.lundi} UA)</label>${picker('pw-lun', w.lun||'', `<option value="">Socle — Renforcement (${socle.lundi} UA)</option>`)}</div>`
+    +'<span class="block-sep">📅 MARDI</span>'
     +`<div class="field-group"><label class="field-label">Séance</label>${picker('pw-m',w.m)}</div>`
+    +`<span class="block-sep" style="color:var(--mousse)">🚶 MERCREDI — Footing récup</span>`
+    +`<div class="field-group"><label class="field-label">Séance (vide = socle ${socle.mercredi} UA)</label>${picker('pw-mer', w.mer||'', `<option value="">Socle — Footing récup (${socle.mercredi} UA)</option>`)}</div>`
     +'<span class="block-sep" style="color:var(--mousse)">📅 JEUDI</span>'
     +`<div class="field-group"><label class="field-label">Séance</label>${picker('pw-j',w.j)}</div>`
-    +'<span class="block-sep">🏃 SORTIE WEEKEND</span>'
-    +`<div class="field-group"><label class="field-label">🛣️ Route</label>${picker('pw-wr',w.wr)}</div>`
-    +`<div class="field-group"><label class="field-label">🌲 Trail</label>${picker('pw-wt',w.wt)}</div>`
+    +'<span class="block-sep">🛣️ SAMEDI — Sortie</span>'
+    +`<div class="field-group"><label class="field-label">Route</label>${picker('pw-wr',w.wr)}</div>`
+    +`<div class="field-group"><label class="field-label">Trail</label>${picker('pw-wt',w.wt)}</div>`
+    +'<span class="block-sep">🌅 DIMANCHE</span>'
+    +`<div class="field-group"><label class="field-label">Séance (repos par défaut)</label>${picker('pw-dim', w.dim||'—')}</div>`
     +`<div class="field-group"><label class="field-label">UA semaine (auto-calculé)</label><input type="number" class="field-input" id="pw-ua" value="${w.ua}" style="font-weight:700"></div>`
     +`<div id="pw-preview" style="background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.8rem"></div>`
     +`<div class="field-group"><label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="pw-d" ${w.d?'checked':''}> Semaine de décharge</label></div>`
@@ -653,10 +668,13 @@ return `
 
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
+  updateSeancePreview('pw-lun');
   updateSeancePreview('pw-m');
+  updateSeancePreview('pw-mer');
   updateSeancePreview('pw-j');
   updateSeancePreview('pw-wr');
   updateSeancePreview('pw-wt');
+  updateSeancePreview('pw-dim');
   autoCalcWeekUA();
 }
 
@@ -668,22 +686,23 @@ function resetWeek(sn){
   saveLocal(); buildAdminProg(); toast('S'+sn+' réinitialisée','success');
 }
 function autoCalcWeekUA() {
-  const getCharge = (elementId) => {
+  const socle = getSocleUA();
+  const getCharge = (elementId, defaultUA) => {
     const el = document.getElementById(elementId);
-    if(!el) return 0;
-    const key = el.value;
-    const seance = L.seances[key];
-    return seance ? (seance.ua || (seance.rn||0) * (seance.d||60)) : 0;
+    if(!el || !el.value || el.value==='—') return defaultUA ?? 0;
+    const seance = L.seances[el.value];
+    return seance ? calcSeanceUA(seance) : (defaultUA ?? 0);
   };
 
-  const uaMardi = getCharge('pw-m');
-  const uaJeudi = getCharge('pw-j');
-  const socle = getSocleUA();
-  const totalUA = socle.lundi + uaMardi + socle.mercredi + uaJeudi + socle.weekend;
+  const uaLun = getCharge('pw-lun', socle.lundi);
+  const uaMar = getCharge('pw-m',   0);
+  const uaMer = getCharge('pw-mer', socle.mercredi);
+  const uaJeu = getCharge('pw-j',   0);
+  const uaSam = getCharge('pw-wr',  socle.weRoute);
+  const uaDim = getCharge('pw-dim', 0);
+  const totalUA = uaLun + uaMar + uaMer + uaJeu + uaSam + uaDim;
   document.getElementById('pw-ua').value = totalUA;
-
-  // Update live preview
-  updateWeekPreview(uaMardi, uaJeudi, socle);
+  updateWeekPreview(uaMar, uaJeu, socle);
 }
 
 // ══════════════════════════════════════════════════
@@ -866,6 +885,118 @@ function buildSeancesList(){
     </div>`).join('');
 }
 
+const TERRAIN_OPTS = [
+  {v:'halage',    l:'🏞️ Halage'},
+  {v:'stades',    l:'🏟️ Piste / Stade'},
+  {v:'intramuros',l:'🏘️ Route / Intramuros'},
+  {v:'floride',   l:'⛰️ Côte La Floride'},
+  {v:'voulgre',   l:'⛰️ Côte du Voulgre'},
+  {v:'vw',        l:'⛰️ Côte VW'},
+  {v:'vvf',       l:'⛰️ Côte VVF Anglet'},
+  {v:'escaliers', l:'🪜 Escaliers Biarritz'},
+  {v:'chiberta',  l:'🌲 Forêt Chiberta'},
+  {v:'girouettes',l:'🌿 Parc Girouettes'},
+  {v:'douves',    l:'🏰 Les Douves'},
+  {v:'plage',     l:'🏖️ Plage'},
+  {v:'montagne',  l:'🏔️ Montagne'},
+];
+function terrainSelect(cur){
+  return `<select class="field-select" id="se-lieu">${TERRAIN_OPTS.map(t=>`<option value="${t.v}"${t.v===cur?' selected':''}>${t.l}</option>`).join('')}</select>`;
+}
+
+function calcSeanceUA(s, defaultDur = 60){ return s ? (s.ua || (s.rn||0) * (s.d||defaultDur)) : 0; }
+
+function parseEffortMin(str){
+  if(!str) return 1;
+  str = str.trim().toLowerCase();
+  const ms = str.match(/(\d+)[''`](\d+)/);
+  if(ms) return parseInt(ms[1]) + parseInt(ms[2])/60;
+  const sec = str.match(/^(\d+)[""s]/);
+  if(sec) return parseInt(sec[1])/60;
+  const min = str.match(/^(\d+)['`m]/);
+  if(min) return parseInt(min[1]);
+  const km = str.match(/(\d+\.?\d*)km/);
+  if(km) return parseFloat(km[1]) * 5;
+  const mtr = str.match(/(\d+)m/);
+  if(mtr) return parseInt(mtr[1])/200;
+  return 1;
+}
+function parseRecupMin(str){
+  if(!str) return 0;
+  str = str.trim().toLowerCase();
+  const ms = str.match(/(\d+)[''`](\d+)/);
+  if(ms) return parseInt(ms[1]) + parseInt(ms[2])/60;
+  const sec = str.match(/(\d+)[""s]/);
+  if(sec) return parseInt(sec[1])/60;
+  const min = str.match(/(\d+)['`m]/);
+  if(min) return parseInt(min[1]);
+  return 0;
+}
+function estimerDureeSeance(){
+  const rn        = parseInt(document.getElementById('se-rn').value)||7;
+  const nbSeries  = Math.max(1, parseInt(document.getElementById('se-nb-series').value)||1);
+  const nbRep     = Math.max(1, parseInt(document.getElementById('se-nb-rep').value)||1);
+  const effortMin = parseEffortMin(document.getElementById('se-effort').value);
+  const recupRep  = parseRecupMin(document.getElementById('se-recup-rep').value);
+  const recupSerie= parseRecupMin(document.getElementById('se-recup-serie').value);
+  const work = nbSeries * (nbRep * effortMin + Math.max(0, nbRep-1) * recupRep) + Math.max(0, nbSeries-1) * recupSerie;
+  const warmup = rn >= 7 ? 15 : 10;
+  document.getElementById('se-d').value = Math.max(15, Math.round(work + warmup));
+  updateSeanceUA();
+}
+function updateSeanceUA(){
+  const rn = parseInt(document.getElementById('se-rn').value)||0;
+  const d  = parseInt(document.getElementById('se-d').value)||0;
+  if(d > 0) document.getElementById('se-ua').value = rn * d;
+}
+
+function seanceFormHtml(s){
+  const v = s || {};
+  return `<span class="block-sep">🏷️ Identité</span>`
+    +`<div class="field-group"><label class="field-label">Label (nom court affiché)</label><input class="field-input" id="se-l" value="${(v.l||'').replace(/"/g,'&quot;')}" placeholder="6×1000m Halage R=2'"></div>`
+    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
+    +`<div class="field-group"><label class="field-label">Catégorie</label>${catSelect(v.c||'Seuil')}</div>`
+    +`<div class="field-group"><label class="field-label">RPE (texte)</label><input class="field-input" id="se-rpe" value="${(v.rpe||'').replace(/"/g,'&quot;')}" placeholder="7-8"></div>`
+    +`<div class="field-group"><label class="field-label">RPE (num)</label><input type="number" class="field-input" id="se-rn" value="${v.rn||7}" min="1" max="10" oninput="updateSeanceUA()"></div></div>`
+    +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">`
+    +`<div class="field-group"><label class="field-label">Durée séance (min)</label><div style="display:flex;gap:.4rem;align-items:center"><input type="number" class="field-input" id="se-d" value="${v.d||''}" min="1" placeholder="ex: 55" oninput="updateSeanceUA()"><button type="button" class="btn-sm" onclick="estimerDureeSeance()" title="Estimer à partir de la structure">⚡ Estimer</button></div></div>`
+    +`<div class="field-group"><label class="field-label">UA — charge Foster (RPE × durée)</label><input type="number" class="field-input" id="se-ua" value="${v.ua||0}"></div></div>`
+    +`<span class="block-sep">🔢 Structure de la séance</span>`
+    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
+    +`<div class="field-group"><label class="field-label">Nb séries</label><input type="number" class="field-input" id="se-nb-series" value="${v.nb_series||1}" min="1"></div>`
+    +`<div class="field-group"><label class="field-label">Nb répétitions</label><input type="number" class="field-input" id="se-nb-rep" value="${v.nb_repetition||0}" min="0"></div>`
+    +`<div class="field-group"><label class="field-label">Effort (durée/dist)</label><input class="field-input" id="se-effort" value="${(v.effort||'').replace(/"/g,'&quot;')}" placeholder="1' / 200m / 30&quot;"></div></div>`
+    +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">`
+    +`<div class="field-group"><label class="field-label">Récup inter-répétition</label><input class="field-input" id="se-recup-rep" value="${(v.recup_inter_rep||'').replace(/"/g,'&quot;')}" placeholder="descente rapide / 1'30&quot;"></div>`
+    +`<div class="field-group"><label class="field-label">Récup inter-série</label><input class="field-input" id="se-recup-serie" value="${(v.recup_inter_serie||'').replace(/"/g,'&quot;')}" placeholder="3' récup active"></div></div>`
+    +`<span class="block-sep">📍 Terrain & variantes</span>`
+    +`<div class="field-group"><label class="field-label">Terrain principal</label>${terrainSelect(v.lieu||'halage')}</div>`
+    +`<div class="field-group"><label class="field-label">🏞️ Description Halage</label><input class="field-input" id="se-halage" value="${(v.halage||'').replace(/"/g,'&quot;')}" placeholder="10×30&quot;/30&quot; Halage"></div>`
+    +`<div class="field-group"><label class="field-label">🏟️ Équivalent Piste</label><input class="field-input" id="se-piste" value="${(v.piste||'').replace(/"/g,'&quot;')}" placeholder="10×200m piste"></div>`
+    +`<span class="block-sep">📝 Explication</span>`
+    +`<div class="field-group"><textarea class="field-textarea" id="se-desc" rows="4">${v.desc||''}</textarea></div>`;
+}
+
+function getSeanceFromForm(){
+  return {
+    l:               document.getElementById('se-l').value.trim(),
+    c:               document.getElementById('se-c').value,
+    rpe:             document.getElementById('se-rpe').value.trim(),
+    rn:              parseInt(document.getElementById('se-rn').value)||0,
+    d:               parseInt(document.getElementById('se-d').value)||null,
+    ua:              parseInt(document.getElementById('se-ua').value)||0,
+    nb_series:       parseInt(document.getElementById('se-nb-series').value)||1,
+    nb_repetition:   parseInt(document.getElementById('se-nb-rep').value)||0,
+    effort:          document.getElementById('se-effort').value.trim(),
+    recup_inter_rep: document.getElementById('se-recup-rep').value.trim(),
+    recup_inter_serie:document.getElementById('se-recup-serie').value.trim(),
+    lieu:            document.getElementById('se-lieu').value,
+    halage:          document.getElementById('se-halage').value.trim()||'—',
+    piste:           document.getElementById('se-piste').value.trim()||'—',
+    desc:            document.getElementById('se-desc').value.trim(),
+  };
+}
+
 function openSeanceEdit(k){
   editMode='seance'; editKey=k;
   const s = L.seances[k];
@@ -874,15 +1005,7 @@ function openSeanceEdit(k){
   document.getElementById('btn-reset').style.display = 'none';
   document.getElementById('panel-body').innerHTML =
     `<div class="field-group"><label class="field-label">Clé</label><div style="font-size:.75rem;font-weight:700;color:var(--navy);background:rgba(27,58,107,.06);padding:.35rem .6rem;border-radius:6px">${k}</div></div>`
-    +`<div class="field-group"><label class="field-label">Label</label><input class="field-input" id="se-l" value="${(s.l||'').replace(/"/g,'&quot;')}"></div>`
-    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
-    +`<div class="field-group"><label class="field-label">Catégorie</label><input class="field-input" id="se-c" value="${(s.c||'').replace(/"/g,'&quot;')}"></div>`
-    +`<div class="field-group"><label class="field-label">RPE</label><input class="field-input" id="se-rpe" value="${(s.rpe||'').replace(/"/g,'&quot;')}"></div>`
-    +`<div class="field-group"><label class="field-label">RPE num</label><input type="number" class="field-input" id="se-rn" value="${s.rn||0}" min="1" max="10"></div></div>`
-    +`<div class="field-group"><label class="field-label">UA (charge Foster)</label><input type="number" class="field-input" id="se-ua" value="${s.ua||0}"></div>`
-    +`<div class="field-group"><label class="field-label">🏞️ Halage (description)</label><input class="field-input" id="se-halage" value="${(s.halage||'—').replace(/"/g,'&quot;')}"></div>`
-    +`<div class="field-group"><label class="field-label">🏟️ Piste (équivalence)</label><input class="field-input" id="se-piste" value="${(s.piste||'—').replace(/"/g,'&quot;')}"></div>`
-    +`<div class="field-group"><label class="field-label">Explication</label><textarea class="field-textarea" id="se-desc" rows="3">${s.desc||''}</textarea></div>`;
+    + seanceFormHtml(s);
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
 }
@@ -892,16 +1015,8 @@ function openNewSeance(){
   document.getElementById('panel-title').textContent = 'Nouvelle séance';
   document.getElementById('btn-reset').style.display = 'none';
   document.getElementById('panel-body').innerHTML =
-    `<div class="field-group"><label class="field-label">Clé (sans espaces)</label><input class="field-input" id="se-key" placeholder="ma_seance"></div>`
-    +`<div class="field-group"><label class="field-label">Label</label><input class="field-input" id="se-l" placeholder="6×1000m Halage R=2'"></div>`
-    +`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">`
-    +`<div class="field-group"><label class="field-label">Catégorie</label><input class="field-input" id="se-c" placeholder="Seuil"></div>`
-    +`<div class="field-group"><label class="field-label">RPE</label><input class="field-input" id="se-rpe" placeholder="7-8"></div>`
-    +`<div class="field-group"><label class="field-label">RPE num</label><input type="number" class="field-input" id="se-rn" value="7" min="1" max="10"></div></div>`
-    +`<div class="field-group"><label class="field-label">UA (charge Foster)</label><input type="number" class="field-input" id="se-ua" value="0"></div>`
-    +`<div class="field-group"><label class="field-label">🏞️ Halage (description)</label><input class="field-input" id="se-halage" placeholder="10×30&quot;/30&quot; Halage"></div>`
-    +`<div class="field-group"><label class="field-label">🏟️ Piste (équivalence)</label><input class="field-input" id="se-piste" placeholder="10×200m piste"></div>`
-    +`<div class="field-group"><label class="field-label">Explication</label><textarea class="field-textarea" id="se-desc" rows="3"></textarea></div>`;
+    `<div class="field-group"><label class="field-label">Clé (sans espaces, ex: S201)</label><input class="field-input" id="se-key" placeholder="ma_seance"></div>`
+    + seanceFormHtml(null);
   document.getElementById('edit-panel').classList.add('open');
   document.getElementById('panel-overlay').style.display='block';
 }
@@ -938,6 +1053,9 @@ function buildInfosList(){
     </div>`).join('');
 }
 // ── EMOJI PICKER ──
+const SEANCE_CATS = ['VMA Courte','VMA Longue','Seuil','Allure Marathon','Allure Spécifique','Côtes','Puissance Montée','Technique Descente','Spécificité Trail','Volume Endurance','Récupération','Mixte','Activation'];
+function catSelect(cur){ return `<select class="field-select" id="se-c">${SEANCE_CATS.map(c=>`<option value="${c}"${c===cur?' selected':''}>${c}</option>`).join('')}</select>`; }
+
 const EMOJI_CATS = {
   sport: ['🏃','🏃‍♀️','🏃‍♂️','🚶','🎽','👟','🏅','🥇','🥈','🥉','🏆','🏁','⛰️','🏔️','🌲','🛣️','💪','⏱️','🚴','🏊','🧘','🤸','⛹️','🏋️','🏇','🧗','🏄','🚵','🤾','🥊','🎯','🏹'],
   humeur: ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','🥰','😘','🙂','🤗','🤩','🥳','😏','😔','😟','🙁','😣','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','😱','😨','😰','😥','🤔','🤭','🤫','😶','😐','😬','🙄','😯','😲','🥱','😴','🤐','🥴','🤢','🤧','🥵','🥶','😈','👿','💀'],
@@ -1067,42 +1185,30 @@ function saveItem(){
   if(editMode==='week'){
     const idx = L.programme.findIndex(x=>x.s===editKey);
     if(idx===-1) return;
-    L.programme[idx].m = document.getElementById('pw-m').value;
-    L.programme[idx].j = document.getElementById('pw-j').value;
-    L.programme[idx].wr = document.getElementById('pw-wr').value;
-    L.programme[idx].wt = document.getElementById('pw-wt').value;
-    L.programme[idx].ua = parseInt(document.getElementById('pw-ua').value)||0;
-    L.programme[idx].d = document.getElementById('pw-d').checked?1:0;
-    L.programme[idx].n = document.getElementById('pw-n').value.trim();
+    const lunVal = document.getElementById('pw-lun').value;
+    const merVal = document.getElementById('pw-mer').value;
+    const dimVal = document.getElementById('pw-dim').value;
+    L.programme[idx].lun = lunVal && lunVal!=='—' ? lunVal : null;
+    L.programme[idx].m   = document.getElementById('pw-m').value;
+    L.programme[idx].mer = merVal && merVal!=='—' ? merVal : null;
+    L.programme[idx].j   = document.getElementById('pw-j').value;
+    L.programme[idx].wr  = document.getElementById('pw-wr').value;
+    L.programme[idx].wt  = document.getElementById('pw-wt').value;
+    L.programme[idx].dim = dimVal && dimVal!=='—' ? dimVal : null;
+    L.programme[idx].ua  = parseInt(document.getElementById('pw-ua').value)||0;
+    L.programme[idx].d   = document.getElementById('pw-d').checked?1:0;
+    L.programme[idx].n   = document.getElementById('pw-n').value.trim();
     saveLocal(); buildAdminProg(); closePanel(); toast('Semaine S'+editKey+' mise à jour','success');
   }
   else if(editMode==='seance'){
-    const s = L.seances[editKey];
-    s.l = document.getElementById('se-l').value.trim();
-    s.c = document.getElementById('se-c').value.trim();
-    s.rpe = document.getElementById('se-rpe').value.trim();
-    s.rn = parseInt(document.getElementById('se-rn').value)||0;
-    s.ua = parseInt(document.getElementById('se-ua').value)||0;
-    s.halage = document.getElementById('se-halage').value.trim();
-    s.piste = document.getElementById('se-piste').value.trim();
-    s.desc = document.getElementById('se-desc').value.trim();
+    Object.assign(L.seances[editKey], getSeanceFromForm());
     saveLocal(); buildSeancesList(); closePanel(); toast('Séance mise à jour','success');
   }
   else if(editMode==='seance-new'){
     const k = (document.getElementById('se-key').value||'').trim().replace(/\s+/g,'_');
     if(!k){toast('Clé obligatoire','error');return;}
     if(L.seances[k]){toast('Clé existante','error');return;}
-    L.seances[k] = {
-      l:document.getElementById('se-l').value.trim(),
-      c:document.getElementById('se-c').value.trim(),
-      rpe:document.getElementById('se-rpe').value.trim(),
-      rn:parseInt(document.getElementById('se-rn').value)||0,
-      ua:parseInt(document.getElementById('se-ua').value)||0,
-      lieu:'halage',
-      halage:document.getElementById('se-halage').value.trim()||'—',
-      piste:document.getElementById('se-piste').value.trim()||'—',
-      desc:document.getElementById('se-desc').value.trim()
-    };
+    L.seances[k] = getSeanceFromForm();
     saveLocal(); buildSeancesList(); closePanel(); toast('Séance créée','success');
   }
 }

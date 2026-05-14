@@ -14,6 +14,7 @@ function semRange(n){ const l=semDate(n); return semFmt(l)+' – '+semFmt(new Da
 function semRangeLun(n){ return semFmt(semDate(n)); }
 function semRangeDim(n){ return semFmt(new Date(+semDate(n)+6*864e5)); }
 function sd(k){ return (k && k!=='—' && seancesData[k]) || null; }
+function calcSeanceUA(s, defaultDur = 60){ return s ? (s.ua || (s.rn||0) * (s.d||defaultDur)) : 0; }
 function phCls(p){ const m = phaseMap[p]; return m ? 'ph-'+m.c : 'ph-base'; }
 function phLabel(p){ const m = phaseMap[p]; return m ? m.l : p; }
 function tTag(lieu){
@@ -32,11 +33,11 @@ function getUAReel(w, isTrail = false) {
   const weData = sd(weKey);
   const socleLundi = socleConfig.lundi.dur * socleConfig.lundi.rpe;
   const socleMercredi = socleConfig.mercredi.dur * socleConfig.mercredi.rpe;
-  const uaMardi = mData ? (mData.ua || mData.rn * (mData.d||60)) : 0;
-  const uaJeudi = jData ? (jData.ua || jData.rn * (jData.d||60)) : 0;
+  const uaMardi = calcSeanceUA(mData);
+  const uaJeudi = calcSeanceUA(jData);
   let uaWE = 0;
   if (weData) {
-    uaWE = weData.ua || (weData.rn * (weData.d||90));
+    uaWE = calcSeanceUA(weData, 90);
   } else {
     uaWE = isTrail ? (socleConfig.weTrail.dur * socleConfig.weTrail.rpe) : (socleConfig.weRoute.dur * socleConfig.weRoute.rpe);
   }
@@ -266,10 +267,19 @@ function openDetail(sn){
     const hasPiste = data.piste && data.piste !== '—';
     const hasHalage = data.halage && data.halage !== '—';
     const isTrailOnly = data.lieu === 'montagne' || data.lieu === 'douves' || data.lieu === 'girouettes';
+    const hasStructure = data.nb_series || data.nb_repetition || data.effort;
+    const structureHtml = hasStructure ? `<div style="display:flex;gap:.35rem;flex-wrap:wrap;align-items:center;margin-bottom:.5rem">
+      ${(data.nb_series||0)>1 ? `<span style="font-size:.68rem;background:rgba(27,58,107,.07);border-radius:4px;padding:.1rem .45rem;font-weight:600">${data.nb_series} séries</span>` : ''}
+      ${data.nb_repetition ? `<span style="font-size:.68rem;background:rgba(42,93,160,.09);border-radius:4px;padding:.1rem .45rem;font-weight:600">${data.nb_repetition}×${data.effort?'&nbsp;'+data.effort:''}</span>` : (data.effort ? `<span style="font-size:.68rem;background:rgba(42,93,160,.09);border-radius:4px;padding:.1rem .45rem">${data.effort}</span>` : '')}
+      ${data.recup_inter_rep ? `<span style="font-size:.63rem;color:var(--muted)">r: ${data.recup_inter_rep}</span>` : ''}
+      ${data.recup_inter_serie ? `<span style="font-size:.63rem;color:var(--muted)">R: ${data.recup_inter_serie}</span>` : ''}
+      ${data.d ? `<span style="font-size:.63rem;color:var(--muted);margin-left:.2rem">⏱ ${data.d} min</span>` : ''}
+    </div>` : '';
     return `
       <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem">
         ${tTag(data.lieu)} <span class="rpe-pill">RPE ${data.rpe}</span> <span style="font-size:.68rem;color:var(--muted)">${data.c}</span>
       </div>
+      ${structureHtml}
       ${!isTrailOnly ? `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem">
         <div style="padding:.55rem .75rem;background:rgba(27,58,107,.06);border:1px solid var(--border);border-radius:6px">
