@@ -4,90 +4,98 @@
 
 // ── Variables globales (remplies par Firebase + main.js) ──
 let programme = [
-  // ── REPRISE (S1–S4, sep. 2026) ──────────────────
-  // Mardi: VMA Courte légère → S3 VMA Longue (casse la monotonie 3 semaines VMA Courte)
-  // Jeudi: Côtes courtes → S3 VMA Longue (casse la monotonie 3 semaines Côtes)
-  {s:1,  p:'Reprise',          m:'S107',                j:'S043',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:2,  p:'Reprise',          m:'S108',                j:'S046',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:3,  p:'Reprise',          m:'S116',                j:'S020',             wr:'sl_sur_mesure',   wt:'trail_montagne_decouverte'},
-  {s:4,  p:'Reprise',          m:'S107',                j:'S046',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── BASE ROUTE (S5–S8, oct. 2026) ───────────────
-  // Mardi: VMA Courte → S7 VMA Longue (casse monotonie)
-  // Jeudi: VMA Longue → S7 Seuil (casse monotonie)
-  {s:5,  p:'Base route',       m:'S101',                j:'S020',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:6,  p:'Base route',       m:'S102',                j:'S021',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:7,  p:'Base route',       m:'S021',                j:'S034',             wr:'sl_sur_mesure',   wt:'sortie_trail_col'},
-  {s:8,  p:'Base route',       m:'S108',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── BASE (S9–S16, oct.–déc. 2026) ───────────────
-  // Mardi: VMA Courte → S11 VMA Longue, S15 Seuil (casse monotonie à chaque S3 de bloc)
-  // Jeudi: VMA Longue → S11 Seuil déjà (ok), S14-S15 VMA Longue (seulement 2 consécutives)
-  {s:9,  p:'Base',             m:'S012',                j:'S117',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:10, p:'Base',             m:'S005',                j:'S021',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:11, p:'Base',             m:'S023',                j:'S134',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc'},
-  {s:12, p:'Base',             m:'S102',                j:'S116',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  {s:13, p:'Base',             m:'S001',                j:'S135',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:14, p:'Base',             m:'S012',                j:'S022',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:15, p:'Base',             m:'S035',                j:'S023',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc'},
-  {s:16, p:'Base',             m:'S101',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── TRÊVE NOËL (S17, déc. 2026) ─────────────────
-  {s:17, p:'Trêve Noël',       m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true, n:'Trêve de Noël — entraînement libre'},
-  // ── BASE (S18–S20, jan. 2027) ────────────────────
-  // Mardi: VMA Courte × 2 → S20 Seuil Fartlek (casse monotonie)
-  // Jeudi: VMA Longue × 2 → S20 Seuil (casse monotonie)
-  {s:18, p:'Base',             m:'S011',                j:'S020',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:19, p:'Base',             m:'S002',                j:'S117',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:20, p:'Base',             m:'S036',                j:'S135',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  // ── BLOC CROSS (S21–S24, jan.–fév. 2027) ────────
-  // Mardi: Côtes × 2 → S23 VMA Longue Pyramide (casse monotonie, choc cross)
-  // Jeudi: Côtes × 2 → S23 Seuil 2×10' (casse monotonie)
-  // S23 sam montagne : KV simulation (séance signature Bloc Cross)
-  {s:21, p:'Bloc cross',       m:'S044',                j:'S047',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:22, p:'Bloc cross',       m:'S045',                j:'S048',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:23, p:'Bloc cross',       m:'S026',                j:'S134',             wr:'sl_sur_mesure',   wt:'kv_simulation'},
-  {s:24, p:'Bloc cross',       m:'S043',                j:'S046',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── SPÉCIFIQUE (S25–S32, fév.–avr. 2027) ────────
-  // S27 : weekend choc double Sam seuil montagne + Dim sortie longue
-  // Mardi S27 : VMA Longue Pyramide (casse monotonie 3× VMA Courte S25-S26-S27)
-  // Jeudi S27 : Allure Marathon (break Seuil S25-S26)
-  {s:25, p:'Spécifique',       m:'S001',                j:'S035',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:26, p:'Spécifique',       m:'S003',                j:'S036',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:27, p:'Spécifique',       m:'S026',                j:'S038',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
-  {s:28, p:'Spécifique',       m:'S001',                j:'S034',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  {s:29, p:'Spécifique',       m:'S008',                j:'S039',             wr:'allure_marathon', wt:'sl_sur_mesure'},
-  {s:30, p:'Spécifique',       m:'S026',                j:'S040',             wr:'allure_marathon', wt:'sl_sur_mesure'},
-  {s:31, p:'Spécifique',       m:'S013',                j:'S036',             wr:'allure_marathon', wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
-  {s:32, p:'Spécifique',       m:'S005',                j:'S029',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── AFFÛTAGE (S33–S34, avr. 2027) ───────────────
-  {s:33, p:'Affûtage',         m:'S002',                j:'S041',             wr:'allure_marathon', wt:'sl_sur_mesure'},
-  {s:34, p:'Affûtage',         m:'vitesse_5x100_veille',j:'S034',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── COMPÉTITION (S35–S40, avr.–mai 2027) ────────
-  {s:35, p:'Compétition',      m:'S005',                j:'S041',             wr:'S039',            wt:'sl_sur_mesure'},
-  {s:36, p:'Compétition',      m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'—',               wt:'—',             d:true, n:'Course le weekend'},
-  {s:37, p:'Compétition',      m:'S012',                j:'S029',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:38, p:'Compétition',      m:'S107',                j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  {s:39, p:'Compétition',      m:'S005',                j:'S034',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:40, p:'Compétition',      m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'—',               wt:'—',             d:true, n:'Course le weekend'},
-  // ── DÉVELOPPEMENT (S41–S44, mai–juin 2027) ───────
-  // Mardi: VMA Courte × 2 → S43 Côtes (casse monotonie)
-  // Jeudi: Seuil × 2 → S43 Allure Marathon (casse monotonie)
-  // S43 : weekend choc double Sam seuil montagne + Dim sortie longue
-  {s:41, p:'Développement',    m:'S001',                j:'S135',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:42, p:'Développement',    m:'S002',                j:'S033',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:43, p:'Développement',    m:'S047',                j:'S041',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
-  {s:44, p:'Développement',    m:'S011',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── SPÉCIFIQUE TRAIL (S45–S48, juin–juil. 2027) ──
-  // Mardi: Côtes × 2 → S47 Seuil (casse monotonie, semaine choc double)
-  // S47 : weekend choc double Sam seuil montagne + Dim sortie longue (PEAK)
-  {s:45, p:'Spécifique trail', m:'S050',                j:'circuit_douves',   wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:46, p:'Spécifique trail', m:'S049',                j:'fartlek_pyramid_girouettes', wr:'sl_sur_mesure', wt:'sl_sur_mesure'},
-  {s:47, p:'Spécifique trail', m:'S035',                j:'S050',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
-  {s:48, p:'Spécifique trail', m:'S043',                j:'circuit_douves',   wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── AFFÛTAGE TRAIL (S49–S50, juil. 2027) ─────────
-  {s:49, p:'Affûtage',         m:'S044',                j:'cote_1min30',      wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
-  {s:50, p:'Affûtage',         m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  // ── COUPURE (S51–S52, août 2027) ────────────────
-  {s:51, p:'Coupure',          m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  {s:52, p:'Coupure',          m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
+  // ── REPRISE (S1–S4, fin août–sept. 2026) ─────────────────────────────────
+  // Méthode Foster. UA cible : 1450 → 1770 → 1975 → 1150 (décharge)
+  // Mardi: VC→VC→VL  |  Jeudi: Côtes→Côtes→VL  |  Sam S2 opt, S3 obligatoire
+  {s:1,  p:'Reprise',          m:'S107', j:'S043',                                    wr:'SR090', wt:'TM090'},
+  {s:2,  p:'Reprise',          m:'S108', j:'S046',            sam:'M04',              wr:'SR090', wt:'TM120'},
+  {s:3,  p:'Reprise',          m:'S116', j:'S020',            sam:'trail_montagne_decouverte', wr:'SR090', wt:'TM120'},
+  {s:4,  p:'Reprise',          m:'S107', j:'S043',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── BASE ROUTE (S5–S8, oct. 2026) ────────────────────────────────────────
+  // UA cible : 1770 → 2040 → 2345 → 1240 (décharge)
+  // Mardi: VC→VC→VL  |  Jeudi: VL→VL→Seuil  |  Sam S2 opt, S3 obligatoire
+  {s:5,  p:'Base route',       m:'S101', j:'S117',                                    wr:'SR090', wt:'TM120'},
+  {s:6,  p:'Base route',       m:'S102', j:'S021',            sam:'M02',              wr:'SR120', wt:'TM150'},
+  {s:7,  p:'Base route',       m:'S021', j:'S134',            sam:'sortie_trail_col', wr:'SR090', wt:'TM120'},
+  {s:8,  p:'Base route',       m:'S108', j:'S020',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── BASE (S9–S12, oct.–nov. 2026) ────────────────────────────────────────
+  // UA cible : 1985 → 2298 → 2620 → 1310 (décharge)
+  // Mardi: VC→VC→VL  |  Jeudi: VL→VL→Seuil  |  Sam S2 opt, S3 obligatoire
+  {s:9,  p:'Base',             m:'S005', j:'S117',                                    wr:'SR120', wt:'TM150'},
+  {s:10, p:'Base',             m:'S012', j:'S021',            sam:'M03',              wr:'SR120', wt:'TM180'},
+  {s:11, p:'Base',             m:'S027', j:'S134',            sam:'seuil_montagne_bloc', wr:'SR150', wt:'TM240'},
+  {s:12, p:'Base',             m:'S102', j:'S116',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── BASE (S13–S16, nov.–déc. 2026) ───────────────────────────────────────
+  // UA cible : 2444 → 2760 → 2975 → 1280 (décharge)
+  // Mardi: VC→VC→Seuil  |  Jeudi: Seuil→VL→VL→Côtes  |  Sam S2 opt, S3 obligatoire
+  {s:13, p:'Base',             m:'S001', j:'S135',                                    wr:'SR150', wt:'TM210'},
+  {s:14, p:'Base',             m:'S012', j:'S022',            sam:'M01',              wr:'SR150', wt:'TM270'},
+  {s:15, p:'Base',             m:'S035', j:'S023',            sam:'seuil_montagne_bloc', wr:'SR150', wt:'TM300'},
+  {s:16, p:'Base',             m:'S101', j:'S046',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── TRÊVE NOËL (S17, déc. 2026) ──────────────────────────────────────────
+  {s:17, p:'Trêve Noël',       m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true, n:'Trêve de Noël — entraînement libre'},
+  // ── BASE HIVER (S18–S20, jan. 2027) ──────────────────────────────────────
+  // UA cible : 2210 → 2600 → 2865 — bloc 3 semaines, reprise progressive post-trêve
+  // Mardi: VC→VC→Seuil  |  Jeudi: VL→VL→Seuil  |  Sam S2 opt, S3 obligatoire
+  {s:18, p:'Base',             m:'S011', j:'S020',                                    wr:'SR150', wt:'TM210'},
+  {s:19, p:'Base',             m:'S002', j:'S117',            sam:'M02',              wr:'SR150', wt:'TM240'},
+  {s:20, p:'Base',             m:'S036', j:'S135',            sam:'X03',              wr:'SR180', wt:'TM270'},
+  // ── BLOC CROSS (S21–S24, jan.–fév. 2027) ──────────────────────────────────
+  // UA cible : 2385 → 2760 → 3035 → 1270 (décharge)
+  // Mardi: Côtes→Côtes→VL(pyramide)  |  Jeudi: Côtes→Côtes→Seuil
+  // S22 sam opt: Descente Technique  |  S23 sam obligatoire: KV Simulation
+  {s:21, p:'Bloc cross',       m:'S044', j:'S047',                                    wr:'SR150', wt:'TM210'},
+  {s:22, p:'Bloc cross',       m:'S045', j:'S048',            sam:'D01',              wr:'SR150', wt:'TM240'},
+  {s:23, p:'Bloc cross',       m:'S026', j:'S134',            sam:'kv_simulation',    wr:'SR150', wt:'TM330'},
+  {s:24, p:'Bloc cross',       m:'S043', j:'S046',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── SPÉCIFIQUE 1 (S25–S28, fév.–mars 2027) ───────────────────────────────
+  // UA cible : 2764 → 3015 → 3275 → 1425 (décharge)
+  // Mardi: VC→VC→VL(pyramide)  |  Jeudi: Seuil→Seuil→AM
+  // S26 sam opt: Descente Technique  |  S27 sam obligatoire: Seuil Montagne
+  {s:25, p:'Spécifique',       m:'S001', j:'S035',                                    wr:'SR150', wt:'TM270'},
+  {s:26, p:'Spécifique',       m:'S003', j:'S036',            sam:'D01',              wr:'SR150', wt:'TM300'},
+  {s:27, p:'Spécifique',       m:'S026', j:'S038',            sam:'seuil_montagne_bloc', wr:'SR180', wt:'TM360'},
+  {s:28, p:'Spécifique',       m:'S001', j:'S034',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── SPÉCIFIQUE 2 (S29–S32, mars–avr. 2027) ───────────────────────────────
+  // UA cible : 3115 → 3400 → 3695 → 1370 (décharge)
+  // Mardi: VC→VL→VC(vol+)  |  Jeudi: AM→AM→Seuil
+  // S30 sam opt: Relance Crête  |  S31 sam obligatoire: Descente Engagée
+  {s:29, p:'Spécifique',       m:'S008', j:'S039',                                    wr:'SR180', wt:'TM300'},
+  {s:30, p:'Spécifique',       m:'S026', j:'S040',            sam:'X01',              wr:'SR180', wt:'TM330'},
+  {s:31, p:'Spécifique',       m:'S013', j:'S036',            sam:'D02',              wr:'SR180', wt:'TM420'},
+  {s:32, p:'Spécifique',       m:'S005', j:'S029',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── AFFÛTAGE (S33–S34, avr. 2027) ────────────────────────────────────────
+  {s:33, p:'Affûtage',         m:'S035', j:'S041',                                    wr:'SR180', wt:'TM300'},
+  {s:34, p:'Affûtage',         m:'vitesse_5x100_veille', j:'S034',                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── COMPÉTITION (S35–S40, avr.–mai 2027) ─────────────────────────────────
+  {s:35, p:'Compétition',      m:'S005', j:'S041',                                    wr:'SR120', wt:'TM240'},
+  {s:36, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'—', d:true, n:'Course le weekend'},
+  {s:37, p:'Compétition',      m:'S012', j:'S029',                                    wr:'SR150', wt:'TM270'},
+  {s:38, p:'Compétition',      m:'S107', j:'sortie_recup',                            wr:'sortie_recup', wt:'sortie_recup', d:true},
+  {s:39, p:'Compétition',      m:'S005', j:'S034',                                    wr:'SR150', wt:'TM300'},
+  {s:40, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'—', d:true, n:'Course le weekend'},
+  // ── DÉVELOPPEMENT (S41–S44, mai–juin 2027) ───────────────────────────────
+  // UA cible : 3194 → 3530 → 3995 → 1310 (décharge)
+  // Mardi: VC→VC→Côtes  |  Jeudi: Seuil→Seuil→Côtes
+  // S42 sam opt: Relance Crête  |  S43 sam obligatoire: Descente Engagée (CHOC)
+  {s:41, p:'Développement',    m:'S001', j:'S135',                                    wr:'SR180', wt:'TM360'},
+  {s:42, p:'Développement',    m:'S002', j:'S033',            sam:'X01',              wr:'SR180', wt:'TM420'},
+  {s:43, p:'Développement',    m:'S047', j:'S050',            sam:'D02',              wr:'SR180', wt:'TM480'},
+  {s:44, p:'Développement',    m:'S011', j:'S020',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── SPÉCIFIQUE TRAIL (S45–S48, juin–juil. 2027) ──────────────────────────
+  // UA cible : 3322 → 3635 → 3950 → 1360 (décharge) — PIC SAISON juillet
+  // Mardi: Côtes→Côtes→Seuil  |  Jeudi: Trail→Trail→Côtes
+  // S46 sam opt: Terrain Vallonn  |  S47 sam obligatoire: Descente Engagée (PEAK)
+  {s:45, p:'Spécifique trail', m:'S050', j:'circuit_douves',                          wr:'SR180', wt:'TM390'},
+  {s:46, p:'Spécifique trail', m:'S049', j:'fartlek_pyramid_girouettes', sam:'X02',   wr:'SR180', wt:'TM420'},
+  {s:47, p:'Spécifique trail', m:'S035', j:'S050',            sam:'D03',              wr:'SR180', wt:'TM480'},
+  {s:48, p:'Spécifique trail', m:'S043', j:'circuit_douves',                          wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── AFFÛTAGE TRAIL (S49–S50, juil. 2027) ─────────────────────────────────
+  {s:49, p:'Affûtage',         m:'S044', j:'cote_1min30',                             wr:'SR120', wt:'TM240'},
+  {s:50, p:'Affûtage',         m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'sortie_recup', wt:'sortie_recup', d:true},
+  // ── COUPURE (S51–S52, août 2027) ─────────────────────────────────────────
+  {s:51, p:'Coupure',          m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true},
+  {s:52, p:'Coupure',          m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true},
 ];
 let seancesData = {};
 let socleConfig = { lundi:{dur:60,rpe:4}, mercredi:{dur:50,rpe:3}, weRoute:{dur:60,rpe:4}, weTrail:{dur:90,rpe:4} };

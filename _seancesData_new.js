@@ -1705,4 +1705,206 @@ seancesData = {
     "piste": "\u2014",
     "desc": "Circuit trail Les Douves. Terrain naturel, relief vari\u00e9, alternance c\u00f4tes et plat."
   },
+
+  // \u2500\u2500 SORTIES MONTAGNE (TM) \u2014 1h30 \u00e0 6h, toutes les 30min \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  "TM090": {
+    "l": "Trail Montagne 1h30",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 450,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "1h30 en montagne, Zone 2 stricte. Mix course/marche selon la pente. Allure conversationnelle, jamais > 80% FCmax. Id\u00e9al en reprise de saison ou r\u00e9cup\u00e9ration active entre deux blocs charg\u00e9s."
+  },
+  "TM120": {
+    "l": "Trail Montagne 2h",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 600,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "2h en montagne, endurance active Zone 2. Marche rapide en mont\u00e9e, course en descente et plat. Hydratation obligatoire. Conversation possible \u00e0 tout moment. Socle du trail long."
+  },
+  "TM150": {
+    "l": "Trail Montagne 2h30",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 750,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "2h30 en montagne, Zone 2. Gestion de l'effort sur la dur\u00e9e \u2014 ne pas partir trop vite. Pr\u00e9voir ravitaillement (gel ou barre). Terrain vallonn\u00e9, accumulation D+ progressive. RPE constant."
+  },
+  "TM180": {
+    "l": "Trail Montagne 3h",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 900,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "3h en montagne, endurance fondamentale. Nutrition toutes les 45min. Zone 2 \u2014 si la conversation devient difficile, ralentir ou marcher. Id\u00e9al pour d\u00e9velopper le m\u00e9tabolisme des graisses et l'autonomie."
+  },
+  "TM210": {
+    "l": "Trail Montagne 3h30",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 1050,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "3h30 en montagne. Sortie longue trail \u2014 gestion de la fatigue sur la 2e moiti\u00e9 cl\u00e9. Ravitaillement r\u00e9gulier. Marche assum\u00e9e en forte mont\u00e9e. Travailler la descente technique en fin de sortie (jambes fatigu\u00e9es)."
+  },
+  "TM240": {
+    "l": "Trail Montagne 4h",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 1200,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "4h en montagne, Zone 2 strict. S\u00e9ance de r\u00e9f\u00e9rence trail \u2014 d\u00e9veloppe l'\u00e9conomie de course sur dur\u00e9e. Pr\u00e9voir 2 ravitaillements solides. Tester la nutrition de course. Ne pas forcer en mont\u00e9e, r\u00e9cup\u00e9rer en descente."
+  },
+  "TM270": {
+    "l": "Trail Montagne 4h30",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 1350,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "4h30 en montagne. Pr\u00e9paration trail long. La fatigue des derni\u00e8re 45min est sp\u00e9cifique \u2014 apprendre \u00e0 courir fatigu\u00e9. Nutrition: gel ou barre toutes les 30-40min. Tester mat\u00e9riel de course (chaussures, sac, b\u00e2tons)."
+  },
+  "TM300": {
+    "l": "Trail Montagne 5h",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 1500,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "5h en montagne \u2014 pr\u00e9paration ultra trail. Zone 2, gestion mentale et physique sur la dur\u00e9e. Sortie collective recommand\u00e9e. Pr\u00e9voir ravitaillement autonome complet. Simulation partielle des conditions de course."
+  },
+  "TM330": {
+    "l": "Trail Montagne 5h30",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 1650,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "5h30 en montagne \u2014 s\u00e9ance ultra sp\u00e9cifique. Reproduire les conditions de course : nutrition, hydratation, mat\u00e9riel, b\u00e2tons. Accepter la marche prolong\u00e9e. La r\u00e9gularit\u00e9 de l'effort prime sur la vitesse."
+  },
+  "TM360": {
+    "l": "Trail Montagne 6h",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 1800,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "6h en montagne \u2014 simulation maximale de course. S\u00e9ance phare de pr\u00e9paration trail 40km+. Tester toute la logistique de course (nutrition, chaussures, v\u00eatements). Ne pas d\u00e9passer RPE 5-6. La r\u00e9cup\u00e9ration J+1 et J+2 est imp\u00e9rative."
+  },
+  "TM390": {
+    "l": "Trail Montagne 6h30",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 1950,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "6h30 en montagne \u2014 pr\u00e9paration ultra trail longue distance. Volume maximum avant le pic. Gestion nutrition toutes les 30-40min obligatoire. Tester les b\u00e2tons si objectif trail technique. R\u00e9cup\u00e9ration de 48h minimum apr\u00e8s."
+  },
+  "TM420": {
+    "l": "Trail Montagne 7h",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 2100,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "7h en montagne \u2014 s\u00e9ance ultra longue, proche de la dur\u00e9e de course pour un 40km. Zone 2 absolue, marche assum\u00e9e d\u00e8s que la pente d\u00e9passe 15%. Simulation compl\u00e8te des conditions de course. Ne pas faire plus de 2x dans la saison."
+  },
+  "TM480": {
+    "l": "Trail Montagne 8h",
+    "c": "Sortie Longue",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 2400,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "8h en montagne \u2014 S\u00c9ANCE MAXIMALE. R\u00e9serv\u00e9e aux athl\u00e8tes au pic de forme. Simulation de course enti\u00e8re en conditions r\u00e9elles. Logistique compl\u00e8te obligatoire (ravitaillements, mat\u00e9riel, b\u00e2tons, 2500m D+). Semaine suivante = d\u00e9charge imp\u00e9rative."
+  },
+
+  // \u2500\u2500 SORTIES ROUTE (SR) \u2014 1h \u00e0 3h, toutes les 30min \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  "SR060": {
+    "l": "Sortie Route 1h",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 240,
+    "lieu": "halage",
+    "halage": "1h endurance fondamentale Halage / Chiberta",
+    "piste": "\u2014",
+    "desc": "1h en endurance fondamentale, Zone 2. Allure conversationnelle. Terrain plat de pr\u00e9f\u00e9rence. Id\u00e9al en r\u00e9cup\u00e9ration active ou en compl\u00e9ment d'une semaine charg\u00e9e."
+  },
+  "SR090": {
+    "l": "Sortie Route 1h30",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 360,
+    "lieu": "halage",
+    "halage": "1h30 endurance Halage / Chiberta",
+    "piste": "\u2014",
+    "desc": "1h30 en endurance, Zone 2 stricte. Sortie standard de week-end pour les semaines l\u00e9g\u00e8res. Allure r\u00e9guli\u00e8re, jamais > 80% FCmax. Conversation possible \u00e0 tout moment."
+  },
+  "SR120": {
+    "l": "Sortie Route 2h",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 480,
+    "lieu": "halage",
+    "halage": "2h endurance route / Chiberta / Boucle C\u00f4te Basque",
+    "piste": "\u2014",
+    "desc": "2h en endurance fondamentale. Sortie longue route de r\u00e9f\u00e9rence. Pr\u00e9voir hydratation si chaleur. Zone 2 \u2014 d\u00e9veloppe le m\u00e9tabolisme a\u00e9robie et l'\u00e9conomie de course. Allure r\u00e9guli\u00e8re sur toute la dur\u00e9e."
+  },
+  "SR150": {
+    "l": "Sortie Route 2h30",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 600,
+    "lieu": "halage",
+    "halage": "2h30 endurance longue route / C\u00f4te Basque",
+    "piste": "\u2014",
+    "desc": "2h30 route, Zone 2. Sortie longue route \u2014 ravitaillement recommand\u00e9 apr\u00e8s 1h30. Terrain vari\u00e9 bienvenu (petites c\u00f4tes). Construire la r\u00e9sistance \u00e0 la fatigue et l'efficacit\u00e9 \u00e9nerg\u00e9tique."
+  },
+  "SR180": {
+    "l": "Sortie Route 3h",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 720,
+    "lieu": "halage",
+    "halage": "3h endurance maximale route",
+    "piste": "\u2014",
+    "desc": "3h route \u2014 sortie longue maximale sur route. Tester la nutrition de course (gel, barre). Zone 2 stricte \u2014 ralentir d\u00e8s que la conversation devient difficile. Pr\u00e9pare l'endurance de base pour les trails longue distance."
+  }
 };

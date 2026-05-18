@@ -34,33 +34,25 @@ function getUAReel(w, isTrail = false) {
   const socleLundi    = socleConfig.lundi.dur    * socleConfig.lundi.rpe;
   const socleMercredi = socleConfig.mercredi.dur * socleConfig.mercredi.rpe;
   const uaMardi = calcSeanceUA(mData);
-  const uaJeudi = calcSeanceUA(jData);
+  // Foster : samedi montagne remplace jeudi si UA plus haute (règle max)
+  const samData = w.sam ? sd(w.sam) : null;
+  const uaJeudi = Math.max(calcSeanceUA(jData), samData ? calcSeanceUA(samData) : 0);
   let uaWE = 0;
   const sl = slSem(w);
-
-  if (isTrail && w.dim && w.dim !== '—') {
-    // Weekend bloc double : Samedi wt (seuil montagne) + Dimanche dim (sortie longue)
-    const samData = sd(w.wt);
-    const uaSam   = samData ? calcSeanceUA(samData, 75) : 0;
-    const dimDur  = sl ? sl.dur_t : socleConfig.weTrail.dur;
-    const uaDim   = 4 * dimDur;
-    uaWE = uaSam + uaDim;
-  } else {
-    const weKey  = isTrail ? w.wt : w.wr;
-    const weData = sd(weKey);
-    if (weData) {
-      // Sortie longue sur mesure : durée dynamique selon slProgression
-      if ((weKey === 'sortie_longue' || weKey === 'sl_sur_mesure') && sl) {
-        const dur = isTrail ? sl.dur_t : sl.dur_r;
-        uaWE = (weData.rn || 4) * dur;
-      } else {
-        uaWE = calcSeanceUA(weData, isTrail ? 90 : 60);
-      }
+  const weKey  = isTrail ? w.wt : w.wr;
+  const weData = sd(weKey);
+  if (weData) {
+    // Sortie longue sur mesure : durée dynamique selon slProgression
+    if ((weKey === 'sortie_longue' || weKey === 'sl_sur_mesure') && sl) {
+      const dur = isTrail ? sl.dur_t : sl.dur_r;
+      uaWE = (weData.rn || 4) * dur;
     } else {
-      uaWE = isTrail
-        ? (socleConfig.weTrail.dur * socleConfig.weTrail.rpe)
-        : (socleConfig.weRoute.dur * socleConfig.weRoute.rpe);
+      uaWE = calcSeanceUA(weData, isTrail ? 90 : 60);
     }
+  } else {
+    uaWE = isTrail
+      ? (socleConfig.weTrail.dur * socleConfig.weTrail.rpe)
+      : (socleConfig.weRoute.dur * socleConfig.weRoute.rpe);
   }
   return socleLundi + uaMardi + socleMercredi + uaJeudi + uaWE;
 }
@@ -135,9 +127,9 @@ function renderAccueil(){
     const weKey  = isTrailAcc ? w.wt : w.wr;
     const weData = sd(weKey);
     let weLbl = weData ? weData.l : (weKey==='—'?'—':weKey||'—');
-    if (isTrailAcc && w.dim && w.dim !== '—') {
-      const dimData = sd(w.dim);
-      weLbl = `${weData?weData.l:'Sortie sam.'} + ${dimData?dimData.l:'Sortie dim.'}`;
+    if (isTrailAcc && w.sam && w.sam !== '—') {
+      const samD = sd(w.sam);
+      weLbl = `${samD?`🏔 ${samD.l} · `:''}🌲 ${weLbl}`;
     }
     const obj = objForSem(sn);
     const marFmt = new Date(+lundiSem+864e5).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'});
@@ -242,9 +234,9 @@ function buildProg(){
     const obj    = objForSem(w.s);
 
     let weLbl = weData ? weData.l : (weKey==='—' ? '—' : weKey||'—');
-    if (isTrail && w.dim && w.dim !== '—') {
-      const dimData = sd(w.dim);
-      weLbl = `${weData?weData.l:'Sam.'} + ${dimData?dimData.l:'Dim.'}`;
+    if (isTrail && w.sam && w.sam !== '—') {
+      const samD = sd(w.sam);
+      weLbl = `${samD?`🏔 ${samD.l} · `:''}🌲 ${weLbl}`;
     }
 
     // ── Calcul UA ──
@@ -391,20 +383,21 @@ function openDetail(sn){
   const wrSub  = weR&&weR.halage&&weR.halage!=='—' ? weR.halage : '';
 
   let wtHtml = '';
-  if (w.dim && w.dim !== '—') {
-    const dimData = sd(w.dim);
+  const detailSamData = w.sam && w.sam !== '—' ? sd(w.sam) : null;
+  if (detailSamData) {
     wtHtml = `
       <div style="flex:1;min-width:180px;padding:.6rem .8rem;background:rgba(74,138,90,.08);border:2px solid var(--mousse);border-radius:6px">
         <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--mousse);margin-bottom:.3rem">🌲 Weekend Trail — Sam + Dim</div>
         <div style="display:flex;flex-direction:column;gap:.4rem">
           <div style="padding:.4rem .6rem;background:rgba(0,0,0,.03);border-radius:4px;border-left:3px solid #D4893A">
-            <div style="font-size:.58rem;font-weight:700;color:#D4893A;text-transform:uppercase;margin-bottom:.1rem">Samedi</div>
-            <div style="font-size:.76rem;font-weight:600">${weT?weT.l:'—'}</div>
-            ${weT&&weT.desc?`<div style="font-size:.62rem;color:var(--muted);margin-top:.1rem">${weT.desc.slice(0,80)}…</div>`:''}
+            <div style="font-size:.58rem;font-weight:700;color:#D4893A;text-transform:uppercase;margin-bottom:.1rem">🏔 Samedi — Montagne</div>
+            <div style="font-size:.76rem;font-weight:600">${detailSamData.l}</div>
+            ${detailSamData.desc?`<div style="font-size:.62rem;color:var(--muted);margin-top:.1rem">${detailSamData.desc.slice(0,100)}…</div>`:''}
           </div>
           <div style="padding:.4rem .6rem;background:rgba(0,0,0,.03);border-radius:4px;border-left:3px solid var(--mousse)">
-            <div style="font-size:.58rem;font-weight:700;color:var(--mousse);text-transform:uppercase;margin-bottom:.1rem">Dimanche</div>
-            <div style="font-size:.76rem;font-weight:600">${dimData?dimData.l:'Sortie longue'}</div>
+            <div style="font-size:.58rem;font-weight:700;color:var(--mousse);text-transform:uppercase;margin-bottom:.1rem">Dimanche — Sortie longue</div>
+            <div style="font-size:.76rem;font-weight:600">${weT?weT.l:'—'}</div>
+            ${weT&&weT.desc?`<div style="font-size:.62rem;color:var(--muted);margin-top:.1rem">${weT.desc.slice(0,80)}…</div>`:''}
           </div>
         </div>
       </div>`;
