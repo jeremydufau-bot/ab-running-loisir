@@ -617,9 +617,9 @@ function buildAdminProg(){
           +(mono?`<div style="font-size:.55rem;color:#D4893A;font-weight:700;margin-top:.1rem">⚠ mono: ${seance.c}</div>`:'');
   };
   const samCell = (w, uaSam) => {
-    const samKey = w.wt || w.wr;
-    const samD = L.seances[samKey];
-    const samLbl = (samD ? samD.l : (samKey||'Repos')).substring(0,22);
+    const samKey = w.sam;
+    const samD = samKey && samKey !== '—' ? L.seances[samKey] : null;
+    const samLbl = (samD ? samD.l : (samKey && samKey !== '—' ? samKey : '—')).substring(0,22);
     return `<div style="font-size:.65rem;color:var(--navy);line-height:1.2">${samLbl}</div>`
           +`<div style="font-size:.58rem;color:var(--muted)">${uaSam} UA</div>`;
   };
@@ -634,17 +634,19 @@ function buildAdminProg(){
     const mD   = L.seances[w.m];
     const merD = w.mer ? L.seances[w.mer] : null;
     const jD   = L.seances[w.j];
-    const dimD = w.dim&&w.dim!=='—' ? L.seances[w.dim] : null;
+    const weKey = w.wt || w.wr;
+    const dimD = weKey && weKey !== '—' ? L.seances[weKey] : null;
 
     const uaLun = lunD ? calcSeanceUA(lunD) : socle.lundi;
     const uaMar = calcSeanceUA(mD);
     const uaMer = merD ? calcSeanceUA(merD) : socle.mercredi;
     const uaJeu = calcSeanceUA(jD);
 
-    const samKey = w.wt || w.wr;
-    const uaSam = L.seances[samKey] ? calcSeanceUA(L.seances[samKey], 75) : (samKey && samKey !== '—' ? 0 : socle.weTrail);
-    const uaDim = dimD ? calcSeanceUA(dimD) : 0;
-    const uaReel = uaLun + uaMar + uaMer + uaJeu + uaSam + uaDim;
+    // Foster : max(jeudi, samedi montagne) + sortie longue dimanche
+    const samMtnD = w.sam && w.sam !== '—' ? L.seances[w.sam] : null;
+    const uaSamMtn = samMtnD ? calcSeanceUA(samMtnD) : 0;
+    const uaWE = dimD ? calcSeanceUA(dimD, 75) : socle.weTrail;
+    const uaReel = uaLun + uaMar + uaMer + Math.max(uaJeu, uaSamMtn) + uaWE;
     w.ua = uaReel;
 
     // Détection monotonie (3 sem. consécutives même catégorie, hors décharge)
@@ -669,8 +671,8 @@ function buildAdminProg(){
       <td><span style="font-size:.68rem;font-weight:600;color:var(--navy)">${w.p}</span>${w.d?'<div style="font-size:.58rem;color:var(--mousse)">Décharge</div>':''}${changed?'<span class="modified-flag">✏️</span>':''}</td>
       <td>${clubCell(mD, uaMar, mono_m)}</td>
       <td>${clubCell(jD, uaJeu, mono_j)}</td>
-      <td>${samCell(w, uaSam)}</td>
-      <td>${dimD?dayCell(dimD,uaDim,'Repos'):'<div style="font-size:.65rem;color:var(--muted)">Repos</div>'}</td>
+      <td>${samCell(w, uaSamMtn)}</td>
+      <td>${dimD?dayCell(dimD,uaWE,'Repos'):'<div style="font-size:.65rem;color:var(--muted)">Repos</div>'}</td>
       <td style="text-align:center;font-weight:700;color:var(--navy)">${uaReel}</td>
       <td style="text-align:center;font-size:.72rem">${delta||'—'}</td>
       <td><button class="btn-sm" onclick="openWeekEdit(${w.s})">✏️</button>${changed?`<button class="btn-sm danger" style="margin-left:.2rem" onclick="resetWeek(${w.s})">↺</button>`:''}</td>
@@ -741,10 +743,10 @@ return `
     +`<div class="field-group"><label class="field-label">Séance (vide = socle ${socle.mercredi} UA)</label>${picker('pw-mer', w.mer||'', `<option value="">Socle — Footing récup (${socle.mercredi} UA)</option>`)}</div>`
     +'<span class="block-sep" style="color:var(--mousse)">📅 JEUDI</span>'
     +`<div class="field-group"><label class="field-label">Séance</label>${picker('pw-j',w.j)}</div>`
-    +'<span class="block-sep">🏔️ SAMEDI</span>'
-    +`<div class="field-group"><label class="field-label">Séance</label>${picker('pw-sam', w.wt||w.wr||'—')}</div>`
-    +'<span class="block-sep">🌅 DIMANCHE</span>'
-    +`<div class="field-group"><label class="field-label">Séance (repos par défaut)</label>${picker('pw-dim', w.dim||'—')}</div>`
+    +'<span class="block-sep">🏔️ SAMEDI — Montagne (optionnel)</span>'
+    +`<div class="field-group"><label class="field-label">Séance montagne (vide = repos)</label>${picker('pw-sam', w.sam||'—')}</div>`
+    +'<span class="block-sep">🌅 DIMANCHE — Sortie longue</span>'
+    +`<div class="field-group"><label class="field-label">Séance (repos par défaut)</label>${picker('pw-dim', w.wt||w.wr||'—')}</div>`
     +`<div class="field-group"><label class="field-label">UA semaine (auto-calculé)</label><input type="number" class="field-input" id="pw-ua" value="${w.ua}" style="font-weight:700"></div>`
     +`<div id="pw-preview" style="background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.8rem"></div>`
     +`<div class="field-group"><label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="pw-d" ${w.d?'checked':''}> Semaine de décharge</label></div>`
@@ -782,11 +784,11 @@ function autoCalcWeekUA() {
   const uaMar = getCharge('pw-m',   0);
   const uaMer = getCharge('pw-mer', socle.mercredi);
   const uaJeu = getCharge('pw-j',   0);
-  const uaSam = getCharge('pw-sam', socle.weTrail);
-  const uaDim = getCharge('pw-dim', 0);
-  const totalUA = uaLun + uaMar + uaMer + uaJeu + uaSam + uaDim;
+  const uaSamMtn = getCharge('pw-sam', 0);  // montagne samedi, 0 si absent
+  const uaWE = getCharge('pw-dim', socle.weTrail);  // sortie longue dimanche
+  const totalUA = uaLun + uaMar + uaMer + Math.max(uaJeu, uaSamMtn) + uaWE;
   document.getElementById('pw-ua').value = totalUA;
-  updateWeekPreview(uaMar, uaJeu, uaSam, uaDim, socle);
+  updateWeekPreview(uaMar, uaJeu, uaSamMtn, uaWE, socle);
 }
 
 // ══════════════════════════════════════════════════
@@ -846,7 +848,8 @@ function loadSocle(){
 function updateWeekPreview(uaMardi, uaJeudi, uaSam, uaDim, socle){
   const el = document.getElementById('pw-preview');
   if(!el) return;
-  const total = socle.lundi + uaMardi + socle.mercredi + uaJeudi + uaSam + uaDim;
+  // Foster : on ne compte que max(jeudi, samedi montagne), pas les deux
+  const total = socle.lundi + uaMardi + socle.mercredi + Math.max(uaJeudi, uaSam) + uaDim;
   const sn = editKey;
   const prev = L.programme.find(x=>x.s===sn-1);
   let deltaHtml = '';
@@ -1113,9 +1116,10 @@ function saveItem(){
     L.programme[idx].mer = merVal && merVal!=='—' ? merVal : null;
     L.programme[idx].j   = document.getElementById('pw-j').value;
     const samVal = document.getElementById('pw-sam').value;
-    L.programme[idx].wr  = samVal;
-    L.programme[idx].wt  = samVal;
-    L.programme[idx].dim = dimVal && dimVal!=='—' ? dimVal : null;
+    L.programme[idx].sam = samVal && samVal !== '—' ? samVal : null;
+    L.programme[idx].wt  = dimVal && dimVal !== '—' ? dimVal : null;
+    L.programme[idx].wr  = dimVal && dimVal !== '—' ? dimVal : null;
+    L.programme[idx].dim = null; // champ obsolète
     L.programme[idx].ua  = parseInt(document.getElementById('pw-ua').value)||0;
     L.programme[idx].d   = document.getElementById('pw-d').checked?1:0;
     L.programme[idx].n   = document.getElementById('pw-n').value.trim();
@@ -1642,7 +1646,8 @@ async function doLoadPrebuiltProgramme() {
   status.textContent = 'Enregistrement…';
   status.style.color = 'var(--muted)';
   try {
-    L.programme = JSON.parse(JSON.stringify(PROGRAMME_2026_2027));
+    // Utilise le programme de data.js (schéma sam+wt+wr) — PROGRAMME_2026_2027 ci-dessous est obsolète
+    L.programme = JSON.parse(JSON.stringify(typeof programme !== 'undefined' ? programme : PROGRAMME_2026_2027));
     await fbSaveProgramme(L.programme);
     FB_ORIGIN.programme = JSON.parse(JSON.stringify(L.programme));
     saveLocal();
