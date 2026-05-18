@@ -7,8 +7,6 @@
   --navy:#1B3A6B;--blue:#2A5DA0;--light:#4A7ECC;--sky:#7BC3E5;
   --text:#1A2540;--muted:#6B7A9A;--mousse:#4A8A5A;--rouge:#C04040;--ocre:#D4893A;
   --gold:#B8860B;
-  /* aliases used by Foster CSS */
-  --ab-blue:var(--blue);--ab-blue2:#2A5DA0;--ab-sky:var(--sky);--ab-light:var(--light);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:15px;line-height:1.6}

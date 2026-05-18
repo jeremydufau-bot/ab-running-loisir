@@ -1287,6 +1287,61 @@ seancesData = {
     "piste": "\u2014",
     "desc": "Jamais > 80% FCmax. La conversation doit rester possible. Volume et r\u00e9gularit\u00e9 allure."
   },
+  "sl_sur_mesure": {
+    "l": "Sortie longue sur mesure",
+    "c": "Volume Endurance",
+    "rpe": "3-4",
+    "rn": 4,
+    "sur_mesure": true,
+    "lieu": "variable",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "Dur\u00e9e et D+ d\u00e9finis selon la p\u00e9riode de saison et le bloc d'entra\u00eenement. Jamais > 80% FCmax. Conversation possible tout au long. La dur\u00e9e progresse de ~2h en d\u00e9but de saison jusqu'\u00e0 5-6h en pic trail."
+  },
+  "seuil_montagne_bloc": {
+    "l": "Seuil Montagne \u2014 Bloc Samedi",
+    "c": "Seuil",
+    "rpe": "7-8",
+    "rn": 7,
+    "ua": 525,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "Samedi du weekend choc : 1h15 en montagne avec mont\u00e9es soutenues (col ou grande c\u00f4te). RPE 7/10. Pr\u00e9pare la sortie longue du dimanche sur jambes charg\u00e9es. Accumulation sp\u00e9cifique ultra et trail long. Ne pas r\u00e9p\u00e9ter > 1\u00d7/mois."
+  },
+  "trail_montagne_decouverte": {
+    "l": "D\u00e9couverte trail montagne",
+    "c": "Volume Endurance",
+    "rpe": "5",
+    "rn": 5,
+    "ua": 600,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "2h en montagne sur terrain vari\u00e9, rythme conversationnel. Focus technique de descente. Id\u00e9al en S3 de Reprise pour introduire le relief en douceur. Cardio < 75% FCmax \u2014 on doit pouvoir parler \u00e0 tout moment."
+  },
+  "sortie_trail_col": {
+    "l": "Sortie trail col",
+    "c": "Sp\u00e9cificit\u00e9 Trail",
+    "rpe": "6",
+    "rn": 6,
+    "ua": 900,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "2h30 en montagne avec passage de col ou grande mont\u00e9e (500-700m D+). Mont\u00e9e en endurance active (RPE 6), descente technique ma\u00eetris\u00e9e. Ne pas partir trop vite en mont\u00e9e. Tester nutrition et hydratation en condition r\u00e9elle."
+  },
+  "kv_simulation": {
+    "l": "Simulation KV",
+    "c": "Sp\u00e9cificit\u00e9 Trail",
+    "rpe": "9",
+    "rn": 9,
+    "ua": 360,
+    "lieu": "montagne",
+    "halage": "\u2014",
+    "piste": "\u2014",
+    "desc": "Kilom\u00e8tre Vertical en effort maximal soutenu : ~40min de mont\u00e9e pure \u00e0 90-95% FCmax. Simuler les conditions de course (b\u00e2tons, chaussures trail, nutrition). Descente en marche pour r\u00e9cup\u00e9ration active. Ne r\u00e9p\u00e9ter qu'une fois par mois max."
+  },
   "fartlek": {
     "l": "Fartlek libre 45min",
     "c": "Mixte",

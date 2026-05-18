@@ -5,66 +5,85 @@
 // ── Variables globales (remplies par Firebase + main.js) ──
 let programme = [
   // ── REPRISE (S1–S4, sep. 2026) ──────────────────
-  {s:1,  p:'Reprise',          m:'S107',                j:'S043',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:2,  p:'Reprise',          m:'S108',                j:'S046',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:3,  p:'Reprise',          m:'S011',                j:'S043',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // Mardi: VMA Courte légère → S3 VMA Longue (casse la monotonie 3 semaines VMA Courte)
+  // Jeudi: Côtes courtes → S3 VMA Longue (casse la monotonie 3 semaines Côtes)
+  {s:1,  p:'Reprise',          m:'S107',                j:'S043',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:2,  p:'Reprise',          m:'S108',                j:'S046',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:3,  p:'Reprise',          m:'S116',                j:'S020',             wr:'sl_sur_mesure',   wt:'trail_montagne_decouverte'},
   {s:4,  p:'Reprise',          m:'S107',                j:'S046',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── BASE ROUTE (S5–S8, oct. 2026) ───────────────
-  {s:5,  p:'Base route',       m:'S101',                j:'S020',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:6,  p:'Base route',       m:'S102',                j:'S021',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:7,  p:'Base route',       m:'S011',                j:'S116',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // Mardi: VMA Courte → S7 VMA Longue (casse monotonie)
+  // Jeudi: VMA Longue → S7 Seuil (casse monotonie)
+  {s:5,  p:'Base route',       m:'S101',                j:'S020',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:6,  p:'Base route',       m:'S102',                j:'S021',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:7,  p:'Base route',       m:'S021',                j:'S034',             wr:'sl_sur_mesure',   wt:'sortie_trail_col'},
   {s:8,  p:'Base route',       m:'S108',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── BASE (S9–S16, oct.–déc. 2026) ───────────────
-  {s:9,  p:'Base',             m:'S012',                j:'S117',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:10, p:'Base',             m:'S005',                j:'S021',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:11, p:'Base',             m:'S014',                j:'S134',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // Mardi: VMA Courte → S11 VMA Longue, S15 Seuil (casse monotonie à chaque S3 de bloc)
+  // Jeudi: VMA Longue → S11 Seuil déjà (ok), S14-S15 VMA Longue (seulement 2 consécutives)
+  {s:9,  p:'Base',             m:'S012',                j:'S117',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:10, p:'Base',             m:'S005',                j:'S021',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:11, p:'Base',             m:'S023',                j:'S134',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc'},
   {s:12, p:'Base',             m:'S102',                j:'S116',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  {s:13, p:'Base',             m:'S001',                j:'S135',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:14, p:'Base',             m:'S012',                j:'S022',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:15, p:'Base',             m:'S002',                j:'S023',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:13, p:'Base',             m:'S001',                j:'S135',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:14, p:'Base',             m:'S012',                j:'S022',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:15, p:'Base',             m:'S035',                j:'S023',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc'},
   {s:16, p:'Base',             m:'S101',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── TRÊVE NOËL (S17, déc. 2026) ─────────────────
   {s:17, p:'Trêve Noël',       m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true, n:'Trêve de Noël — entraînement libre'},
   // ── BASE (S18–S20, jan. 2027) ────────────────────
-  {s:18, p:'Base',             m:'S011',                j:'S020',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:19, p:'Base',             m:'S002',                j:'S117',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:20, p:'Base',             m:'S001',                j:'S023',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // Mardi: VMA Courte × 2 → S20 Seuil Fartlek (casse monotonie)
+  // Jeudi: VMA Longue × 2 → S20 Seuil (casse monotonie)
+  {s:18, p:'Base',             m:'S011',                j:'S020',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:19, p:'Base',             m:'S002',                j:'S117',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:20, p:'Base',             m:'S036',                j:'S135',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
   // ── BLOC CROSS (S21–S24, jan.–fév. 2027) ────────
-  {s:21, p:'Bloc cross',       m:'S044',                j:'S047',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:22, p:'Bloc cross',       m:'S045',                j:'S048',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:23, p:'Bloc cross',       m:'S137',                j:'S049',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // Mardi: Côtes × 2 → S23 VMA Longue Pyramide (casse monotonie, choc cross)
+  // Jeudi: Côtes × 2 → S23 Seuil 2×10' (casse monotonie)
+  // S23 sam montagne : KV simulation (séance signature Bloc Cross)
+  {s:21, p:'Bloc cross',       m:'S044',                j:'S047',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:22, p:'Bloc cross',       m:'S045',                j:'S048',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:23, p:'Bloc cross',       m:'S026',                j:'S134',             wr:'sl_sur_mesure',   wt:'kv_simulation'},
   {s:24, p:'Bloc cross',       m:'S043',                j:'S046',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── SPÉCIFIQUE (S25–S32, fév.–avr. 2027) ────────
-  {s:25, p:'Spécifique',       m:'S001',                j:'S035',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:26, p:'Spécifique',       m:'S003',                j:'S036',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:27, p:'Spécifique',       m:'P13',                 j:'S038',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // S27 : weekend choc double Sam seuil montagne + Dim sortie longue
+  // Mardi S27 : VMA Longue Pyramide (casse monotonie 3× VMA Courte S25-S26-S27)
+  // Jeudi S27 : Allure Marathon (break Seuil S25-S26)
+  {s:25, p:'Spécifique',       m:'S001',                j:'S035',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:26, p:'Spécifique',       m:'S003',                j:'S036',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:27, p:'Spécifique',       m:'S026',                j:'S038',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
   {s:28, p:'Spécifique',       m:'S001',                j:'S034',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  {s:29, p:'Spécifique',       m:'S008',                j:'S039',             wr:'allure_marathon', wt:'sortie_longue'},
-  {s:30, p:'Spécifique',       m:'S026',                j:'S040',             wr:'allure_marathon', wt:'sortie_longue'},
-  {s:31, p:'Spécifique',       m:'S013',                j:'S036',             wr:'allure_marathon', wt:'sortie_longue'},
+  {s:29, p:'Spécifique',       m:'S008',                j:'S039',             wr:'allure_marathon', wt:'sl_sur_mesure'},
+  {s:30, p:'Spécifique',       m:'S026',                j:'S040',             wr:'allure_marathon', wt:'sl_sur_mesure'},
+  {s:31, p:'Spécifique',       m:'S013',                j:'S036',             wr:'allure_marathon', wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
   {s:32, p:'Spécifique',       m:'S005',                j:'S029',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── AFFÛTAGE (S33–S34, avr. 2027) ───────────────
-  {s:33, p:'Affûtage',         m:'S002',                j:'S041',             wr:'allure_marathon', wt:'sortie_longue'},
+  {s:33, p:'Affûtage',         m:'S002',                j:'S041',             wr:'allure_marathon', wt:'sl_sur_mesure'},
   {s:34, p:'Affûtage',         m:'vitesse_5x100_veille',j:'S034',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── COMPÉTITION (S35–S40, avr.–mai 2027) ────────
-  {s:35, p:'Compétition',      m:'S005',                j:'S041',             wr:'S039',            wt:'sortie_longue'},
+  {s:35, p:'Compétition',      m:'S005',                j:'S041',             wr:'S039',            wt:'sl_sur_mesure'},
   {s:36, p:'Compétition',      m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'—',               wt:'—',             d:true, n:'Course le weekend'},
-  {s:37, p:'Compétition',      m:'S012',                j:'S029',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:37, p:'Compétition',      m:'S012',                j:'S029',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
   {s:38, p:'Compétition',      m:'S107',                j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
-  {s:39, p:'Compétition',      m:'S005',                j:'S034',             wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:39, p:'Compétition',      m:'S005',                j:'S034',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
   {s:40, p:'Compétition',      m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'—',               wt:'—',             d:true, n:'Course le weekend'},
   // ── DÉVELOPPEMENT (S41–S44, mai–juin 2027) ───────
-  {s:41, p:'Développement',    m:'S001',                j:'S135',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:42, p:'Développement',    m:'S002',                j:'S033',             wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:43, p:'Développement',    m:'S047',                j:'S035',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // Mardi: VMA Courte × 2 → S43 Côtes (casse monotonie)
+  // Jeudi: Seuil × 2 → S43 Allure Marathon (casse monotonie)
+  // S43 : weekend choc double Sam seuil montagne + Dim sortie longue
+  {s:41, p:'Développement',    m:'S001',                j:'S135',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:42, p:'Développement',    m:'S002',                j:'S033',             wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:43, p:'Développement',    m:'S047',                j:'S041',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
   {s:44, p:'Développement',    m:'S011',                j:'S020',             wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── SPÉCIFIQUE TRAIL (S45–S48, juin–juil. 2027) ──
-  {s:45, p:'Spécifique trail', m:'S050',                j:'circuit_douves',   wr:'sortie_longue',   wt:'sortie_longue'},
-  {s:46, p:'Spécifique trail', m:'S049',                j:'fartlek_pyramid_girouettes', wr:'sortie_longue', wt:'sortie_longue'},
-  {s:47, p:'Spécifique trail', m:'S045',                j:'S050',             wr:'sortie_longue',   wt:'sortie_longue'},
+  // Mardi: Côtes × 2 → S47 Seuil (casse monotonie, semaine choc double)
+  // S47 : weekend choc double Sam seuil montagne + Dim sortie longue (PEAK)
+  {s:45, p:'Spécifique trail', m:'S050',                j:'circuit_douves',   wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
+  {s:46, p:'Spécifique trail', m:'S049',                j:'fartlek_pyramid_girouettes', wr:'sl_sur_mesure', wt:'sl_sur_mesure'},
+  {s:47, p:'Spécifique trail', m:'S035',                j:'S050',             wr:'sl_sur_mesure',   wt:'seuil_montagne_bloc',  dim:'sl_sur_mesure'},
   {s:48, p:'Spécifique trail', m:'S043',                j:'circuit_douves',   wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── AFFÛTAGE TRAIL (S49–S50, juil. 2027) ─────────
-  {s:49, p:'Affûtage',         m:'S044',                j:'cote_1min30',      wr:'sortie_longue',   wt:'sortie_longue'},
+  {s:49, p:'Affûtage',         m:'S044',                j:'cote_1min30',      wr:'sl_sur_mesure',   wt:'sl_sur_mesure'},
   {s:50, p:'Affûtage',         m:'vitesse_5x100_veille',j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
   // ── COUPURE (S51–S52, août 2027) ────────────────
   {s:51, p:'Coupure',          m:'sortie_recup',        j:'sortie_recup',     wr:'sortie_recup',    wt:'sortie_recup',  d:true},
@@ -72,6 +91,58 @@ let programme = [
 ];
 let seancesData = {};
 let socleConfig = { lundi:{dur:60,rpe:4}, mercredi:{dur:50,rpe:3}, weRoute:{dur:60,rpe:4}, weTrail:{dur:90,rpe:4} };
+
+// ── Progression des sorties longues sur mesure ──────────────────────────────
+// Durée (minutes) et D+ trail par semaine de saison.
+// La durée augmente progressivement : ~2h en sept → 5-6h en juillet.
+// Semaines de décharge (d:true) n'ont pas d'entrée → elles utilisent sortie_recup.
+// dur_r = durée route (min), dur_t = durée trail (min), dplus_t = D+ trail (m)
+const slProgression = {
+  // ── REPRISE (S1–S3, sept. 2026) ── 1h30 route · 2h→2h30 trail ──────────────────
+  1:  { dur_r:  90, dur_t: 120, dplus_t:  200, note: 'Reprise — 1h30 route · 2h trail' },
+  2:  { dur_r:  90, dur_t: 150, dplus_t:  300, note: '1h30 route · 2h30 trail' },
+  3:  { dur_r:  90, dur_t: 150, dplus_t:  400, note: '1h30 route · 2h30 trail' },
+  // ── BASE ROUTE (S5–S6, oct. 2026) ── 1h45 route · 2h30→3h trail ─────────────────
+  5:  { dur_r: 105, dur_t: 150, dplus_t:  400, note: '1h45 route · 2h30 trail' },
+  6:  { dur_r: 105, dur_t: 180, dplus_t:  500, note: '1h45 route · 3h trail' },
+  // ── DÉVELOPPEMENT AUTOMNE (S9–S11, nov. 2026) ── 2h route · 3h→3h30 trail ───────
+  9:  { dur_r: 105, dur_t: 180, dplus_t:  500, note: 'Reprise — 1h45 route · 3h trail' },
+  10: { dur_r: 120, dur_t: 180, dplus_t:  600, note: '2h route · 3h trail' },
+  11: { dur_r: 120, dur_t: 210, dplus_t:  700, note: 'Choc — 2h route · 3h30 trail' },
+  // ── TRANSITION HIVER (S13–S14, déc. 2026) ── 2h route · 3h→3h30 trail ──────────
+  13: { dur_r: 105, dur_t: 180, dplus_t:  600, note: 'Retour post-décharge — 1h45 route · 3h trail' },
+  14: { dur_r: 120, dur_t: 210, dplus_t:  700, note: '2h route · 3h30 trail' },
+  // ── CONSTRUCTION HIVER (S17–S18, janv. 2027) ── 2h route · 3h30→4h trail ────────
+  17: { dur_r: 120, dur_t: 210, dplus_t:  700, note: 'Reprise janvier — 2h route · 3h30 trail' },
+  18: { dur_r: 120, dur_t: 240, dplus_t:  800, note: '2h route · 4h trail' },
+  // ── PRÉPA PRINTEMPS (S21–S23, fév. 2027) ── 2h→2h30 route · 3h30→4h30 trail ────
+  21: { dur_r: 120, dur_t: 210, dplus_t:  800, note: 'Prépa printemps — 2h route · 3h30 trail' },
+  22: { dur_r: 135, dur_t: 240, dplus_t:  900, note: '2h15 route · 4h trail' },
+  23: { dur_r: 150, dur_t: 270, dplus_t: 1000, note: 'Choc — 2h30 route · 4h30 trail' },
+  // ── PRÉPA TRAIL PRINTEMPS (S25–S26, mars 2027) ── 2h30 route · 4h30→5h trail ────
+  25: { dur_r: 150, dur_t: 270, dplus_t: 1000, note: '2h30 route · 4h30 trail' },
+  26: { dur_r: 150, dur_t: 300, dplus_t: 1200, note: '2h30 route · 5h trail' },
+  // ── DÉVELOPPEMENT TRAIL (S29–S30, avr. 2027) ── 2h30→2h45 route · 5h→5h30 trail ─
+  29: { dur_r: 150, dur_t: 300, dplus_t: 1200, note: '2h30 route · 5h trail' },
+  30: { dur_r: 165, dur_t: 330, dplus_t: 1400, note: '2h45 route · 5h30 trail' },
+  // ── MONTÉE EN PUISSANCE (S33–S34, mai 2027) ── 2h45 route · 5h30→6h trail ───────
+  33: { dur_r: 165, dur_t: 330, dplus_t: 1500, note: 'Montée en puissance — 2h45 route · 5h30 trail' },
+  34: { dur_r: 165, dur_t: 360, dplus_t: 1800, note: 'CHOC — 2h45 route · 6h trail, 1800m D+' },
+  // ── PRÉ-PEAK (S37–S38, juin 2027) ── 2h45→3h route · 6h30→7h trail, 2000m+ D+ ───
+  37: { dur_r: 165, dur_t: 390, dplus_t: 2000, note: 'Pré-peak — 2h45 route · 6h30 trail, 2000m D+' },
+  38: { dur_r: 180, dur_t: 420, dplus_t: 2200, note: 'CHOC — 3h route · 7h trail, 2200m D+' },
+  // ── PEAK TRAIL (S41–S42, juil. 2027) ── 3h route · 7h→8h trail — MAXIMUM ─────────
+  41: { dur_r: 180, dur_t: 420, dplus_t: 2200, note: 'Peak — 3h route · 7h trail, 2200m D+' },
+  42: { dur_r: 180, dur_t: 480, dplus_t: 2500, note: '🏆 CHOC MAXIMUM — 3h route · 8h trail, 2500m D+' },
+  // ── POST-PEAK / RELÂCHE (S45–S47, août 2027) ── descente progressive ──────────────
+  45: { dur_r: 150, dur_t: 330, dplus_t: 1500, note: 'Post-peak — 2h30 route · 5h30 trail' },
+  46: { dur_r: 120, dur_t: 240, dplus_t: 1000, note: 'Récupération — 2h route · 4h trail' },
+  47: { dur_r:  90, dur_t: 180, dplus_t:  600, note: 'Allègement — 1h30 route · 3h trail' },
+  // ── FIN DE SAISON (S49–S51, août–sept. 2027) ── coupure progressive ───────────────
+  49: { dur_r:  90, dur_t: 150, dplus_t:  500, note: 'Relâche — 1h30 route · 2h30 trail' },
+  50: { dur_r:  90, dur_t: 120, dplus_t:  400, note: 'Récupération active' },
+  51: { dur_r:  90, dur_t:  90, dplus_t:  200, note: 'Coupure fin de saison — 1h30 route · 1h30 trail' },
+};
 let infosClub = [
   { id:'msg_default_1', titre:'Bienvenue saison 2025-2026 !', texte:'Entraînements mardi et jeudi à 18h30 au halage. Bonne saison à tous !', type:'info', dateFin:'' }
 ];

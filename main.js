@@ -15,6 +15,8 @@ function semRangeLun(n){ return semFmt(semDate(n)); }
 function semRangeDim(n){ return semFmt(new Date(+semDate(n)+6*864e5)); }
 function sd(k){ return (k && k!=='—' && seancesData[k]) || null; }
 function calcSeanceUA(s, defaultDur = 60){ return s ? (s.ua || (s.rn||0) * (s.d||defaultDur)) : 0; }
+function fmtDur(min){ const h=Math.floor(min/60),m=min%60; return m?`${h}h${String(m).padStart(2,'0')}`:`${h}h`; }
+function slSem(w){ return (typeof slProgression!=='undefined'&&w)?slProgression[w.s]||null:null; }
 function phCls(p){ const m = phaseMap[p]; return m ? 'ph-'+m.c : 'ph-base'; }
 function phLabel(p){ const m = phaseMap[p]; return m ? m.l : p; }
 function tTag(lieu){
@@ -29,17 +31,36 @@ function objForSem(n){
 function getUAReel(w, isTrail = false) {
   if(!w) return 0;
   const mData = sd(w.m), jData = sd(w.j);
-  const weKey = isTrail ? w.wt : w.wr;
-  const weData = sd(weKey);
-  const socleLundi = socleConfig.lundi.dur * socleConfig.lundi.rpe;
+  const socleLundi    = socleConfig.lundi.dur    * socleConfig.lundi.rpe;
   const socleMercredi = socleConfig.mercredi.dur * socleConfig.mercredi.rpe;
   const uaMardi = calcSeanceUA(mData);
   const uaJeudi = calcSeanceUA(jData);
   let uaWE = 0;
-  if (weData) {
-    uaWE = calcSeanceUA(weData, 90);
+  const sl = slSem(w);
+
+  if (isTrail && w.dim && w.dim !== '—') {
+    // Weekend bloc double : Samedi wt (seuil montagne) + Dimanche dim (sortie longue)
+    const samData = sd(w.wt);
+    const uaSam   = samData ? calcSeanceUA(samData, 75) : 0;
+    const dimDur  = sl ? sl.dur_t : socleConfig.weTrail.dur;
+    const uaDim   = 4 * dimDur;
+    uaWE = uaSam + uaDim;
   } else {
-    uaWE = isTrail ? (socleConfig.weTrail.dur * socleConfig.weTrail.rpe) : (socleConfig.weRoute.dur * socleConfig.weRoute.rpe);
+    const weKey  = isTrail ? w.wt : w.wr;
+    const weData = sd(weKey);
+    if (weData) {
+      // Sortie longue sur mesure : durée dynamique selon slProgression
+      if ((weKey === 'sortie_longue' || weKey === 'sl_sur_mesure') && sl) {
+        const dur = isTrail ? sl.dur_t : sl.dur_r;
+        uaWE = (weData.rn || 4) * dur;
+      } else {
+        uaWE = calcSeanceUA(weData, isTrail ? 90 : 60);
+      }
+    } else {
+      uaWE = isTrail
+        ? (socleConfig.weTrail.dur * socleConfig.weTrail.rpe)
+        : (socleConfig.weRoute.dur * socleConfig.weRoute.rpe);
+    }
   }
   return socleLundi + uaMardi + socleMercredi + uaJeudi + uaWE;
 }
@@ -110,9 +131,14 @@ function renderAccueil(){
     const mData = sd(w.m), jData = sd(w.j);
     const mRpe = mData?mData.rpe:'', jRpe = jData?jData.rpe:'';
     const mLieu = mData?mData.lieu:'halage', jLieu = jData?jData.lieu:'halage';
-    const weKey = curWE===1?w.wt:w.wr;
+    const isTrailAcc = curWE === 1;
+    const weKey  = isTrailAcc ? w.wt : w.wr;
     const weData = sd(weKey);
-    const weLbl = weData?weData.l:(weKey==='—'?'—':weKey);
+    let weLbl = weData ? weData.l : (weKey==='—'?'—':weKey||'—');
+    if (isTrailAcc && w.dim && w.dim !== '—') {
+      const dimData = sd(w.dim);
+      weLbl = `${weData?weData.l:'Sortie sam.'} + ${dimData?dimData.l:'Sortie dim.'}`;
+    }
     const obj = objForSem(sn);
     const marFmt = new Date(+lundiSem+864e5).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'});
     const jeuFmt = new Date(+lundiSem+3*864e5).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'});
@@ -210,23 +236,27 @@ function buildProg(){
 
   tbody.innerHTML = rows.map((w,i)=>{
     const mData = sd(w.m), jData = sd(w.j);
-    const weKey = curWE===1?w.wt:w.wr;
-    const weData = sd(weKey);
-    const weLbl = weData?weData.l:(weKey==='—'?'—':weKey);
-    const obj = objForSem(w.s);
-
-// --- NOUVEAU CALCUL (Prend en compte le socle et la vraie charge S-1) ---
     const isTrail = (curWE === 1);
+    const weKey  = isTrail ? w.wt : w.wr;
+    const weData = sd(weKey);
+    const obj    = objForSem(w.s);
+
+    let weLbl = weData ? weData.l : (weKey==='—' ? '—' : weKey||'—');
+    if (isTrail && w.dim && w.dim !== '—') {
+      const dimData = sd(w.dim);
+      weLbl = `${weData?weData.l:'Sam.'} + ${dimData?dimData.l:'Dim.'}`;
+    }
+
+    // ── Calcul UA ──
     const uaReel = getUAReel(w, isTrail);
-    w.ua = uaReel; // Met à jour l'objet pour que la modale "Détail" affiche aussi le bon total
+    w.ua = uaReel;
 
     const prev = programme.find(x=>x.s===w.s-1);
-    const prevUAReel = prev ? getUAReel(prev, isTrail) : 0; // Recalcule la charge S-1 même si elle est masquée par un filtre
-    
+    const prevUAReel = prev ? getUAReel(prev, isTrail) : 0;
     let delta = '';
     if(prev && prevUAReel > 0){
       const d = Math.round((uaReel - prevUAReel) / prevUAReel * 100);
-      const col = d>15?'#C04040':d>10?'#D4893A':d>5?'#2A5DA0':d<-5?'#4A8A5A':'#6B7A9A';
+      const col = d>20?'#C04040':d>15?'#D4893A':d>5?'#2A5DA0':d<-5?'#4A8A5A':'#6B7A9A';
       const arr = d>5?'↑':d<-5?'↓':'=';
       delta = `<span style="color:${col};font-weight:700">${arr}${d>0?'+':''}${d}%</span>`;
     }
@@ -357,6 +387,36 @@ function openDetail(sn){
   document.getElementById('mTitle').textContent = `${semRange(sn)} · ${w.p}`;
   const weR = sd(w.wr), weT = sd(w.wt);
 
+  const wrDesc = weR ? weR.l : '—';
+  const wrSub  = weR&&weR.halage&&weR.halage!=='—' ? weR.halage : '';
+
+  let wtHtml = '';
+  if (w.dim && w.dim !== '—') {
+    const dimData = sd(w.dim);
+    wtHtml = `
+      <div style="flex:1;min-width:180px;padding:.6rem .8rem;background:rgba(74,138,90,.08);border:2px solid var(--mousse);border-radius:6px">
+        <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--mousse);margin-bottom:.3rem">🌲 Weekend Trail — Sam + Dim</div>
+        <div style="display:flex;flex-direction:column;gap:.4rem">
+          <div style="padding:.4rem .6rem;background:rgba(0,0,0,.03);border-radius:4px;border-left:3px solid #D4893A">
+            <div style="font-size:.58rem;font-weight:700;color:#D4893A;text-transform:uppercase;margin-bottom:.1rem">Samedi</div>
+            <div style="font-size:.76rem;font-weight:600">${weT?weT.l:'—'}</div>
+            ${weT&&weT.desc?`<div style="font-size:.62rem;color:var(--muted);margin-top:.1rem">${weT.desc.slice(0,80)}…</div>`:''}
+          </div>
+          <div style="padding:.4rem .6rem;background:rgba(0,0,0,.03);border-radius:4px;border-left:3px solid var(--mousse)">
+            <div style="font-size:.58rem;font-weight:700;color:var(--mousse);text-transform:uppercase;margin-bottom:.1rem">Dimanche</div>
+            <div style="font-size:.76rem;font-weight:600">${dimData?dimData.l:'Sortie longue'}</div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    wtHtml = `
+      <div style="flex:1;min-width:180px;padding:.6rem .8rem;background:${curWE===1?'rgba(74,138,90,.08)':'rgba(0,0,0,.02)'};border:1px solid ${curWE===1?'var(--mousse)':'var(--border)'};border-radius:6px">
+        <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--mousse);margin-bottom:.2rem">🌲 Trail / Montagne</div>
+        <div style="font-size:.78rem;font-weight:600">${weT?weT.l:'—'}</div>
+        ${weT&&weT.desc?`<div style="font-size:.62rem;color:var(--muted);margin-top:.2rem">${weT.desc.slice(0,100)}${weT.desc.length>100?'…':''}</div>`:''}
+      </div>`;
+  }
+
   document.getElementById('mBody').innerHTML = `
     ${obj?`<div class="info-box gold">${obj}</div>`:''}
     ${w.d?'<div class="info-box green">🌙 Semaine de décharge — volume réduit.</div>':''}
@@ -377,14 +437,11 @@ function openDetail(sn){
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem">
       <div style="flex:1;min-width:180px;padding:.6rem .8rem;background:${curWE===0?'rgba(27,58,107,.06)':'rgba(0,0,0,.02)'};border:1px solid ${curWE===0?'var(--blue)':'var(--border)'};border-radius:6px">
         <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.2rem">🛣️ Route / Halage</div>
-        <div style="font-size:.78rem;font-weight:600">${weR?weR.l:'—'}</div>
-        ${weR&&weR.halage&&weR.halage!=='—'?`<div style="font-size:.64rem;color:var(--muted);margin-top:.2rem">${weR.halage}</div>`:''}
+        <div style="font-size:.78rem;font-weight:600">${wrDesc}</div>
+        ${wrSub?`<div style="font-size:.64rem;color:var(--muted);margin-top:.2rem">${wrSub}</div>`:''}
+        ${weR&&weR.desc&&!wrDur?`<div style="font-size:.62rem;color:var(--muted);margin-top:.2rem">${weR.desc.slice(0,80)}${weR.desc.length>80?'…':''}</div>`:''}
       </div>
-      <div style="flex:1;min-width:180px;padding:.6rem .8rem;background:${curWE===1?'rgba(74,138,90,.08)':'rgba(0,0,0,.02)'};border:1px solid ${curWE===1?'var(--mousse)':'var(--border)'};border-radius:6px">
-        <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--mousse);margin-bottom:.2rem">🌲 Trail / Montagne</div>
-        <div style="font-size:.78rem;font-weight:600">${weT?weT.l:'—'}</div>
-        ${weT&&weT.desc?`<div style="font-size:.64rem;color:var(--muted);margin-top:.2rem">${weT.desc.slice(0,80)}${weT.desc.length>80?'…':''}</div>`:''}
-      </div>
+      ${wtHtml}
     </div>
   `;
   document.getElementById('overlay').classList.add('open');

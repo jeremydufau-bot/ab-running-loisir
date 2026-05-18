@@ -5,129 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — AB Running</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#F2F5FA;--surface:#fff;--surface2:#F8FAFF;--border:rgba(27,58,107,.1);
-  --navy:#1B3A6B;--blue:#2A5DA0;--light:#4A7ECC;--sky:#7BC3E5;
-  --text:#1A2540;--muted:#6B7A9A;--mousse:#4A8A5A;--rouge:#C04040;--ocre:#D4893A;
-  --gold:#B8860B;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:14px;line-height:1.6}
-
-/* Login */
-#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy),var(--blue),var(--light))}
-.login-box{background:#fff;border-radius:16px;padding:2.5rem;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.login-box h2{font-size:1.2rem;color:var(--navy);margin-bottom:.2rem}
-.login-box p{font-size:.7rem;color:var(--muted);margin-bottom:1.5rem}
-.login-box input{width:100%;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Lora',serif;font-size:.85rem;margin-bottom:.8rem}
-.login-box button{width:100%;background:var(--navy);color:#fff;border:none;padding:.7rem;border-radius:8px;font-family:'Lora',serif;font-size:.78rem;font-weight:700;cursor:pointer}
-#login-err{color:var(--rouge);font-size:.72rem;display:none;margin-top:.4rem}
-
-/* App */
-#app{display:none}
-.topbar{background:var(--navy);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(27,58,107,.25)}
-.topbar h1{color:#fff;font-size:1rem;font-weight:700}
-.topbar-right{display:flex;gap:.5rem;align-items:center}
-.topbar-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:'Lora',serif;font-size:.68rem;padding:.35rem .7rem;border-radius:6px;cursor:pointer}
-.topbar-btn:hover{background:rgba(255,255,255,.2)}
-.topbar-btn.pub{background:var(--mousse);border-color:var(--mousse)}
-
-.tabs{display:flex;gap:.3rem;padding:.6rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border)}
-.tab{font-family:'Lora',serif;font-size:.72rem;font-weight:600;padding:.4rem .8rem;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer}
-.tab:hover{color:var(--navy);background:rgba(27,58,107,.05)}
-.tab.active{background:rgba(42,93,160,.12);color:var(--navy)}
-
-.admin-page{display:none;max-width:1100px;margin:0 auto;padding:1.5rem}
-.admin-page.active{display:block}
-
-.status-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:.4rem 1.5rem;font-size:.68rem;display:flex;align-items:center;gap:.5rem}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--mousse)}
-.status-dot.warn{background:var(--ocre)}
-
-/* Form */
-.field-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:.25rem}
-.field-input,.field-select,.field-textarea{width:100%;padding:.5rem .7rem;border:1px solid var(--border);border-radius:6px;font-family:'Lora',serif;font-size:.82rem;background:var(--surface);color:var(--text)}
-.field-textarea{resize:vertical}
-.field-group{margin-bottom:.8rem}
-.btn-sm{font-family:'Lora',serif;font-size:.68rem;font-weight:600;padding:.3rem .6rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}
-.btn-sm:hover{border-color:var(--light);color:var(--navy)}
-.btn-sm.danger{color:var(--rouge);border-color:rgba(192,64,64,.3)}
-.emoji-btn{background:none;border:none;cursor:pointer;font-size:1.15rem;padding:3px 4px;border-radius:4px;line-height:1;transition:.1s}
-.emoji-btn:hover{background:rgba(27,58,107,.1);transform:scale(1.25)}
-.emoji-cat{background:none;border:1px solid transparent;font-family:'Lora',serif;font-size:.62rem;font-weight:600;padding:.2rem .45rem;border-radius:5px;cursor:pointer;color:var(--muted);transition:.12s}
-.emoji-cat:hover{background:rgba(27,58,107,.06);color:var(--navy)}
-.emoji-cat.active{background:rgba(42,93,160,.12);border-color:var(--blue);color:var(--navy)}
-.block-sep{display:block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .8rem;margin:.8rem 0 .6rem;background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:6px;color:var(--navy)}
-.cat-group-hdr{display:flex;justify-content:space-between;align-items:center;margin:1.2rem 0 .5rem;padding:.35rem .6rem;border-left:3px solid var(--blue);background:rgba(42,93,160,.05);border-radius:0 6px 6px 0}
-.cat-group-hdr span:first-child{font-size:.72rem;font-weight:700;color:var(--navy)}
-.cat-group-hdr span:last-child{font-size:.6rem;color:var(--muted)}
-
-/* Prog table */
-.admin-table{width:100%;border-collapse:collapse}
-.admin-table th{background:var(--surface2);font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border)}
-.admin-table td{padding:.45rem .7rem;border-bottom:1px solid var(--border);vertical-align:middle}
-.admin-table tr:hover td{background:rgba(123,195,229,.04)}
-.admin-table tr.dec td{background:rgba(74,138,90,.03)}
-.modified-flag{color:var(--ocre);font-size:.6rem;margin-left:.3rem}
-
-/* Séances grid */
-.seance-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.5rem}
-.seance-card-hdr{background:var(--surface2);padding:.5rem .8rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;border-bottom:1px solid var(--border)}
-.seance-card-body{padding:.5rem .8rem}
-
-/* Panel */
-#panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200}
-#edit-panel{position:fixed;top:0;right:-480px;width:460px;max-width:95vw;height:100vh;background:var(--surface);box-shadow:-4px 0 30px rgba(0,0,0,.15);z-index:210;transition:right .3s;overflow-y:auto}
-#edit-panel.open{right:0}
-.panel-hdr{background:var(--navy);color:#fff;padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:center}
-.panel-hdr h3{font-size:.85rem;font-weight:700}
-.panel-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.1rem;cursor:pointer}
-.panel-body{padding:1rem 1.2rem}
-.panel-footer{padding:.8rem 1.2rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end}
-.panel-btn{font-family:'Lora',serif;font-size:.72rem;font-weight:700;padding:.5rem 1rem;border-radius:6px;border:none;cursor:pointer}
-.panel-btn.save{background:var(--navy);color:#fff}
-.panel-btn.cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
-.panel-btn.reset{background:transparent;border:1px solid rgba(192,64,64,.3);color:var(--rouge)}
-
-.seance-preview {
-  background-color: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 8px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-  
-/* Toast */
-#toast{position:fixed;top:1rem;right:1rem;z-index:300;display:flex;flex-direction:column;gap:.3rem}
-.toast-item{padding:.6rem 1rem;border-radius:8px;font-size:.76rem;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15);animation:slideIn .3s}
-.toast-item.success{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
-.toast-item.error{background:#fbe9e7;color:#c62828;border:1px solid #ef9a9a}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:none;opacity:1}}
-
-/* Publish modal */
-#pub-overlay{display:none;position:fixed;inset:0;background:rgba(20,35,70,.6);z-index:250;align-items:center;justify-content:center}
-#pub-overlay.open{display:flex}
-.pub-box{background:var(--surface);border-radius:14px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-
-/* Planificateur */
-#tab-planner .planner-grid{display:grid;grid-template-columns:360px 1fr;gap:1rem;align-items:start}
-#tab-planner .pl-panel{border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
-#tab-planner .pl-panel-hdr{padding:.55rem .9rem;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
-#tab-planner .pl-form-hdr{padding:.6rem .9rem;background:var(--navy);color:#fff;display:flex;justify-content:space-between;align-items:center}
-#tab-planner .pl-form-body{padding:.9rem;overflow-y:auto;max-height:calc(100vh - 180px)}
-.pl-serie-block{background:rgba(27,58,107,.04);border:1.5px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.5rem}
-.pl-rest-block{background:rgba(74,138,90,.06);border:1.5px dashed rgba(74,138,90,.4);border-radius:8px;padding:.5rem .7rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.pl-step-row{display:grid;grid-template-columns:.55fr 1fr 1fr .9fr .3fr;gap:.35rem;background:var(--surface2);padding:.35rem .45rem;border-radius:5px;margin-bottom:.3rem;border-left:3px solid var(--light);align-items:end}
-.pl-stat-box{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;background:var(--navy);color:#fff;padding:.7rem 1rem;border-radius:8px;margin:.7rem 0;text-align:center}
-.pl-stat-val{font-size:1.3rem;font-weight:700;color:#a8dadc}
-.pl-list-item{display:flex;align-items:center;gap:.4rem;padding:.35rem .5rem;border-radius:6px;border-bottom:1px solid var(--border);font-size:.75rem}
-.pl-list-item:hover{background:rgba(42,93,160,.05)}
-.pl-list-item.active-edit{background:rgba(42,93,160,.1);border-color:var(--blue)}
-@media(max-width:820px){#tab-planner .planner-grid{grid-template-columns:1fr}}
-</style>
+<link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
@@ -168,12 +46,16 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 
   <!-- TAB PROGRAMME -->
   <div class="admin-page active" id="tab-prog">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
       <h2 style="font-size:1rem;color:var(--navy)">Programme 52 semaines</h2>
-      <select class="field-select" style="width:auto" id="phase-filter" onchange="buildAdminProg()">
-        <option value="">Toutes les phases</option>
-      </select>
+      <div style="display:flex;gap:.4rem;align-items:center">
+        <button class="btn-sm" onclick="scrollToCurrentWeek()">📍 Sem. courante</button>
+        <select class="field-select" style="width:auto" id="phase-filter" onchange="buildAdminProg()">
+          <option value="">Toutes les phases</option>
+        </select>
+      </div>
     </div>
+    <div id="foster-alerts" style="margin-bottom:.8rem"></div>
 
     <!-- SOCLE HEBDOMADAIRE -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem">
@@ -289,7 +171,15 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 
   <!-- TAB CALENDRIER -->
   <div class="admin-page" id="tab-cal">
-    <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Calendrier des sorties</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1rem;color:var(--navy)">Calendrier des sorties</h2>
+      <div style="display:flex;align-items:center;gap:.4rem">
+        <button class="btn-sm" onclick="calNavMonth(-1)">◀</button>
+        <span id="cal-month-label" style="font-size:.82rem;font-weight:700;color:var(--navy);min-width:150px;text-align:center"></span>
+        <button class="btn-sm" onclick="calNavMonth(1)">▶</button>
+      </div>
+    </div>
+    <div id="cal-month-grid" style="margin-bottom:1.2rem"></div>
     <div id="cal-list" style="margin-bottom:1rem"></div>
     <div class="block-sep">Ajouter une sortie</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;max-width:500px">
@@ -702,8 +592,6 @@ function showTab(id,btn){
 function buildAdminProg(){
   const filter = document.getElementById('phase-filter').value;
   const rows = L.programme.filter(w=>!filter||(phaseMap[w.p]&&phaseMap[w.p].c===filter));
-  const MOIS = ['Janv','Févr','Mars','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'];
-  const S1 = new Date(2026,7,31);
   const socle = getSocleUA();
 
   // Populate phase filter
@@ -716,58 +604,107 @@ function buildAdminProg(){
     });
   }
 
-  const dayCell = (seance, uaVal, defaultLbl) => {
-    const lbl = seance ? seance.l : defaultLbl;
-    return `<div style="font-size:.65rem;color:var(--navy);line-height:1.2">${(lbl||'—').substring(0,22)}</div>`
-          +`<div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`;
+  const fmtD = (min) => { const h=Math.floor(min/60),m=min%60; return m?`${h}h${String(m).padStart(2,'0')}`:`${h}h`; };
+  const slGet = (w) => {
+    if(w.d || typeof slProgression==='undefined') return null;
+    const base = slProgression[w.s]||null;
+    if(!w.dur_r && !w.dur_t) return base;
+    return { dur_r: w.dur_r||base?.dur_r||90, dur_t: w.dur_t||base?.dur_t||120, dplus_t: base?.dplus_t||0, note: base?.note||'Sur mesure' };
   };
-  const clubCell = (seance, uaVal) => {
+  const slUAr = (w) => { const sl=slGet(w); return sl ? 4*sl.dur_r : socle.weRoute; };
+  const slUAt = (w) => { const sl=slGet(w); return sl ? 4*sl.dur_t : socle.weTrail; };
+  const slLbl = (w, isTrail) => { const sl=slGet(w); if(!sl) return ''; const dur=isTrail?sl.dur_t:sl.dur_r; return fmtD(dur)+(isTrail&&sl.dplus_t?` · ${sl.dplus_t}m D+`:''); };
+  const isSL = (k) => k==='sl_sur_mesure'||k==='sortie_longue';
+
+  const clubCell = (seance, uaVal, mono) => {
     if(!seance) return `<div style="font-size:.65rem;color:var(--muted)">—</div><div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`;
     const t = terrainLabel[seance.lieu];
     const lieuLbl = t ? `${t.icon} ${t.label}` : (seance.lieu||'');
     return `<div style="font-size:.65rem;color:var(--navy);line-height:1.2">${(seance.l||'').substring(0,22)}</div>`
           +`<div style="font-size:.58rem;color:var(--muted)">${lieuLbl}</div>`
+          +`<div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`
+          +(mono?`<div style="font-size:.55rem;color:#D4893A;font-weight:700;margin-top:.1rem">⚠ mono: ${seance.c}</div>`:'');
+  };
+  const samCell = (w, uaRoute, uaTrail) => {
+    const wrD=L.seances[w.wr], wtD=L.seances[w.wt];
+    const wrLbl=(wrD?wrD.l:(w.wr||'—')).substring(0,20);
+    const wtLbl=(wtD?wtD.l:(w.wt||'—')).substring(0,20);
+    const wrSub=isSL(w.wr)?slLbl(w,false):'';
+    const wtSub=isSL(w.wt)?slLbl(w,true):'';
+    const hasDim=w.dim&&w.dim!=='—';
+    return `<div style="font-size:.6rem;font-weight:600;color:var(--blue)">🛣️ ${wrLbl}</div>`
+          +(wrSub?`<div style="font-size:.57rem;color:var(--muted)">${wrSub}</div>`:'')
+          +`<div style="font-size:.57rem;color:var(--muted)">${uaRoute} UA</div>`
+          +`<div style="border-top:1px solid var(--border);margin:.2rem 0"></div>`
+          +`<div style="font-size:.6rem;font-weight:600;color:var(--mousse)">🌲 ${wtLbl}${hasDim?' +Dim':''}</div>`
+          +(wtSub?`<div style="font-size:.57rem;color:var(--muted)">${wtSub}</div>`:'')
+          +`<div style="font-size:.57rem;color:var(--muted)">${uaTrail} UA</div>`;
+  };
+  const dayCell = (seance, uaVal, defaultLbl) => {
+    const lbl = seance ? seance.l : defaultLbl;
+    return `<div style="font-size:.65rem;color:var(--navy);line-height:1.2">${(lbl||'—').substring(0,22)}</div>`
           +`<div style="font-size:.58rem;color:var(--muted)">${uaVal} UA</div>`;
   };
 
-document.getElementById('admin-prog-body').innerHTML = rows.map(w=>{
+  document.getElementById('admin-prog-body').innerHTML = rows.map(w=>{
     const lunD = w.lun ? L.seances[w.lun] : null;
     const mD   = L.seances[w.m];
     const merD = w.mer ? L.seances[w.mer] : null;
     const jD   = L.seances[w.j];
-    const samD = L.seances[w.wr];
-    const dimD = w.dim && w.dim!=='—' ? L.seances[w.dim] : null;
+    const dimD = w.dim&&w.dim!=='—' ? L.seances[w.dim] : null;
 
-    const uaLun = lunD ? calcSeanceUA(lunD)     : socle.lundi;
+    const uaLun = lunD ? calcSeanceUA(lunD) : socle.lundi;
     const uaMar = calcSeanceUA(mD);
-    const uaMer = merD ? calcSeanceUA(merD)     : socle.mercredi;
+    const uaMer = merD ? calcSeanceUA(merD) : socle.mercredi;
     const uaJeu = calcSeanceUA(jD);
-    const uaSam = samD ? calcSeanceUA(samD, 90) : socle.weRoute;
-    const uaDim = dimD ? calcSeanceUA(dimD)     : 0;
-    const uaReel = uaLun + uaMar + uaMer + uaJeu + uaSam + uaDim;
+
+    // Route samedi
+    const uaSamRoute = isSL(w.wr) ? slUAr(w) : (L.seances[w.wr] ? calcSeanceUA(L.seances[w.wr],60) : socle.weRoute);
+    // Trail samedi + dimanche (mode trail = charge max)
+    let uaSamTrail, uaDim;
+    if(w.dim&&w.dim!=='—'){
+      uaSamTrail = L.seances[w.wt] ? calcSeanceUA(L.seances[w.wt],75) : socle.weTrail;
+      uaDim = isSL(w.dim) ? slUAt(w) : (dimD ? calcSeanceUA(dimD) : 0);
+    } else {
+      uaSamTrail = isSL(w.wt) ? slUAt(w) : (L.seances[w.wt] ? calcSeanceUA(L.seances[w.wt],90) : socle.weTrail);
+      uaDim = 0;
+    }
+    const uaReel = uaLun + uaMar + uaMer + uaJeu + uaSamTrail + uaDim;
     w.ua = uaReel;
 
-    const orig = (FB_ORIGIN.programme || []).find(x=>x.s===w.s);
+    // Détection monotonie (3 sem. consécutives même catégorie, hors décharge)
+    const p1=L.programme.find(x=>x.s===w.s-1), p2=L.programme.find(x=>x.s===w.s-2);
+    const mono_m = !w.d&&mD?.c&&!p1?.d&&!p2?.d&&mD.c===L.seances[p1?.m]?.c&&mD.c===L.seances[p2?.m]?.c;
+    const mono_j = !w.d&&jD?.c&&!p1?.d&&!p2?.d&&jD.c===L.seances[p1?.j]?.c&&jD.c===L.seances[p2?.j]?.c;
+
+    const orig = (FB_ORIGIN.programme||[]).find(x=>x.s===w.s);
     const changed = orig && JSON.stringify(w)!==JSON.stringify(orig);
     const prev = L.programme.find(x=>x.s===w.s-1);
     let delta = '';
-    if(prev && prev.ua>0){
+    if(prev&&prev.ua>0){
       const d = Math.round((uaReel-prev.ua)/prev.ua*100);
-      const col = d>15?'var(--rouge)':d>10?'var(--ocre)':d>5?'var(--blue)':d<-5?'var(--mousse)':'var(--muted)';
-      delta = `<span style="color:${col};font-weight:700">${d>0?'+':''}${d}%</span>`;
+      const fosterOk = !w.d&&!prev.d && d>=10&&d<=20;
+      const col = d>20?'var(--rouge)':d>10?'var(--ocre)':d>=0?'var(--blue)':d>=-5?'var(--mousse)':'var(--muted)';
+      const fosterBadge = (!w.d&&!prev.d) ? `<div style="font-size:.5rem;color:${fosterOk?'var(--mousse)':'#D4893A'}">${fosterOk?'✓ Foster':'⚠ Foster'}</div>` : '';
+      delta = `<span style="color:${col};font-weight:700">${d>0?'+':''}${d}%</span>${fosterBadge}`;
     }
-    return `<tr class="${w.d?'dec':''}">
-      <td><strong style="font-size:.62rem;color:var(--navy)">${semRangeLun(w.s)}</strong><div style="font-size:.58rem;color:var(--muted)">${semRangeDim(w.s)}</div></td>
+
+    const slData = slGet(w);
+    const slNote = slData ? `<div style="font-size:.54rem;color:var(--muted);font-style:italic;margin-top:.15rem">📈 ${slData.note}</div>` : '';
+
+    return `<tr id="row-s${w.s}" class="${w.d?'dec':''}">
+      <td><strong style="font-size:.62rem;color:var(--navy)">${semRangeLun(w.s)}</strong><div style="font-size:.58rem;color:var(--muted)">${semRangeDim(w.s)}</div>${slNote}</td>
       <td><span style="font-size:.68rem;font-weight:600;color:var(--navy)">${w.p}</span>${w.d?'<div style="font-size:.58rem;color:var(--mousse)">Décharge</div>':''}${changed?'<span class="modified-flag">✏️</span>':''}</td>
-      <td>${clubCell(mD,   uaMar)}</td>
-      <td>${clubCell(jD,   uaJeu)}</td>
-      <td>${dayCell(samD, uaSam, '—')}</td>
-      <td>${dayCell(dimD, uaDim, 'Repos')}</td>
-      <td style="text-align:center;font-weight:700;color:var(--navy)">${uaReel}</td>
+      <td>${clubCell(mD, uaMar, mono_m)}</td>
+      <td>${clubCell(jD, uaJeu, mono_j)}</td>
+      <td>${samCell(w, uaSamRoute, uaSamTrail+uaDim)}</td>
+      <td>${dimD?dayCell(dimD,uaDim,'Repos'):'<div style="font-size:.65rem;color:var(--muted)">Repos</div>'}</td>
+      <td style="text-align:center;font-weight:700;color:var(--navy)">${uaReel}<div style="font-size:.53rem;color:var(--muted);font-weight:400">trail</div></td>
       <td style="text-align:center;font-size:.72rem">${delta||'—'}</td>
       <td><button class="btn-sm" onclick="openWeekEdit(${w.s})">✏️</button>${changed?`<button class="btn-sm danger" style="margin-left:.2rem" onclick="resetWeek(${w.s})">↺</button>`:''}</td>
     </tr>`;
   }).join('');
+  buildFosterAlerts();
 }
 
 function openWeekEdit(sn){
@@ -779,8 +716,10 @@ function openWeekEdit(sn){
   document.getElementById('btn-reset').style.display = JSON.stringify(w)!==JSON.stringify(origW)?'block':'none';
  
   const socle = getSocleUA();
+  const SL_KEYS = ['sl_sur_mesure', 'sortie_longue'];
   const picker = (id, cur, firstOpt='<option value="—">— Repos —</option>')=>{
-    let html = firstOpt;
+    const isCurSL = SL_KEYS.includes(cur);
+    let html = `<option value="sl_sur_mesure" ${isCurSL?'selected':''}>📏 Sortie Longue sur mesure (durée variable)</option>` + firstOpt;
     const cats = [
       {l:'🔥 VMA Courte',       fn:(k,v)=>v.c==='VMA Courte'},
       {l:'🔥 VMA Longue',       fn:(k,v)=>v.c==='VMA Longue'},
@@ -837,6 +776,11 @@ return `
     +'<span class="block-sep">🌅 DIMANCHE</span>'
     +`<div class="field-group"><label class="field-label">Séance (repos par défaut)</label>${picker('pw-dim', w.dim||'—')}</div>`
     +`<div class="field-group"><label class="field-label">UA semaine (auto-calculé)</label><input type="number" class="field-input" id="pw-ua" value="${w.ua}" style="font-weight:700"></div>`
+    +`<span class="block-sep" style="color:var(--blue)">📏 Sortie longue sur mesure</span>`
+    +`<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem">`
+    +`<div class="field-group"><label class="field-label">🛣️ Durée route (min) <small style="font-weight:400;color:var(--muted)">1h=60 · 3h=180</small></label><input type="number" class="field-input" id="pw-dur-r" value="${w.dur_r || (typeof slProgression!=='undefined'&&slProgression[sn]?.dur_r) || 90}" min="60" max="180" step="15" oninput="autoCalcWeekUA()"></div>`
+    +`<div class="field-group"><label class="field-label">🌲 Durée trail (min) <small style="font-weight:400;color:var(--muted)">1h30=90 · 8h=480</small></label><input type="number" class="field-input" id="pw-dur-t" value="${w.dur_t || (typeof slProgression!=='undefined'&&slProgression[sn]?.dur_t) || 120}" min="90" max="480" step="30" oninput="autoCalcWeekUA()"></div>`
+    +`</div>`
     +`<div id="pw-preview" style="background:rgba(27,58,107,.04);border:1px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.8rem"></div>`
     +`<div class="field-group"><label class="field-label" style="display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="pw-d" ${w.d?'checked':''}> Semaine de décharge</label></div>`
     +`<div class="field-group"><label class="field-label">Notes coach</label><textarea class="field-textarea" id="pw-n" rows="2">${w.n||''}</textarea></div>`;
@@ -862,21 +806,48 @@ function resetWeek(sn){
 }
 function autoCalcWeekUA() {
   const socle = getSocleUA();
-  const getCharge = (elementId, defaultUA) => {
+  const slBase = (typeof slProgression!=='undefined'&&editKey) ? slProgression[editKey]||null : null;
+  const durREl = document.getElementById('pw-dur-r');
+  const durTEl = document.getElementById('pw-dur-t');
+  const sl = (durREl||slBase) ? {
+    dur_r: durREl ? (parseInt(durREl.value)||slBase?.dur_r||90) : (slBase?.dur_r||90),
+    dur_t: durTEl ? (parseInt(durTEl.value)||slBase?.dur_t||120) : (slBase?.dur_t||120),
+    dplus_t: slBase?.dplus_t||0
+  } : null;
+  const isSL = (k) => k==='sl_sur_mesure'||k==='sortie_longue';
+
+  const getCharge = (elementId, defaultUA, isTrail=false) => {
     const el = document.getElementById(elementId);
-    if(!el || !el.value || el.value==='—') return defaultUA ?? 0;
-    const seance = L.seances[el.value];
-    return seance ? calcSeanceUA(seance) : (defaultUA ?? 0);
+    if(!el||!el.value||el.value==='—') return defaultUA??0;
+    const k = el.value;
+    if(isSL(k)&&sl) return isTrail ? 4*sl.dur_t : 4*sl.dur_r;
+    const seance = L.seances[k];
+    return seance ? calcSeanceUA(seance) : (defaultUA??0);
   };
 
   const uaLun = getCharge('pw-lun', socle.lundi);
   const uaMar = getCharge('pw-m',   0);
   const uaMer = getCharge('pw-mer', socle.mercredi);
   const uaJeu = getCharge('pw-j',   0);
-  const uaSam = getCharge('pw-wr',  socle.weRoute);
-  const uaDim = getCharge('pw-dim', 0);
+  const uaSamR = getCharge('pw-wr', socle.weRoute, false);
+  const uaSamT = getCharge('pw-wt', socle.weTrail, true);
+  const uaDim  = getCharge('pw-dim', 0);
+  // Weekly UA = average of route and trail options (licencié choisit l'une ou l'autre)
+  const uaSam  = Math.round((uaSamR + uaSamT) / 2);
   const totalUA = uaLun + uaMar + uaMer + uaJeu + uaSam + uaDim;
   document.getElementById('pw-ua').value = totalUA;
+
+  // Hint sl_sur_mesure duration in the preview if applicable
+  if(sl) {
+    const elM = document.getElementById('pw-m'), elJ = document.getElementById('pw-j');
+    const elWR = document.getElementById('pw-wr'), elDim = document.getElementById('pw-dim');
+    const fmtD = (min) => { const h=Math.floor(min/60),m=min%60; return m?`${h}h${String(m).padStart(2,'0')}`:`${h}h`; };
+    const hint = `📈 S.L. sur mesure : Route ${fmtD(sl.dur_r)} · Trail ${fmtD(sl.dur_t)} · ${sl.dplus_t}m D+`;
+    let el = document.getElementById('sl-prog-hint');
+    if(!el){ el=document.createElement('div'); el.id='sl-prog-hint'; el.style.cssText='font-size:.65rem;color:var(--muted);font-style:italic;margin:.3rem 0 .6rem';
+      document.getElementById('pw-ua')?.parentElement?.insertAdjacentElement('afterend',el); }
+    el.textContent = hint;
+  }
   updateWeekPreview(uaMar, uaJeu, socle);
 }
 
@@ -1034,6 +1005,7 @@ function calcSeanceUA(s, defaultDur = 60){ return s ? (s.ua || (s.rn||0) * (s.d|
 // CALENDRIER & INFOS
 // ══════════════════════════════════════════════════
 function buildCalList(){
+  calRenderMonth();
   const el = document.getElementById('cal-list');
   if(!el) return;
   el.innerHTML = L.calFixed.map((c,i)=>`
@@ -1204,6 +1176,10 @@ function saveItem(){
     L.programme[idx].ua  = parseInt(document.getElementById('pw-ua').value)||0;
     L.programme[idx].d   = document.getElementById('pw-d').checked?1:0;
     L.programme[idx].n   = document.getElementById('pw-n').value.trim();
+    const durRVal = parseInt(document.getElementById('pw-dur-r')?.value)||null;
+    const durTVal = parseInt(document.getElementById('pw-dur-t')?.value)||null;
+    L.programme[idx].dur_r = durRVal;
+    L.programme[idx].dur_t = durTVal;
     const newPhase = document.getElementById('pw-p').value.trim();
     if(newPhase){
       const oldPhase = L.programme[idx].p;
@@ -1391,6 +1367,7 @@ function plannerRenderList() {
         <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem">${s.title||'Sans titre'}</span>
         <span style="font-size:.6rem;color:var(--gold);background:rgba(184,134,11,.1);padding:.1rem .3rem;border-radius:3px;font-weight:700;white-space:nowrap">${ua} UA</span>
         <button class="btn-sm" style="padding:.2rem .45rem;font-size:.62rem" onclick="plannerEditSeance('${s._docId}')">✏️</button>
+        <button class="btn-sm" style="padding:.2rem .4rem;font-size:.62rem" title="Dupliquer" onclick="plannerDuplicateSeance('${s._docId}')">⧉</button>
         <button class="btn-sm danger" style="padding:.2rem .4rem;font-size:.62rem" onclick="plannerDeleteSeance('${s._docId}','${(s.title||'').replace(/'/g,"\\'")}')">✕</button>
       </div>`;
     });
@@ -1627,70 +1604,70 @@ function plannerCalculate() {
 // UA = 240(lun) + m + 150(mer) + j + wr(240 si null) · progression ~+10%/sem
 const PROGRAMME_2026_2027 = [
   // ── BLOC 1 · REPRISE (S1-S4 · Sep 2026) ─────────────────────────────────────────
-  {s:1,  p:"Reprise",               m:"S004", j:"S034", wr:"—",   wt:"—",   ua:1288, d:0, n:"Sortie longue 1h — retour progressif après l'été"},
-  {s:2,  p:"Reprise",               m:"S001", j:"S029", wr:"—",   wt:"—",   ua:1435, d:0, n:"Sortie longue 1h10 (+11%)"},
-  {s:3,  p:"Reprise",               m:"S002", j:"S133", wr:"—",   wt:"—",   ua:1550, d:0, n:"Sortie longue 1h15 (+8%)"},
-  {s:4,  p:"Reprise",               m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge"},
+  {s:1,  p:"Reprise",               m:"S004", j:"S034", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h30 · trail 2h"},
+  {s:2,  p:"Reprise",               m:"S001", j:"S029", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h30 · trail 2h30"},
+  {s:3,  p:"Reprise",               m:"S002", j:"S133", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h30 · trail 2h30"},
+  {s:4,  p:"Reprise",               m:"S107", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
   // ── BLOC 2 · BASE ROUTE (S5-S8 · Oct 2026) ──────────────────────────────────────
-  {s:5,  p:"Base route",            m:"S012", j:"S032", wr:"—",   wt:"—",   ua:1394, d:0, n:"Sortie longue 1h15"},
-  {s:6,  p:"Base route",            m:"S202", j:"S133", wr:"—",   wt:"—",   ua:1510, d:0, n:"Sortie longue 1h20 (+8%) · Mar : 8×200m piste"},
-  {s:7,  p:"Base route",            m:"S012", j:"S032", wr:"M02", wt:"M02", ua:1616, d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+ (+7%)"},
-  {s:8,  p:"Base route",            m:"S108", j:"—",    wr:"—",   wt:"—",   ua:910,  d:1, n:"Décharge"},
+  {s:5,  p:"Base route",            m:"S012", j:"S032", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h45 · trail 2h30"},
+  {s:6,  p:"Base route",            m:"S202", j:"S133", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h45 · trail 3h"},
+  {s:7,  p:"Base route",            m:"S012", j:"S032", wr:"M02",           wt:"M02",           d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+"},
+  {s:8,  p:"Base route",            m:"S108", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
   // ── BLOC 3 · DÉVELOPPEMENT AUTOMNE (S9-S12 · Nov 2026) ──────────────────────────
-  {s:9,  p:"Développement automne", m:"S205", j:"S029", wr:"—",   wt:"—",   ua:1539, d:0, n:"Sortie longue 1h20 · Prépa marathon / semi automne"},
-  {s:10, p:"Développement automne", m:"S205", j:"S135", wr:"—",   wt:"—",   ua:1670, d:0, n:"Sortie longue 1h25 (+8.5%)"},
-  {s:11, p:"Développement automne", m:"S003", j:"S030", wr:"—",   wt:"—",   ua:1823, d:0, n:"Sortie longue 1h30 (+9.2%)"},
-  {s:12, p:"Développement automne", m:"S011", j:"—",    wr:"—",   wt:"—",   ua:924,  d:1, n:"Décharge"},
+  {s:9,  p:"Développement automne", m:"S205", j:"S029", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h45 · trail 3h"},
+  {s:10, p:"Développement automne", m:"S205", j:"S135", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h · trail 3h"},
+  {s:11, p:"Développement automne", m:"S003", j:"S030", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h · trail 3h30 — choc"},
+  {s:12, p:"Développement automne", m:"S011", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
   // ── BLOC 4 · TRANSITION HIVER (S13-S16 · Déc 2026) ──────────────────────────────
-  {s:13, p:"Transition hiver",      m:"S001", j:"S029", wr:"—",   wt:"—",   ua:1435, d:0, n:"Sortie longue 1h20 — allègement post-automne"},
-  {s:14, p:"Transition hiver",      m:"S012", j:"S135", wr:"—",   wt:"—",   ua:1574, d:0, n:"Sortie longue 1h25 (+9.7%)"},
-  {s:15, p:"Transition hiver",      m:"S012", j:"S133", wr:"M02", wt:"M02", ua:1748, d:0, n:"🏔️ Sortie montagne hiver — 4×6' seuil D+ (+11%)"},
-  {s:16, p:"Transition hiver",      m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge fin d'année"},
+  {s:13, p:"Transition hiver",      m:"S001", j:"S029", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h45 · trail 3h — retour"},
+  {s:14, p:"Transition hiver",      m:"S012", j:"S135", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h · trail 3h30"},
+  {s:15, p:"Transition hiver",      m:"S012", j:"S133", wr:"M02",           wt:"M02",           d:0, n:"🏔️ Sortie montagne hiver — 4×6' seuil D+"},
+  {s:16, p:"Transition hiver",      m:"S107", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge fin d'année"},
   // ── BLOC 5 · CONSTRUCTION HIVER (S17-S20 · Jan 2027) ────────────────────────────
-  {s:17, p:"Construction hiver",    m:"S209", j:"S133", wr:"—",   wt:"—",   ua:1566, d:0, n:"Sortie longue 1h25 — reprise après fêtes · Mar : 7×400m piste"},
-  {s:18, p:"Construction hiver",    m:"S210", j:"S135", wr:"—",   wt:"—",   ua:1646, d:0, n:"Sortie longue 1h30 (+5%)"},
-  {s:19, p:"Construction hiver",    m:"S012", j:"S135", wr:"M02", wt:"M02", ua:1796, d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+ (+9%)"},
-  {s:20, p:"Construction hiver",    m:"S108", j:"—",    wr:"—",   wt:"—",   ua:910,  d:1, n:"Décharge"},
-  // ── BLOC 6 · PRÉPA SEMI / MARATHON PRINTEMPS (S21-S24 · Fév 2027) ──────────────
-  {s:21, p:"Prépa printemps",       m:"S215", j:"S133", wr:"—",   wt:"—",   ua:1646, d:0, n:"Sortie longue 1h30 · Mar : 8×600m piste — allure marathon introduction"},
-  {s:22, p:"Prépa printemps",       m:"S074", j:"S135", wr:"—",   wt:"—",   ua:1750, d:0, n:"Sortie longue 1h35 (+6%)"},
-  {s:23, p:"Prépa printemps",       m:"S074", j:"S030", wr:"—",   wt:"—",   ua:1886, d:0, n:"Sortie longue 1h40 (+8%)"},
-  {s:24, p:"Prépa printemps",       m:"S011", j:"—",    wr:"—",   wt:"—",   ua:924,  d:1, n:"Décharge — repos avant compétitions printemps"},
+  {s:17, p:"Construction hiver",    m:"S209", j:"S133", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h · trail 3h30"},
+  {s:18, p:"Construction hiver",    m:"S210", j:"S135", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h · trail 4h"},
+  {s:19, p:"Construction hiver",    m:"S012", j:"S135", wr:"M02",           wt:"M02",           d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+"},
+  {s:20, p:"Construction hiver",    m:"S108", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
+  // ── BLOC 6 · PRÉPA PRINTEMPS (S21-S24 · Fév 2027) ───────────────────────────────
+  {s:21, p:"Prépa printemps",       m:"S215", j:"S133", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h · trail 3h30"},
+  {s:22, p:"Prépa printemps",       m:"S074", j:"S135", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h15 · trail 4h"},
+  {s:23, p:"Prépa printemps",       m:"S074", j:"S030", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h30 · trail 4h30 — choc"},
+  {s:24, p:"Prépa printemps",       m:"S011", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
   // ── BLOC 7 · PRÉPA TRAIL PRINTEMPS (S25-S28 · Mar 2027) ─────────────────────────
-  {s:25, p:"Prépa trail printemps", m:"S216", j:"S135", wr:"—",   wt:"L01", ua:1734, d:0, n:"Route : sortie 1h40 · Trail : rando-course 2h30 D+"},
-  {s:26, p:"Prépa trail printemps", m:"S019", j:"S030", wr:"—",   wt:"L01", ua:1870, d:0, n:"Route : sortie 1h45 (+8%) · Trail : rando-course 3h D+"},
-  {s:27, p:"Prépa trail printemps", m:"S013", j:"S031", wr:"M02", wt:"M02", ua:2085, d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+ (+11%)"},
-  {s:28, p:"Prépa trail printemps", m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
+  {s:25, p:"Prépa trail printemps", m:"S216", j:"S135", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h30 · trail 4h30"},
+  {s:26, p:"Prépa trail printemps", m:"S019", j:"S030", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h30 · trail 5h"},
+  {s:27, p:"Prépa trail printemps", m:"S013", j:"S031", wr:"M02",           wt:"M02",           d:0, n:"🏔️ Sortie montagne — 4×6' seuil D+"},
+  {s:28, p:"Prépa trail printemps", m:"S012", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
   // ── BLOC 8 · DÉVELOPPEMENT TRAIL (S29-S32 · Avr 2027) ───────────────────────────
-  {s:29, p:"Développement trail",   m:"S215", j:"S030", wr:"—",   wt:"L01", ua:1830, d:0, n:"Route : sortie 1h45 · Trail : rando-course 2h30-3h D+"},
-  {s:30, p:"Développement trail",   m:"S022", j:"S030", wr:"—",   wt:"L01", ua:1902, d:0, n:"Route : sortie 1h50 (+4%) · Trail : 3h D+"},
-  {s:31, p:"Développement trail",   m:"S022", j:"S031", wr:"M03", wt:"M03", ua:2161, d:0, n:"🏔️ Sortie montagne — Pyramide D+ 1'-2'-3'-2'-1' (+14%)"},
-  {s:32, p:"Développement trail",   m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
-  // ── BLOC 9 · SPÉCIFICITÉ TRAIL (S33-S36 · Mai 2027) ─────────────────────────────
-  {s:33, p:"Spécificité trail",     m:"S019", j:"S031", wr:"—",   wt:"L01", ua:1937, d:0, n:"Route : sortie 1h50 · Trail : 25km / 1200D+"},
-  {s:34, p:"Spécificité trail",     m:"S022", j:"S036", wr:"—",   wt:"L02", ua:2062, d:0, n:"Route : sortie 1h55 (+6.5%) · Trail : boucle 25km 1200D+"},
-  {s:35, p:"Spécificité trail",     m:"S008", j:"S031", wr:"M05", wt:"M05", ua:2262, d:0, n:"🏔️ KV simulation 30' — semaine de charge max (+9.7%)"},
-  {s:36, p:"Spécificité trail",     m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
-  // ── BLOC 10 · PIC TRAIL ÉTÉ (S37-S40 · Juin 2027) ──────────────────────────────
-  {s:37, p:"Pic été",               m:"S024", j:"S036", wr:"—",   wt:"L02", ua:2046, d:0, n:"Route : sortie 2h · Trail : boucle 25km 1200D+"},
-  {s:38, p:"Pic été",               m:"S019", j:"S087", wr:"—",   wt:"L02", ua:2110, d:0, n:"Route : sortie 2h (+3%) · Trail : 30km 1500D+"},
-  {s:39, p:"Pic été",               m:"S022", j:"S031", wr:"M05", wt:"M05", ua:2314, d:0, n:"🏔️ KV simulation — semaine pic absolue (+9.7%)"},
-  {s:40, p:"Pic été",               m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
-  // ── BLOC 11 · MAINTIEN ÉTÉ (S41-S44 · Juil 2027) ───────────────────────────────
-  {s:41, p:"Maintien été",          m:"S214", j:"S030", wr:"—",   wt:"L01", ua:1798, d:0, n:"Route : sortie 1h55 · Trail : rando-course 2h30"},
-  {s:42, p:"Maintien été",          m:"S215", j:"S031", wr:"—",   wt:"L01", ua:1997, d:0, n:"Route : sortie 2h (+11%) · Trail : boucle 25km"},
-  {s:43, p:"Maintien été",          m:"S022", j:"S031", wr:"M03", wt:"M03", ua:2161, d:0, n:"🏔️ Sortie montagne — Pyramide D+ (+8%)"},
-  {s:44, p:"Maintien été",          m:"S012", j:"—",    wr:"—",   wt:"—",   ua:1030, d:1, n:"Décharge"},
-  // ── BLOC 12 · RELÂCHE ÉTÉ (S45-S48 · Aoû 2027) ─────────────────────────────────
-  {s:45, p:"Relâche été",           m:"S201", j:"S029", wr:"—",   wt:"—",   ua:1351, d:0, n:"Sortie légère 1h30 — réduction de charge"},
-  {s:46, p:"Relâche été",           m:"S204", j:"S133", wr:"—",   wt:"—",   ua:1518, d:0, n:"Sortie 1h35 (+12%)"},
-  {s:47, p:"Relâche été",           m:"S014", j:"S033", wr:"—",   wt:"—",   ua:1606, d:0, n:"Sortie 1h40 (+6%)"},
-  {s:48, p:"Relâche été",           m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge — bilan de saison"},
-  // ── BLOC 13 · TRANSITION NOUVELLE SAISON (S49-S52 · Sep 2027) ───────────────────
-  {s:49, p:"Reprise",               m:"S004", j:"S034", wr:"—",   wt:"—",   ua:1288, d:0, n:"Début saison 2027-2028 — sortie 1h"},
-  {s:50, p:"Reprise",               m:"S001", j:"S029", wr:"—",   wt:"—",   ua:1435, d:0, n:"Sortie 1h10 (+11%)"},
-  {s:51, p:"Reprise",               m:"S002", j:"S133", wr:"—",   wt:"—",   ua:1550, d:0, n:"Sortie 1h15 (+8%)"},
-  {s:52, p:"Reprise",               m:"S107", j:"—",    wr:"—",   wt:"—",   ua:858,  d:1, n:"Décharge — clôture saison"},
+  {s:29, p:"Développement trail",   m:"S215", j:"S030", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h30 · trail 5h"},
+  {s:30, p:"Développement trail",   m:"S022", j:"S030", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h45 · trail 5h30"},
+  {s:31, p:"Développement trail",   m:"S022", j:"S031", wr:"M03",           wt:"M03",           d:0, n:"🏔️ Sortie montagne — Pyramide D+ 1'-2'-3'-2'-1'"},
+  {s:32, p:"Développement trail",   m:"S012", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
+  // ── BLOC 9 · MONTÉE EN PUISSANCE (S33-S36 · Mai 2027) ───────────────────────────
+  {s:33, p:"Montée en puissance",   m:"S019", j:"S031", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h45 · trail 5h30 — montée"},
+  {s:34, p:"Montée en puissance",   m:"S022", j:"S036", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h45 · trail 6h — CHOC 1800m D+"},
+  {s:35, p:"Montée en puissance",   m:"S008", j:"S031", wr:"M05",           wt:"M05",           d:0, n:"🏔️ KV simulation 30'"},
+  {s:36, p:"Montée en puissance",   m:"S012", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge"},
+  // ── BLOC 10 · PRÉ-PEAK (S37-S40 · Juin 2027) ────────────────────────────────────
+  {s:37, p:"Pré-peak",              m:"S024", j:"S036", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h45 · trail 6h30 — 2000m D+"},
+  {s:38, p:"Pré-peak",              m:"S019", j:"S087", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 3h · trail 7h — CHOC 2200m D+"},
+  {s:39, p:"Pré-peak",              m:"S022", j:"S031", wr:"M05",           wt:"M05",           d:0, n:"🏔️ KV simulation — bloc D+ spécifique"},
+  {s:40, p:"Pré-peak",              m:"S012", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge avant pic"},
+  // ── BLOC 11 · PEAK TRAIL (S41-S44 · Juil 2027) — MAXIMUM ABSOLU ─────────────────
+  {s:41, p:"Peak trail",            m:"S214", j:"S030", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 3h · trail 7h — PEAK 2200m D+"},
+  {s:42, p:"Peak trail",            m:"S215", j:"S031", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 3h · trail 8h — CHOC MAXIMUM 2500m D+ 🏆"},
+  {s:43, p:"Peak trail",            m:"S022", j:"S031", wr:"M03",           wt:"M03",           d:0, n:"🏔️ Sortie montagne — Pyramide D+ spécifique 40km"},
+  {s:44, p:"Peak trail",            m:"S012", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge post-pic"},
+  // ── BLOC 12 · POST-PEAK / RELÂCHE (S45-S48 · Août 2027) ─────────────────────────
+  {s:45, p:"Post-peak",             m:"S201", j:"S029", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h30 · trail 5h30 — descente progressive"},
+  {s:46, p:"Post-peak",             m:"S204", j:"S133", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 2h · trail 4h — récupération"},
+  {s:47, p:"Post-peak",             m:"S014", j:"S033", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h30 · trail 3h — allègement"},
+  {s:48, p:"Post-peak",             m:"S107", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge — bilan de saison"},
+  // ── BLOC 13 · FIN DE SAISON (S49-S52 · Sep 2027) ────────────────────────────────
+  {s:49, p:"Fin de saison",         m:"S004", j:"S034", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h30 · trail 2h30 — relâche"},
+  {s:50, p:"Fin de saison",         m:"S001", j:"S029", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h30 · trail 2h — récupération active"},
+  {s:51, p:"Fin de saison",         m:"S002", j:"S133", wr:"sl_sur_mesure", wt:"sl_sur_mesure", d:0, n:"SL route 1h30 · trail 1h30 — coupure finale"},
+  {s:52, p:"Fin de saison",         m:"S107", j:"—",    wr:"—",             wt:"—",             d:1, n:"Décharge — clôture saison"},
 ];
 
 async function doLoadPrebuiltProgramme() {
@@ -1756,6 +1733,152 @@ async function doImportSeancesV3(){
   }
 
   btn.disabled = false;
+}
+
+// ══════════════════════════════════════════════════
+// NAVIGATION — Semaine courante
+// ══════════════════════════════════════════════════
+function getCurrentSemaine() {
+  const diff = Date.now() - S1_saison.getTime();
+  if (diff < 0) return 1;
+  return Math.min(Math.max(Math.floor(diff / (7 * 864e5)) + 1, 1), 52);
+}
+
+function scrollToCurrentWeek() {
+  const filter = document.getElementById('phase-filter');
+  if (filter && filter.value) { filter.value = ''; buildAdminProg(); }
+  const sn = getCurrentSemaine();
+  setTimeout(() => {
+    const el = document.getElementById('row-s' + sn);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.outline = '2px solid var(--sky)';
+    setTimeout(() => { el.style.outline = ''; }, 2500);
+  }, 50);
+}
+
+function scrollToWeek(sn) {
+  const filter = document.getElementById('phase-filter');
+  if (filter && filter.value) { filter.value = ''; buildAdminProg(); }
+  setTimeout(() => {
+    const el = document.getElementById('row-s' + sn);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.outline = '2px solid var(--rouge)';
+    setTimeout(() => { el.style.outline = ''; }, 2500);
+  }, 50);
+}
+
+// ══════════════════════════════════════════════════
+// ALERTES FOSTER
+// ══════════════════════════════════════════════════
+function buildFosterAlerts() {
+  const el = document.getElementById('foster-alerts');
+  if (!el) return;
+  const alerts = [];
+  L.programme.forEach(w => {
+    const prev = L.programme.find(x => x.s === w.s - 1);
+    if (!prev || !prev.ua || w.d || prev.d) return;
+    const d = Math.round((w.ua - prev.ua) / prev.ua * 100);
+    if (d > 20)       alerts.push({ s: w.s, d, type: 'danger', msg: `+${d}% — progression trop rapide` });
+    else if (d < -25) alerts.push({ s: w.s, d, type: 'warn',   msg: `${d}% — chute de charge importante` });
+  });
+  if (!alerts.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div style="background:rgba(192,64,64,.06);border:1px solid rgba(192,64,64,.2);border-radius:8px;padding:.5rem .8rem">
+      <div style="font-size:.62rem;font-weight:700;color:var(--rouge);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem">
+        ⚠️ ${alerts.length} alerte${alerts.length > 1 ? 's' : ''} Foster
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        ${alerts.map(a => `
+          <button onclick="scrollToWeek(${a.s})" style="background:${a.type==='danger'?'rgba(192,64,64,.1)':'rgba(212,137,58,.1)'};border:1px solid ${a.type==='danger'?'rgba(192,64,64,.3)':'rgba(212,137,58,.4)'};border-radius:5px;padding:.25rem .55rem;cursor:pointer;font-family:'Lora',serif;font-size:.68rem;color:${a.type==='danger'?'var(--rouge)':'var(--ocre)'}">
+            <strong>S${a.s}</strong> ${a.msg}
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// PLANIFICATEUR — Dupliquer
+// ══════════════════════════════════════════════════
+function plannerDuplicateSeance(docId) {
+  const s = plannerSeancesList.find(x => x._docId === docId);
+  if (!s) return;
+  plannerCurrentId = null;
+  document.getElementById('planner-form-title').textContent = 'Dupliquer — ' + (s.id_original || docId);
+  document.getElementById('planner-id').value = 'S' + Date.now().toString().slice(-5);
+  document.getElementById('planner-id').readOnly = false;
+  document.getElementById('planner-title').value = (s.title || '') + ' (copie)';
+  document.getElementById('planner-category').value = s.category || 'VMA Courte';
+  document.getElementById('planner-terrain').value = s.terrain || 'Route';
+  document.getElementById('planner-description').value = s.description || '';
+  document.getElementById('planner-warmup').value = s.warmupSec || 1200;
+  document.getElementById('planner-cooldown').value = s.cooldownSec || 600;
+  const rpe = s.rpe_foster || 7;
+  document.getElementById('planner-rpe').value = rpe;
+  document.getElementById('planner-rpe-display').textContent = rpe;
+  document.getElementById('planner-blocks').innerHTML = '';
+  (s.series || []).forEach(serie => {
+    if (serie.type === 'work') plannerAddSerie(serie);
+    else if (serie.type === 'rest_block') plannerAddRestBlock(serie.value);
+  });
+  plannerCalculate();
+  document.getElementById('planner-form-panel').style.display = 'block';
+  plannerRenderList();
+}
+
+// ══════════════════════════════════════════════════
+// CALENDRIER — Vue mensuelle
+// ══════════════════════════════════════════════════
+let calViewYear  = new Date().getFullYear();
+let calViewMonth = new Date().getMonth();
+
+const CAL_MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const CAL_TYPE_COLOR = { course:'var(--rouge)', social:'var(--blue)', trail:'var(--mousse)', rando:'var(--ocre)' };
+const CAL_TYPE_ICON  = { course:'🏁', social:'🍺', trail:'🌲', rando:'🥾' };
+
+function calNavMonth(delta) {
+  calViewMonth += delta;
+  if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+  if (calViewMonth < 0)  { calViewMonth = 11; calViewYear--; }
+  calRenderMonth();
+}
+
+function calRenderMonth() {
+  const labelEl = document.getElementById('cal-month-label');
+  const gridEl  = document.getElementById('cal-month-grid');
+  if (!labelEl || !gridEl) return;
+  labelEl.textContent = CAL_MOIS[calViewMonth] + ' ' + calViewYear;
+
+  const firstDay = new Date(calViewYear, calViewMonth, 1);
+  const lastDay  = new Date(calViewYear, calViewMonth + 1, 0);
+  const startDow = (firstDay.getDay() + 6) % 7; // Lundi = 0
+
+  const evByDate = {};
+  (L.calFixed || []).forEach(c => {
+    const d = c.date || '';
+    if (!evByDate[d]) evByDate[d] = [];
+    evByDate[d].push(c);
+  });
+
+  const dayHeaders = ['L','M','M','J','V','S','D'];
+  let html = `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">`;
+  dayHeaders.forEach(d => html += `<div style="text-align:center;font-size:.57rem;font-weight:700;color:var(--muted);padding:.2rem 0;background:var(--surface2);border-radius:3px">${d}</div>`);
+  for (let i = 0; i < startDow; i++) html += `<div style="min-height:44px"></div>`;
+  const today = new Date(); today.setHours(0,0,0,0);
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const iso = calViewYear + '-' + String(calViewMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    const evs = evByDate[iso] || [];
+    const isToday = new Date(calViewYear, calViewMonth, d).getTime() === today.getTime();
+    html += `<div style="min-height:44px;padding:.2rem .15rem;border:1px solid var(--border);border-radius:4px;background:${evs.length ? 'rgba(42,93,160,.04)' : 'var(--surface)'}">
+      <div style="font-size:.6rem;text-align:center;margin-bottom:.1rem">
+        <span style="${isToday ? 'background:var(--navy);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-weight:700' : 'color:var(--muted)'}">${d}</span>
+      </div>
+      ${evs.map(e => `<div title="${e.titre||e.title||''}" style="font-size:.52rem;line-height:1.2;color:#fff;background:${CAL_TYPE_COLOR[e.type]||'var(--blue)'};border-radius:2px;padding:.05rem .2rem;margin-bottom:.1rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:default">${CAL_TYPE_ICON[e.type]||'📅'} ${(e.titre||e.title||'').substring(0, 12)}</div>`).join('')}
+    </div>`;
+  }
+  html += `</div>`;
+  gridEl.innerHTML = html;
 }
 
 // ══════════════════════════════════════════════════
