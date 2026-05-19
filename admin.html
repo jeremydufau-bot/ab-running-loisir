@@ -260,26 +260,7 @@
         <div style="font-size:.75rem;color:var(--muted)">Projet : <strong>ab-running-e8c95</strong></div>
         <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Les modifications sont sauvegardées directement sur Firestore.</div>
       </div>
-      <div style="background:rgba(27,58,107,.05);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--navy);margin-bottom:.4rem">Import — Collection <code>seances_v3</code></div>
-        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.7rem">Alimente la collection Firestore <strong>seances_v3</strong> depuis le fichier <code>ab_running_workouts.json</code> (207 séances). Chaque document utilise <code>id_original</code> comme identifiant.</div>
-        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-          <button class="btn-sm" id="btn-import-v3" onclick="doImportSeancesV3()">📤 Importer seances_v3</button>
-          <span id="import-v3-status" style="font-size:.72rem;color:var(--muted)"></span>
-        </div>
-        <div id="import-v3-progress" style="margin-top:.6rem;display:none">
-          <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div id="import-v3-bar" style="height:100%;background:var(--navy);width:0;transition:width .3s"></div></div>
-          <div id="import-v3-msg" style="font-size:.7rem;color:var(--muted);margin-top:.3rem"></div>
-        </div>
-      </div>
 
-      <div style="background:rgba(42,93,160,.06);border:1px solid rgba(42,93,160,.25);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem">
-        <div style="font-size:.72rem;font-weight:700;color:var(--navy);margin-bottom:.3rem">📅 Programme 2026-2027 — Pré-construit</div>
-        <div style="font-size:.74rem;color:var(--muted);margin-bottom:.7rem">52 semaines · 13 blocs Foster (3 sem. progressif + 1 décharge) · saisonnalité route &amp; trail · 8 semaines montagne · bibliothèque séances_v3.</div>
-        <div style="font-size:.72rem;color:var(--rouge);background:rgba(192,64,64,.07);border:1px solid rgba(192,64,64,.15);border-radius:5px;padding:.4rem .6rem;margin-bottom:.7rem">⚠️ Remplace intégralement le programme actuel.</div>
-        <button class="btn-sm" style="background:var(--navy);color:#fff;border-color:var(--navy)" onclick="doLoadPrebuiltProgramme()">📅 Charger le programme 2026-2027</button>
-        <span id="prebuilt-prog-status" style="font-size:.7rem;color:var(--muted);margin-left:.5rem"></span>
-      </div>
 
       <div id="migration-box" style="background:rgba(212,137,58,.06);border:1px solid rgba(212,137,58,.3);border-radius:10px;padding:1rem 1.2rem;display:none">
         <div style="font-size:.72rem;font-weight:700;color:var(--ocre);margin-bottom:.4rem">📦 Migration depuis sauvegarde locale</div>
@@ -512,7 +493,9 @@ async function getFromFirestore(){
   const data = await fbLoadPageData(
     ['programme','seances','socle','infosClub','objectifs','calFixed','calculateur','seuils']
   );
-  L.programme    = JSON.parse(JSON.stringify(data.programme    || []));
+  // Si Firestore n'a pas encore de programme, utiliser le programme statique de data.js et le sauvegarder
+  const hasFirestoreProg = data.programme && data.programme.length > 0;
+  L.programme    = JSON.parse(JSON.stringify(hasFirestoreProg ? data.programme : (typeof programme !== 'undefined' ? programme : [])));
   // Merge: local seancesData fills gaps, Firebase takes priority for existing keys
   const localBase = (typeof seancesData !== 'undefined') ? seancesData : {};
   L.seances      = JSON.parse(JSON.stringify(Object.assign({}, localBase, data.seances || {})));
@@ -525,6 +508,11 @@ async function getFromFirestore(){
   FB_ORIGIN = JSON.parse(JSON.stringify(L));
   // Charger socle dans l'UI
   if(data.socle) loadSocleFromData(data.socle);
+  // Premier démarrage : initialiser Firestore avec le programme statique de référence
+  if(!hasFirestoreProg && L.programme.length > 0){
+    await fbSaveProgramme(L.programme);
+    FB_ORIGIN.programme = JSON.parse(JSON.stringify(L.programme));
+  }
 }
 
 function saveLocal(){
@@ -1254,29 +1242,6 @@ async function plannerLoadList() {
   if (inner) inner.innerHTML = '<div style="color:var(--muted);font-size:.74rem;padding:.5rem">Chargement…</div>';
   try {
     plannerSeancesList = await fbLoadSeancesV3();
-    // Merge local seancesData "Sortie Longue" sessions not already in Firebase
-    if (typeof seancesData !== 'undefined') {
-      const fbIds = new Set(plannerSeancesList.map(s => s.id_original || s._docId));
-      Object.entries(seancesData).forEach(([id, v]) => {
-        if (v.c === 'Sortie Longue' && !fbIds.has(id)) {
-          plannerSeancesList.push({
-            _docId:       id,
-            id_original:  id,
-            title:        v.l || id,
-            category:     v.c,
-            terrain:      v.lieu || 'Route',
-            description:  v.desc || '',
-            rpe_foster:   parseFloat(v.rpe) || v.rn || 0,
-            totalUA:      v.ua || 0,
-            totalDuration:v.d || 0,
-            series:       [],
-            warmupSec:    0,
-            cooldownSec:  0,
-            _local:       true
-          });
-        }
-      });
-    }
     plannerRenderList();
   } catch(e) {
     if (inner) inner.innerHTML = '<div style="color:var(--rouge);font-size:.74rem;padding:.5rem">Erreur : ' + e.message + '</div>';
@@ -1562,70 +1527,6 @@ function plannerCalculate() {
 }
 
 
-async function doLoadPrebuiltProgramme() {
-  if (!confirm('Remplacer le programme actuel par le programme 2026-2027 (52 semaines) ?')) return;
-  const status = document.getElementById('prebuilt-prog-status');
-  status.textContent = 'Enregistrement…';
-  status.style.color = 'var(--muted)';
-  try {
-    L.programme = JSON.parse(JSON.stringify(programme));
-    await fbSaveProgramme(L.programme);
-    FB_ORIGIN.programme = JSON.parse(JSON.stringify(L.programme));
-    saveLocal();
-    buildAdminProg();
-    updateStatus();
-    status.textContent = '✅ Programme chargé !';
-    status.style.color = 'var(--mousse)';
-    toast('Programme 2026-2027 chargé — 52 semaines', 'success');
-    showTab('tab-prog', document.querySelector('.tab'));
-  } catch(e) {
-    status.textContent = '❌ ' + e.message;
-    status.style.color = 'var(--rouge)';
-    toast('Erreur : ' + e.message, 'error');
-  }
-}
-
-// ══════════════════════════════════════════════════
-// IMPORT SEANCES_V3
-// ══════════════════════════════════════════════════
-async function doImportSeancesV3(){
-  const btn    = document.getElementById('btn-import-v3');
-  const status = document.getElementById('import-v3-status');
-  const prog   = document.getElementById('import-v3-progress');
-  const bar    = document.getElementById('import-v3-bar');
-  const msg    = document.getElementById('import-v3-msg');
-
-  btn.disabled = true;
-  prog.style.display = 'block';
-  status.textContent = '';
-  bar.style.width = '0';
-  msg.textContent = 'Chargement du fichier JSON…';
-
-  try {
-    if (typeof AB_RUNNING_WORKOUTS === 'undefined') throw new Error('Variable AB_RUNNING_WORKOUTS non chargée — vérifiez ab_running_workouts_data.js');
-    const workouts = AB_RUNNING_WORKOUTS;
-
-    msg.textContent = '0 / ' + workouts.length + ' documents écrits…';
-    bar.style.width = '0';
-
-    await fbImportSeancesV3(workouts, (done, total) => {
-      const pct = Math.round(done / total * 100);
-      bar.style.width = pct + '%';
-      msg.textContent = done + ' / ' + total + ' documents écrits…';
-    });
-
-    bar.style.width = '100%';
-    msg.textContent = '✅ ' + workouts.length + ' séances importées dans seances_v3.';
-    status.textContent = '✓ Import terminé';
-    toast(workouts.length + ' séances importées dans seances_v3', 'success');
-  } catch(e) {
-    msg.textContent = '❌ Erreur : ' + e.message;
-    status.textContent = '✗ Échec';
-    toast('Erreur import : ' + e.message, 'error');
-  }
-
-  btn.disabled = false;
-}
 
 // ══════════════════════════════════════════════════
 // NAVIGATION — Semaine courante
@@ -1798,6 +1699,39 @@ function calRenderMonth() {
 }
 
 // ══════════════════════════════════════════════════
+// SYNC SÉANCES STATIQUES → FIREBASE
+// ══════════════════════════════════════════════════
+async function syncStaticSeancesToFirebase() {
+  if (typeof seancesData === 'undefined') return;
+  try {
+    const existing = await fbLoadSeancesV3();
+    const fbIds = new Set(existing.map(s => s.id_original || s._docId));
+    const missing = Object.entries(seancesData)
+      .filter(([id, v]) => v.c === 'Sortie Longue' && !fbIds.has(id))
+      .map(([id, v]) => ({
+        id_original:   id,
+        title:         v.l || id,
+        category:      v.c,
+        terrain:       v.lieu === 'montagne' ? 'Trail' : 'Route',
+        description:   v.desc || '',
+        rpe_foster:    parseFloat(v.rpe) || v.rn || 0,
+        totalUA:       v.ua || 0,
+        totalDuration: Math.round((v.ua || 0) / (parseFloat(v.rpe) || v.rn || 1)),
+        series:        [],
+        warmupSec:     0,
+        cooldownSec:   0,
+        createdAt:     new Date().toISOString()
+      }));
+    if (missing.length > 0) {
+      await fbImportSeancesV3(missing);
+      toast(missing.length + ' séances longues synchronisées dans Firebase', 'success');
+    }
+  } catch(e) {
+    console.warn('syncStaticSeancesToFirebase:', e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════
 async function initApp(){
@@ -1809,6 +1743,7 @@ async function initApp(){
     checkLocalBackup();
     const cfgEmail = document.getElementById('cfg-user-email');
     if(cfgEmail && auth.currentUser) cfgEmail.textContent = auth.currentUser.email;
+    await syncStaticSeancesToFirebase();
   } catch(e) {
     toast('Erreur chargement Firestore : '+e.message, 'error');
     document.getElementById('status-text').textContent = 'Erreur de connexion Firestore';

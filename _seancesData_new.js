@@ -1,4 +1,4 @@
-// seances-default : assignation sans déclaration, data.js déclare déjà seancesData
+﻿// seances-default : assignation sans déclaration, data.js déclare déjà seancesData
 seancesData = {
   "S001": {
     "l": "2\u00d7(8\u00d730\"/30\") R3'",
@@ -1863,7 +1863,18 @@ seancesData = {
     "piste": "\u2014",
     "desc": "1h en endurance fondamentale, Zone 2. Allure conversationnelle. Terrain plat de pr\u00e9f\u00e9rence. Id\u00e9al en r\u00e9cup\u00e9ration active ou en compl\u00e9ment d'une semaine charg\u00e9e."
   },
-  "SR090": {
+    "SR075": {
+    "l": "Sortie Route 1h15",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 300,
+    "lieu": "halage",
+    "halage": "1h15 endurance Halage / Chiberta",
+    "piste": "—",
+    "desc": "1h15 en endurance fondamentale, Zone 2. Légèrement plus long que la récupération active, idéal en fin de semaine de reprise ou semaine légère."
+  },
+"SR090": {
     "l": "Sortie Route 1h30",
     "c": "Sortie Longue",
     "rpe": "4",
@@ -1874,7 +1885,18 @@ seancesData = {
     "piste": "\u2014",
     "desc": "1h30 en endurance, Zone 2 stricte. Sortie standard de week-end pour les semaines l\u00e9g\u00e8res. Allure r\u00e9guli\u00e8re, jamais > 80% FCmax. Conversation possible \u00e0 tout moment."
   },
-  "SR120": {
+    "SR105": {
+    "l": "Sortie Route 1h45",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 420,
+    "lieu": "halage",
+    "halage": "1h45 endurance route / Halage / Chiberta",
+    "piste": "—",
+    "desc": "1h45 en endurance fondamentale, Zone 2. Bonne sortie d'entretien en période de base. Allure régulière sur terrain plat ou légèrement vallonné."
+  },
+"SR120": {
     "l": "Sortie Route 2h",
     "c": "Sortie Longue",
     "rpe": "4",
@@ -1885,7 +1907,18 @@ seancesData = {
     "piste": "\u2014",
     "desc": "2h en endurance fondamentale. Sortie longue route de r\u00e9f\u00e9rence. Pr\u00e9voir hydratation si chaleur. Zone 2 \u2014 d\u00e9veloppe le m\u00e9tabolisme a\u00e9robie et l'\u00e9conomie de course. Allure r\u00e9guli\u00e8re sur toute la dur\u00e9e."
   },
-  "SR150": {
+    "SR135": {
+    "l": "Sortie Route 2h15",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 540,
+    "lieu": "halage",
+    "halage": "2h15 endurance route / Côte Basque",
+    "piste": "—",
+    "desc": "2h15 en endurance, Zone 2. Sortie longue progressive — commencer lentement et finir au même rythme. Hydratation obligatoire. Construire la résistance à la fatigue musculaire."
+  },
+"SR150": {
     "l": "Sortie Route 2h30",
     "c": "Sortie Longue",
     "rpe": "4",
@@ -1896,7 +1929,18 @@ seancesData = {
     "piste": "\u2014",
     "desc": "2h30 route, Zone 2. Sortie longue route \u2014 ravitaillement recommand\u00e9 apr\u00e8s 1h30. Terrain vari\u00e9 bienvenu (petites c\u00f4tes). Construire la r\u00e9sistance \u00e0 la fatigue et l'efficacit\u00e9 \u00e9nerg\u00e9tique."
   },
-  "SR180": {
+    "SR165": {
+    "l": "Sortie Route 2h45",
+    "c": "Sortie Longue",
+    "rpe": "4",
+    "rn": 4,
+    "ua": 660,
+    "lieu": "halage",
+    "halage": "2h45 endurance longue route / Côte Basque / Boucle campagne",
+    "piste": "—",
+    "desc": "2h45 route, Zone 2. Sortie longue soutenue — tester la nutrition toutes les 45min. Maintenir une allure régulière même en fin de sortie. Bonne préparation pour les weekends à fort volume."
+  },
+"SR180": {
     "l": "Sortie Route 3h",
     "c": "Sortie Longue",
     "rpe": "4",
