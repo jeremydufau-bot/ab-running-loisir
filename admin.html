@@ -42,6 +42,7 @@
       <button class="tab" onclick="showTab('tab-infos',this)">📢 Infos Club</button>
       <button class="tab" onclick="showTab('tab-obj',this)">🏆 Objectifs</button>
       <button class="tab" onclick="showTab('tab-config',this)">⚙️ Config</button>
+      <button class="tab" onclick="showTab('tab-props',this)">📬 Propositions</button>
     </div>
   </div>
 
@@ -274,6 +275,24 @@
         <div id="migration-progress" style="margin-top:.5rem;font-size:.72rem;color:var(--muted);display:none"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- TAB PROPOSITIONS -->
+<div class="admin-page" id="tab-props">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h2 style="font-size:1rem;color:var(--navy)">📬 Propositions des licenciés</h2>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <select class="field-select" id="props-status-filter" style="font-size:.72rem;width:auto" onchange="propsRender()">
+        <option value="">Toutes</option>
+        <option value="pending">En attente</option>
+        <option value="approved">Intégrées</option>
+      </select>
+      <button class="btn-sm" onclick="propsLoad()">↻ Actualiser</button>
+    </div>
+  </div>
+  <div id="props-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1rem">
+    <div style="color:var(--muted);font-size:.78rem;padding:.5rem">Cliquez sur Actualiser pour charger les propositions.</div>
   </div>
 </div>
 
@@ -568,6 +587,7 @@ function showTab(id,btn){
   if(id==='tab-infos') buildInfosList();
   if(id==='tab-obj') buildObjList();
   if(id==='tab-planner') plannerLoadList();
+  if(id==='tab-props')   propsLoad();
 }
 
 // ══════════════════════════════════════════════════
@@ -1807,6 +1827,124 @@ async function syncStaticSeancesToFirebase() {
     }
   } catch(e) {
     console.warn('syncStaticSeancesToFirebase:', e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════
+// PROPOSITIONS — Admin
+// ══════════════════════════════════════════════════
+
+let _propsList = [];
+const PROPS_CAT_ICON = {'VMA Courte':'🔥','VMA Longue':'🔥','Seuil':'⚡','Allure Marathon':'🏁','Allure Spécifique':'🎯','Côtes':'⛰️','Puissance Montée':'🏔️','Technique Descente':'🎿','Spécificité Trail':'🌲','Volume Endurance':'🏃','Sortie Longue':'🏔️','Récupération':'🌿','Mixte':'🔄','Activation':'⚡'};
+
+async function propsLoad() {
+  const grid = document.getElementById('props-grid');
+  if (grid) grid.innerHTML = '<div style="color:var(--muted);font-size:.78rem;padding:.5rem">Chargement…</div>';
+  try {
+    _propsList = await fbLoadSeancesProposees();
+    propsRender();
+  } catch(e) {
+    if (grid) grid.innerHTML = '<div style="color:var(--rouge);font-size:.74rem;padding:.5rem">Erreur : ' + e.message + '</div>';
+    toast('Erreur chargement propositions : ' + e.message, 'error');
+  }
+}
+
+function propsRender() {
+  const grid = document.getElementById('props-grid');
+  if (!grid) return;
+  const filter = document.getElementById('props-status-filter')?.value || '';
+  const items  = filter ? _propsList.filter(p => p.status === filter) : _propsList;
+
+  if (!items.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:.78rem;padding:.5rem">Aucune proposition' + (filter ? ' dans cette catégorie' : '') + '.</div>';
+    return;
+  }
+
+  grid.innerHTML = items.map(p => {
+    const icon = PROPS_CAT_ICON[p.category] || '📋';
+    const date = p.proposedAt ? new Date(p.proposedAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+    const isPending  = p.status !== 'approved';
+    const statusHtml = isPending
+      ? '<span style="font-size:.56rem;font-weight:700;padding:.1rem .4rem;border-radius:3px;background:rgba(212,137,58,.15);color:#8a5010">⏳ En attente</span>'
+      : '<span style="font-size:.56rem;font-weight:700;padding:.1rem .4rem;border-radius:3px;background:rgba(74,138,90,.15);color:#3a6a48">✓ Intégrée</span>';
+    const desc = (p.description || '').slice(0, 180) + ((p.description||'').length > 180 ? '…' : '');
+
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="background:var(--surface2);padding:.55rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.4rem">
+        <span style="font-size:.84rem;font-weight:700;color:var(--navy);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${icon} ${p.title||'Sans titre'}</span>
+        ${statusHtml}
+      </div>
+      <div style="padding:.65rem .8rem;flex:1">
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.45rem">
+          <span style="font-size:.6rem;font-weight:700;background:rgba(27,58,107,.08);color:var(--navy);padding:.1rem .4rem;border-radius:3px">${p.category||''}</span>
+          <span style="font-size:.6rem;color:var(--muted)">${p.terrain||''}</span>
+          ${p.totalUA?`<span class="rpe-pill">${p.totalUA} UA</span>`:''}
+          ${p.totalDuration?`<span style="font-size:.6rem;color:var(--muted)">⏱ ${p.totalDuration} min</span>`:''}
+          <span style="font-size:.6rem;color:var(--muted)">RPE ${p.rpe_foster||'—'}</span>
+        </div>
+        ${desc?`<div style="font-size:.72rem;color:var(--muted);line-height:1.55;margin-bottom:.5rem">${desc}</div>`:''}
+        <div style="font-size:.62rem;color:var(--muted);margin-bottom:.7rem">✍️ ${p.proposedBy||'Anonyme'} · ${date}</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          ${isPending ? `
+            <div style="display:flex;gap:.3rem;align-items:center;flex:1">
+              <input class="field-input" id="pid-${p._docId}" placeholder="ID (ex: S208)" style="font-size:.7rem;padding:.3rem .5rem;flex:1" value="PROP_${p._docId.slice(-6).toUpperCase()}">
+            </div>
+            <button class="btn-sm" style="background:var(--mousse);color:#fff;border-color:var(--mousse);white-space:nowrap" onclick="propsIntegrate('${p._docId}',this)">✓ Intégrer</button>
+          ` : `<span style="font-size:.62rem;color:var(--mousse)">${p.approvedId?'→ '+p.approvedId:''}</span>`}
+          <button class="btn-sm danger" onclick="propsArchive('${p._docId}','${(p.title||'').replace(/'/g,"\\'")}',this)">🗂 Archiver</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function propsIntegrate(docId, btn) {
+  const idInput = document.getElementById('pid-' + docId);
+  const id = (idInput?.value || '').trim();
+  if (!id) { toast('Saisis un ID pour la séance', 'error'); return; }
+
+  const p = _propsList.find(x => x._docId === docId);
+  if (!p) return;
+
+  const workout = {
+    id_original:   id,
+    title:         p.title        || '',
+    category:      p.category     || '',
+    terrain:       p.terrain      || 'Route',
+    description:   p.description  || '',
+    warmupSec:     p.warmupSec    || 1200,
+    cooldownSec:   p.cooldownSec  || 600,
+    rpe_foster:    p.rpe_foster   || 7,
+    totalDuration: p.totalDuration|| 0,
+    totalUA:       p.totalUA      || 0,
+    series:        p.series       || [],
+    proposedBy:    p.proposedBy   || '',
+    createdAt:     new Date().toISOString()
+  };
+
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    await fbSaveSeanceV3(id, workout);
+    await db.collection('seances_proposees').doc(docId).update({ status: 'approved', approvedId: id });
+    toast('Séance intégrée : ' + id, 'success');
+    await propsLoad();
+  } catch(e) {
+    toast('Erreur : ' + e.message, 'error');
+    btn.disabled = false; btn.textContent = '✓ Intégrer';
+  }
+}
+
+async function propsArchive(docId, title, btn) {
+  if (!confirm('Archiver (supprimer) la proposition "' + title + '" ?')) return;
+  btn.disabled = true;
+  try {
+    await fbDeleteSeanceProposeee(docId);
+    toast('Proposition archivée', 'success');
+    _propsList = _propsList.filter(p => p._docId !== docId);
+    propsRender();
+  } catch(e) {
+    toast('Erreur : ' + e.message, 'error');
+    btn.disabled = false;
   }
 }
 

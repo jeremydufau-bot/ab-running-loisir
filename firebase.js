@@ -187,6 +187,31 @@ async function fbSaveSeuils(seuils) {
 }
 
 // ══════════════════════════════════════════════════
+// SÉANCES PROPOSÉES — Bibliothèque tampon
+// ══════════════════════════════════════════════════
+
+async function fbLoadSeancesProposees() {
+  try {
+    const snap = await db.collection('seances_proposees').orderBy('proposedAt', 'desc').get();
+    return snap.docs.map(d => ({ _docId: d.id, ...d.data() }));
+  } catch(e) {
+    const snap = await db.collection('seances_proposees').get();
+    return snap.docs.map(d => ({ _docId: d.id, ...d.data() }))
+      .sort((a, b) => (b.proposedAt || '').localeCompare(a.proposedAt || ''));
+  }
+}
+
+async function fbSaveSeanceProposeee(data) {
+  const ref = db.collection('seances_proposees').doc();
+  await ref.set(data);
+  return ref.id;
+}
+
+async function fbDeleteSeanceProposeee(docId) {
+  await db.collection('seances_proposees').doc(docId).delete();
+}
+
+// ══════════════════════════════════════════════════
 // SEANCES_V3 — Planificateur
 // ══════════════════════════════════════════════════
 
