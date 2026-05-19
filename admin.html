@@ -23,25 +23,25 @@
 
 <!-- APP -->
 <div id="app">
-  <div class="topbar">
-    <h1>Admin — AB Running</h1>
-    <div class="topbar-right">
-      <a href="index.html" class="topbar-btn" style="text-decoration:none">← Accueil</a>
-      <span id="status-msg" style="font-size:.65rem;color:rgba(255,255,255,.6)">Prêt</span>
-      <button class="topbar-btn pub" id="btn-publish" onclick="openPublish()">📤 Sauvegarder</button>
-      <button class="topbar-btn" onclick="doLogout()">Déconnexion</button>
+  <div class="sticky-header">
+    <div class="topbar">
+      <h1>Admin — AB Running</h1>
+      <div class="topbar-right">
+        <a href="index.html" class="topbar-btn" style="text-decoration:none">← Accueil</a>
+        <span id="status-msg" style="font-size:.65rem;color:rgba(255,255,255,.6)">Prêt</span>
+        <button class="topbar-btn pub" id="btn-publish" onclick="openPublish()">📤 Sauvegarder</button>
+        <button class="topbar-btn" onclick="doLogout()">Déconnexion</button>
+      </div>
     </div>
-  </div>
-  <div class="status-bar"><div class="status-dot" id="status-dot"></div><span id="status-text">Aucune modification en attente</span></div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('tab-prog',this)">📅 Programme</button>
-    <button class="tab" onclick="showTab('tab-planner',this)">📋 Séances</button>
-    <button class="tab" onclick="showTab('tab-cal',this)">🗓 Calendrier</button>
-    <button class="tab" onclick="showTab('tab-infos',this)">📢 Infos Club</button>
-    <button class="tab" onclick="showTab('tab-calc',this)">📊 Calculateur</button>
-    <button class="tab" onclick="showTab('tab-obj',this)">🏆 Objectifs</button>
-    <button class="tab" onclick="showTab('tab-config',this)">⚙️ Config</button>
+    <div class="status-bar"><div class="status-dot" id="status-dot"></div><span id="status-text">Aucune modification en attente</span></div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('tab-prog',this)">📅 Programme</button>
+      <button class="tab" onclick="showTab('tab-planner',this)">📋 Séances</button>
+      <button class="tab" onclick="showTab('tab-cal',this)">🗓 Calendrier</button>
+      <button class="tab" onclick="showTab('tab-infos',this)">📢 Infos Club</button>
+      <button class="tab" onclick="showTab('tab-obj',this)">🏆 Objectifs</button>
+      <button class="tab" onclick="showTab('tab-config',this)">⚙️ Config</button>
+    </div>
   </div>
 
   <!-- TAB PROGRAMME -->
@@ -162,7 +162,7 @@
     <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
       <table class="admin-table">
         <thead><tr>
-          <th>Sem</th><th>Phase</th><th>🏃 Mar</th><th>🏃 Jeu</th><th>🛣️ Sam</th><th>🌅 Dim</th><th>UA Total</th><th>Δ%</th><th></th>
+          <th>Sem</th><th>Phase</th><th>🏃 Mar</th><th>🏃 Jeu</th><th>🛣️ Sam</th><th>🌅 Dim</th><th>Foster<br><small style="font-weight:400;font-size:.6rem;opacity:.7">UA · Mono · Strain</small></th><th>Δ%</th><th></th>
         </tr></thead>
         <tbody id="admin-prog-body"></tbody>
       </table>
@@ -228,15 +228,6 @@
         <span style="font-size:.65rem;color:var(--muted)">Les emojis s'insèrent dans le texte</span>
       </div>
     </div>
-  </div>
-
-  <!-- TAB CALCULATEUR -->
-  <div class="admin-page" id="tab-calc">
-    <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Textes & seuils du calculateur</h2>
-    <div class="block-sep">Textes explicatifs</div>
-    <div id="calc-textes-form" style="max-width:600px"></div>
-    <div class="block-sep">Seuils de charge hebdomadaire</div>
-    <div id="calc-seuils-form" style="max-width:600px"></div>
   </div>
 
   <!-- TAB OBJECTIFS -->
@@ -584,7 +575,6 @@ function showTab(id,btn){
   if(id==='tab-prog') buildAdminProg();
   if(id==='tab-cal') buildCalList();
   if(id==='tab-infos') buildInfosList();
-  if(id==='tab-calc') buildCalcAdmin();
   if(id==='tab-obj') buildObjList();
   if(id==='tab-planner') plannerLoadList();
 }
@@ -647,6 +637,16 @@ function buildAdminProg(){
     const uaSamMtn = samMtnD ? calcSeanceUA(samMtnD) : 0;
     const uaWE = dimD ? calcSeanceUA(dimD, 75) : socle.weTrail;
     const uaReel = uaLun + uaMar + uaMer + Math.max(uaJeu, uaSamMtn) + uaWE;
+
+    // ── Foster hebdomadaire : 7 jours Lun/Mar/Mer/Jeu/Ven=0/Sam/Dim ──
+    // Monotonie = moy / écart-type  |  Strain = total × monotonie
+    const _fdays = [uaLun, uaMar, uaMer, uaJeu, 0, uaSamMtn, uaWE];
+    const _fmoy  = _fdays.reduce((s,v) => s+v, 0) / 7;
+    const _fstd  = Math.sqrt(_fdays.reduce((s,v) => s + Math.pow(v - _fmoy, 2), 0) / 7);
+    const fmono  = _fstd > 0 ? Math.round(_fmoy / _fstd * 10) / 10 : 0;
+    const fstrain = Math.round(uaReel * fmono);
+    const fmonoCol = fmono >= 2 ? 'var(--rouge)' : fmono >= 1.5 ? 'var(--ocre)' : 'var(--mousse)';
+
     w.ua = uaReel;
 
     // Détection monotonie (3 sem. consécutives même catégorie, hors décharge)
@@ -673,7 +673,10 @@ function buildAdminProg(){
       <td>${clubCell(jD, uaJeu, mono_j)}</td>
       <td>${samCell(w, uaSamMtn)}</td>
       <td>${dimD?dayCell(dimD,uaWE,'Repos'):'<div style="font-size:.65rem;color:var(--muted)">Repos</div>'}</td>
-      <td style="text-align:center;font-weight:700;color:var(--navy)">${uaReel}</td>
+      <td style="text-align:center;min-width:80px">
+        <div style="font-weight:800;color:var(--navy);font-size:.88rem">${uaReel} <span style="font-size:.52rem;font-weight:400;color:var(--muted)">UA</span></div>
+        ${!w.d ? `<div style="font-size:.62rem;font-weight:700;color:${fmonoCol}">Mono&nbsp;${fmono}</div><div style="font-size:.55rem;color:var(--muted)">Strain&nbsp;${fstrain}</div>` : '<div style="font-size:.58rem;color:var(--mousse)">décharge</div>'}
+      </td>
       <td style="text-align:center;font-size:.72rem">${delta||'—'}</td>
       <td><button class="btn-sm" onclick="openWeekEdit(${w.s})">✏️</button>${changed?`<button class="btn-sm danger" style="margin-left:.2rem" onclick="resetWeek(${w.s})">↺</button>`:''}</td>
     </tr>`;
@@ -887,13 +890,29 @@ function updateWeekPreview(uaMardi, uaJeudi, uaSam, uaDim, socle){
         <div style="font-size:.75rem;font-weight:700;color:var(--navy)">${uaDim}</div>
       </div>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem">
       <div>
-        <span style="font-size:.65rem;color:var(--muted)">Charge totale semaine :</span>
+        <span style="font-size:.65rem;color:var(--muted)">Charge totale :</span>
         <span style="font-size:1rem;font-weight:800;color:var(--navy);margin-left:.3rem">${total} UA</span>
       </div>
       ${deltaHtml}
     </div>
+    ${(() => {
+      const _pvdays = [socle.lundi, uaMardi, socle.mercredi, uaJeudi, 0, uaSam, uaDim];
+      const _pvm = _pvdays.reduce((s,v) => s+v, 0) / 7;
+      const _pvs = Math.sqrt(_pvdays.reduce((s,v) => s + Math.pow(v - _pvm, 2), 0) / 7);
+      const _mono = _pvs > 0 ? Math.round(_pvm / _pvs * 10) / 10 : 0;
+      const _strain = Math.round(total * _mono);
+      const _mc = _mono >= 2 ? '#c04040' : _mono >= 1.5 ? '#d4893a' : '#4a8a5a';
+      const _warn = _mono >= 2 ? `<span style="font-size:.6rem;color:#c04040;margin-left:.5rem">⚠️ trop uniforme — variez l'intensité</span>` : '';
+      return `<div style="margin-top:.4rem;display:flex;align-items:center;gap:.6rem;padding:.35rem .5rem;background:rgba(27,58,107,.04);border-radius:5px">
+        <span style="font-size:.6rem;color:var(--muted)">Monotonie Foster :</span>
+        <span style="font-size:.82rem;font-weight:800;color:${_mc}">${_mono}</span>
+        <span style="font-size:.6rem;color:var(--muted)">|  Strain :</span>
+        <span style="font-size:.78rem;font-weight:700;color:var(--navy)">${_strain}</span>
+        ${_warn}
+      </div>`;
+    })()}
   `;
 }
 
@@ -1073,28 +1092,6 @@ function addObj(){
   document.getElementById('new-obj-nom').value='';
 }
   
-// ══════════════════════════════════════════════════
-// CALCULATEUR ADMIN
-// ══════════════════════════════════════════════════
-function buildCalcAdmin(){
-  const form = document.getElementById('calc-textes-form');
-  if(form){
-    const fields = [['intro','Introduction'],['rpe_titre','Titre RPE'],['rpe_texte','Texte RPE'],['ua_titre','Titre UA'],['ua_texte','Texte UA'],['bloc_titre','Titre Bloc'],['bloc_texte','Texte Bloc']];
-    form.innerHTML = fields.map(([k,l])=>`<div class="field-group"><label class="field-label">${l}</label><textarea class="field-textarea" rows="2" oninput="L.calcTextes['${k}']=this.value;saveLocal()">${L.calcTextes[k]||''}</textarea></div>`).join('');
-  }
-  const sForm = document.getElementById('calc-seuils-form');
-  if(sForm){
-    sForm.innerHTML = L.chargeSeuils.map((s,i)=>`
-      <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.4rem;flex-wrap:wrap">
-        <div style="width:20px;height:20px;border-radius:50%;background:${s.couleur};flex-shrink:0"></div>
-        <input class="field-input" style="width:120px" value="${s.label}" oninput="L.chargeSeuils[${i}].label=this.value;saveLocal()">
-        <span style="font-size:.65rem;color:var(--muted)">UA max</span>
-        <input type="number" class="field-input" style="width:80px" value="${s.max}" oninput="L.chargeSeuils[${i}].max=parseInt(this.value)||0;saveLocal()" ${i===L.chargeSeuils.length-1?'disabled':''}>
-        <input class="field-input" style="flex:1;min-width:150px" value="${s.description||''}" placeholder="Description" oninput="L.chargeSeuils[${i}].description=this.value;saveLocal()">
-      </div>`).join('');
-  }
-}
-
 // ══════════════════════════════════════════════════
 // PANEL SAVE
 // ══════════════════════════════════════════════════
@@ -1564,81 +1561,6 @@ function plannerCalculate() {
   if (elUA)  elUA.textContent  = ua;
 }
 
-// ══════════════════════════════════════════════════
-// PROGRAMME PRÉCONÇU 2026-2027
-// ══════════════════════════════════════════════════
-// Objectif : Trail 40km+ 2500m D+ · Peak juillet 2027
-// wt = Samedi SPÉCIFIQUE (route SR ou montagne M02/M03/M05)
-// dim = Dimanche SORTIE LONGUE TRAIL (TM090→TM480)
-// Tous les weekends non-décharge : Sam spé + Dim long
-// Foster : +10%/sem · décharge semaine 4 de chaque bloc
-const PROGRAMME_2026_2027 = [
-  // ── BLOC 1 · REPRISE (S1-S4 · Sep 2026) ─────────────────────────────────────────
-  {s:1,  p:"Reprise",               m:"S004", j:"S034", wt:"SR090", dim:"TM090", d:0, n:"Sam: Route 1h30 · Dim: Trail 1h30 — reprise en douceur"},
-  {s:2,  p:"Reprise",               m:"S004", j:"S029", wt:"SR090", dim:"TM120", d:0, n:"Sam: Route 1h30 · Dim: Trail 2h"},
-  {s:3,  p:"Reprise",               m:"S001", j:"S029", wt:"SR120", dim:"TM120", d:0, n:"Sam: Route 2h · Dim: Trail 2h — premier vrai weekend trail"},
-  {s:4,  p:"Reprise",               m:"S107", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 2 · BASE AÉROBIE (S5-S8 · Oct 2026) ────────────────────────────────────
-  {s:5,  p:"Base aérobie",          m:"S001", j:"S032", wt:"SR090", dim:"TM150", d:0, n:"Sam: Route 1h30 · Dim: Trail 2h30"},
-  {s:6,  p:"Base aérobie",          m:"S012", j:"S032", wt:"SR120", dim:"TM150", d:0, n:"Sam: Route 2h · Dim: Trail 2h30"},
-  {s:7,  p:"Base aérobie",          m:"S012", j:"S133", wt:"M02",   dim:"TM090", d:0, n:"🏔️ Sam: 4×6' seuil D+ · Dim: Trail 1h30"},
-  {s:8,  p:"Base aérobie",          m:"S108", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 3 · DÉVELOPPEMENT AUTOMNE (S9-S12 · Nov 2026) ──────────────────────────
-  {s:9,  p:"Développement automne", m:"S205", j:"S133", wt:"SR120", dim:"TM180", d:0, n:"Sam: Route 2h · Dim: Trail 3h"},
-  {s:10, p:"Développement automne", m:"S205", j:"S135", wt:"SR120", dim:"TM180", d:0, n:"Sam: Route 2h · Dim: Trail 3h"},
-  {s:11, p:"Développement automne", m:"S003", j:"S030", wt:"SR120", dim:"TM210", d:0, n:"Sam: Route 2h · Dim: Trail 3h30 — CHOC"},
-  {s:12, p:"Développement automne", m:"S011", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 4 · TRANSITION HIVER (S13-S16 · Déc 2026) ──────────────────────────────
-  {s:13, p:"Transition hiver",      m:"S001", j:"S029", wt:"SR120", dim:"TM180", d:0, n:"Sam: Route 2h · Dim: Trail 3h"},
-  {s:14, p:"Transition hiver",      m:"S012", j:"S135", wt:"SR150", dim:"TM210", d:0, n:"Sam: Route 2h30 · Dim: Trail 3h30"},
-  {s:15, p:"Transition hiver",      m:"S012", j:"S133", wt:"M02",   dim:"TM120", d:0, n:"🏔️ Sam: 4×6' seuil D+ · Dim: Trail 2h"},
-  {s:16, p:"Transition hiver",      m:"S107", j:"—",    wt:"—",                  d:1, n:"Décharge fin d'année"},
-  // ── BLOC 5 · CONSTRUCTION HIVER (S17-S20 · Jan 2027) ────────────────────────────
-  {s:17, p:"Construction hiver",    m:"S209", j:"S133", wt:"SR150", dim:"TM210", d:0, n:"Sam: Route 2h30 · Dim: Trail 3h30"},
-  {s:18, p:"Construction hiver",    m:"S210", j:"S135", wt:"SR150", dim:"TM240", d:0, n:"Sam: Route 2h30 · Dim: Trail 4h"},
-  {s:19, p:"Construction hiver",    m:"S012", j:"S135", wt:"M02",   dim:"TM150", d:0, n:"🏔️ Sam: 4×6' seuil D+ · Dim: Trail 2h30"},
-  {s:20, p:"Construction hiver",    m:"S108", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 6 · PRÉPA PRINTEMPS (S21-S24 · Fév 2027) ───────────────────────────────
-  {s:21, p:"Prépa printemps",       m:"S215", j:"S133", wt:"SR150", dim:"TM240", d:0, n:"Sam: Route 2h30 · Dim: Trail 4h"},
-  {s:22, p:"Prépa printemps",       m:"S215", j:"S135", wt:"SR150", dim:"TM270", d:0, n:"Sam: Route 2h30 · Dim: Trail 4h30"},
-  {s:23, p:"Prépa printemps",       m:"S074", j:"S030", wt:"SR180", dim:"TM270", d:0, n:"Sam: Route 3h · Dim: Trail 4h30 — CHOC"},
-  {s:24, p:"Prépa printemps",       m:"S011", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 7 · PRÉPA TRAIL PRINTEMPS (S25-S28 · Mar 2027) ─────────────────────────
-  {s:25, p:"Prépa trail printemps", m:"S216", j:"S135", wt:"SR180", dim:"TM300", d:0, n:"Sam: Route 3h · Dim: Trail 5h"},
-  {s:26, p:"Prépa trail printemps", m:"S019", j:"S030", wt:"SR180", dim:"TM300", d:0, n:"Sam: Route 3h · Dim: Trail 5h"},
-  {s:27, p:"Prépa trail printemps", m:"S013", j:"S031", wt:"M02",   dim:"TM180", d:0, n:"🏔️ Sam: 4×6' seuil D+ · Dim: Trail 3h"},
-  {s:28, p:"Prépa trail printemps", m:"S012", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 8 · DÉVELOPPEMENT TRAIL (S29-S32 · Avr 2027) ───────────────────────────
-  {s:29, p:"Développement trail",   m:"S215", j:"S030", wt:"SR180", dim:"TM330", d:0, n:"Sam: Route 3h · Dim: Trail 5h30"},
-  {s:30, p:"Développement trail",   m:"S022", j:"S030", wt:"SR180", dim:"TM330", d:0, n:"Sam: Route 3h · Dim: Trail 5h30 — CHOC"},
-  {s:31, p:"Développement trail",   m:"S022", j:"S031", wt:"M03",   dim:"TM210", d:0, n:"🏔️ Sam: Pyramide D+ · Dim: Trail 3h30 — WEEKEND CHOC"},
-  {s:32, p:"Développement trail",   m:"S012", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 9 · MONTÉE EN PUISSANCE (S33-S36 · Mai 2027) ───────────────────────────
-  {s:33, p:"Montée en puissance",   m:"S019", j:"S031", wt:"SR180", dim:"TM360", d:0, n:"Sam: Route 3h · Dim: Trail 6h"},
-  {s:34, p:"Montée en puissance",   m:"S022", j:"S036", wt:"SR180", dim:"TM360", d:0, n:"Sam: Route 3h · Dim: Trail 6h — CHOC"},
-  {s:35, p:"Montée en puissance",   m:"S008", j:"S031", wt:"M05",   dim:"TM270", d:0, n:"🏔️ Sam: KV simulation · Dim: Trail 4h30 — jambes chargées"},
-  {s:36, p:"Montée en puissance",   m:"S012", j:"—",    wt:"—",                  d:1, n:"Décharge"},
-  // ── BLOC 10 · PRÉ-PEAK (S37-S40 · Juin 2027) ────────────────────────────────────
-  {s:37, p:"Pré-peak",              m:"S024", j:"S036", wt:"SR180", dim:"TM390", d:0, n:"Sam: Route 3h · Dim: Trail 6h30 — 2000m D+"},
-  {s:38, p:"Pré-peak",              m:"S019", j:"S087", wt:"SR180", dim:"TM420", d:0, n:"Sam: Route 3h · Dim: Trail 7h — CHOC 2200m D+"},
-  {s:39, p:"Pré-peak",              m:"S022", j:"S031", wt:"M05",   dim:"TM300", d:0, n:"🏔️ Sam: KV simulation · Dim: Trail 5h — WEEKEND CHOC pré-peak"},
-  {s:40, p:"Pré-peak",              m:"S012", j:"—",    wt:"—",                  d:1, n:"Décharge avant pic"},
-  // ── BLOC 11 · PEAK TRAIL (S41-S44 · Juil 2027) — MAXIMUM ABSOLU ─────────────────
-  {s:41, p:"Peak trail",            m:"S214", j:"S030", wt:"SR180", dim:"TM480", d:0, n:"Sam: Route 3h · Dim: Trail 8h — MAXIMUM 2500m D+ 🏆"},
-  {s:42, p:"Peak trail",            m:"S215", j:"S031", wt:"SR180", dim:"TM420", d:0, n:"Sam: Route 3h · Dim: Trail 7h — pic de forme 🏆"},
-  {s:43, p:"Peak trail",            m:"S022", j:"S031", wt:"M03",   dim:"TM300", d:0, n:"🏔️ Sam: Pyramide D+ · Dim: Trail 5h — affinement spécifique"},
-  {s:44, p:"Peak trail",            m:"S012", j:"—",    wt:"—",                  d:1, n:"Décharge / Affûtage — COURSE OBJECTIF"},
-  // ── BLOC 12 · POST-PEAK (S45-S48 · Août 2027) ───────────────────────────────────
-  {s:45, p:"Post-peak",             m:"S201", j:"S029", wt:"SR150", dim:"TM330", d:0, n:"Sam: Route 2h30 · Dim: Trail 5h30 — descente volume"},
-  {s:46, p:"Post-peak",             m:"S204", j:"S133", wt:"SR120", dim:"TM240", d:0, n:"Sam: Route 2h · Dim: Trail 4h"},
-  {s:47, p:"Post-peak",             m:"S014", j:"S033", wt:"SR090", dim:"TM180", d:0, n:"Sam: Route 1h30 · Dim: Trail 3h — allègement"},
-  {s:48, p:"Post-peak",             m:"S107", j:"—",    wt:"—",                  d:1, n:"Décharge — bilan de saison"},
-  // ── BLOC 13 · FIN DE SAISON (S49-S52 · Sep 2027) ────────────────────────────────
-  {s:49, p:"Fin de saison",         m:"S004", j:"S034", wt:"SR090", dim:"TM150", d:0, n:"Sam: Route 1h30 · Dim: Trail 2h30 — relâche"},
-  {s:50, p:"Fin de saison",         m:"S001", j:"S029", wt:"SR090", dim:"TM120", d:0, n:"Sam: Route 1h30 · Dim: Trail 2h"},
-  {s:51, p:"Fin de saison",         m:"S002", j:"S133", wt:"SR090", dim:"TM090", d:0, n:"Sam: Route 1h30 · Dim: Trail 1h30 — coupure progressive"},
-  {s:52, p:"Fin de saison",         m:"S107", j:"—",    wt:"—",                  d:1, n:"Décharge — clôture saison"},
-];
 
 async function doLoadPrebuiltProgramme() {
   if (!confirm('Remplacer le programme actuel par le programme 2026-2027 (52 semaines) ?')) return;
@@ -1646,8 +1568,7 @@ async function doLoadPrebuiltProgramme() {
   status.textContent = 'Enregistrement…';
   status.style.color = 'var(--muted)';
   try {
-    // Utilise le programme de data.js (schéma sam+wt+wr) — PROGRAMME_2026_2027 ci-dessous est obsolète
-    L.programme = JSON.parse(JSON.stringify(typeof programme !== 'undefined' ? programme : PROGRAMME_2026_2027));
+    L.programme = JSON.parse(JSON.stringify(programme));
     await fbSaveProgramme(L.programme);
     FB_ORIGIN.programme = JSON.parse(JSON.stringify(L.programme));
     saveLocal();
@@ -1747,12 +1668,36 @@ function buildFosterAlerts() {
   const el = document.getElementById('foster-alerts');
   if (!el) return;
   const alerts = [];
+  const _alertSocle = getSocleUA();
   L.programme.forEach(w => {
     const prev = L.programme.find(x => x.s === w.s - 1);
-    if (!prev || !prev.ua || w.d || prev.d) return;
-    const d = Math.round((w.ua - prev.ua) / prev.ua * 100);
-    if (d > 20)       alerts.push({ s: w.s, d, type: 'danger', msg: `+${d}% — progression trop rapide` });
-    else if (d < -25) alerts.push({ s: w.s, d, type: 'warn',   msg: `${d}% — chute de charge importante` });
+    // Alerte progression UA hebdomadaire
+    if (prev && prev.ua && !w.d && !prev.d) {
+      const d = Math.round((w.ua - prev.ua) / prev.ua * 100);
+      if (d > 20)       alerts.push({ s: w.s, d, type: 'danger', msg: `+${d}% — progression trop rapide` });
+      else if (d < -25) alerts.push({ s: w.s, d, type: 'warn',   msg: `${d}% — chute de charge importante` });
+    }
+    // Alerte monotonie Foster (semaines non-décharge avec charge significative)
+    if (!w.d && w.ua > 200) {
+      const _lD = w.lun ? L.seances[w.lun] : null;
+      const _mD = L.seances[w.m];
+      const _eD = w.mer ? L.seances[w.mer] : null;
+      const _jD = L.seances[w.j];
+      const _sD = (w.sam && w.sam !== '—') ? L.seances[w.sam] : null;
+      const _wk = w.wt || w.wr;
+      const _dD = (_wk && _wk !== '—') ? L.seances[_wk] : null;
+      const _uL = _lD ? calcSeanceUA(_lD) : _alertSocle.lundi;
+      const _uM = calcSeanceUA(_mD);
+      const _uE = _eD ? calcSeanceUA(_eD) : _alertSocle.mercredi;
+      const _uJ = calcSeanceUA(_jD);
+      const _uS = _sD ? calcSeanceUA(_sD) : 0;
+      const _uD = _dD ? calcSeanceUA(_dD, 75) : _alertSocle.weTrail;
+      const _fd = [_uL, _uM, _uE, _uJ, 0, _uS, _uD];
+      const _fm = _fd.reduce((s,v) => s+v, 0) / 7;
+      const _fs = Math.sqrt(_fd.reduce((s,v) => s + Math.pow(v - _fm, 2), 0) / 7);
+      const _mo = _fs > 0 ? Math.round(_fm / _fs * 10) / 10 : 0;
+      if (_mo > 2) alerts.push({ s: w.s, type: 'warn', msg: `Mono ${_mo} — effort trop uniforme, variez l'intensité` });
+    }
   });
   if (!alerts.length) { el.innerHTML = ''; return; }
   el.innerHTML = `

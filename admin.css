@@ -18,7 +18,8 @@ body{background:var(--bg);color:var(--text);font-family:'Lora',serif;font-size:1
 
 /* App */
 #app{display:none}
-.topbar{background:var(--navy);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(27,58,107,.25)}
+.sticky-header{position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(27,58,107,.18)}
+.topbar{background:var(--navy);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
 .topbar h1{color:#fff;font-size:1rem;font-weight:700}
 .topbar-right{display:flex;gap:.5rem;align-items:center}
 .topbar-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:'Lora',serif;font-size:.68rem;padding:.35rem .7rem;border-radius:6px;cursor:pointer}

@@ -224,17 +224,3 @@ async function fbImportSeancesV3(workouts, onProgress) {
     if (onProgress) onProgress(done, workouts.length);
   }
 }
-
-// Publication complète — pousse tout L vers Firestore
-async function fbPublishAll(L, socleData) {
-  await Promise.all([
-    fbSaveProgramme(L.programme),
-    fbSaveSeances(L.seances),
-    fbSaveSocle(socleData),
-    fbSaveInfosClub(L.infosClub),
-    fbSaveObjectifs(L.objectifs),
-    fbSaveCalFixed(L.calFixed),
-    fbSaveCalculateur(L.calcTextes || {}),
-    fbSaveSeuils(L.chargeSeuils || [])
-  ]);
-}
