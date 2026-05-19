@@ -1,3 +1,4 @@
+﻿// MAJ 18/05/26
 // ══════════════════════════════════════════════════
 // AB Running — main.js
 // All app logic, loaded after data.js
