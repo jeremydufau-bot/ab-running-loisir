@@ -1,4 +1,4 @@
-﻿// MAJ 18/05/26
+﻿// MAJ 19/05/26
 // data.js — AB Running Loisir (configuration statique)
 // Les données dynamiques (programme, séances, infosClub, objectifs,
 // calFixed, socleConfig) sont stockées dans Firebase Firestore.

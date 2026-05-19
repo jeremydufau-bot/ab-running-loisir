@@ -1,4 +1,4 @@
-﻿<!-- MAJ 18/05/26 -->
+﻿<!-- MAJ 19/05/26 -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -283,6 +283,7 @@
     <h2 style="font-size:1rem;color:var(--navy)">Planificateur — <code style="font-size:.8rem;color:var(--blue)">seances_v3</code></h2>
     <div style="display:flex;gap:.5rem">
       <button class="btn-sm" onclick="plannerLoadList()">↻ Actualiser</button>
+      <button class="btn-sm danger" onclick="plannerDeduplicateFirestore()" title="Supprimer les doublons dans Firestore (même id_original, doc ID différent)">🧹 Nettoyer doublons</button>
       <button class="topbar-btn" style="font-size:.72rem;background:var(--blue);border-color:var(--blue)" onclick="plannerNewSeance()">+ Nouvelle séance</button>
     </div>
   </div>
@@ -1285,11 +1286,45 @@ async function plannerLoadList() {
   const inner = document.getElementById('planner-list-inner');
   if (inner) inner.innerHTML = '<div style="color:var(--muted);font-size:.74rem;padding:.5rem">Chargement…</div>';
   try {
-    plannerSeancesList = await fbLoadSeancesV3();
+    const raw = await fbLoadSeancesV3();
+    // Dédupliquer par id_original : privilégier le doc dont _docId === id_original
+    const seen = new Map();
+    raw.forEach(s => {
+      const key = s.id_original || s._docId;
+      if (!seen.has(key) || s._docId === s.id_original) seen.set(key, s);
+    });
+    plannerSeancesList = [...seen.values()];
     plannerRenderList();
   } catch(e) {
     if (inner) inner.innerHTML = '<div style="color:var(--rouge);font-size:.74rem;padding:.5rem">Erreur : ' + e.message + '</div>';
     toast('Erreur chargement seances_v3 : ' + e.message, 'error');
+  }
+}
+
+async function plannerDeduplicateFirestore() {
+  if (!confirm('Supprimer les doublons Firestore ? (garde le doc dont l\'ID = id_original, supprime les autres)')) return;
+  try {
+    const raw = await fbLoadSeancesV3();
+    // Grouper par id_original
+    const groups = new Map();
+    raw.forEach(s => {
+      const key = s.id_original || s._docId;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(s);
+    });
+    // Supprimer les doublons (garder celui dont _docId === id_original, ou le premier)
+    const toDelete = [];
+    groups.forEach((arr, key) => {
+      if (arr.length < 2) return;
+      const keeper = arr.find(s => s._docId === s.id_original) || arr[0];
+      arr.forEach(s => { if (s._docId !== keeper._docId) toDelete.push(s._docId); });
+    });
+    if (!toDelete.length) { toast('Aucun doublon trouvé', 'success'); return; }
+    await Promise.all(toDelete.map(id => fbDeleteSeanceV3(id)));
+    toast(toDelete.length + ' doublon(s) supprimé(s) de Firestore', 'success');
+    await plannerLoadList();
+  } catch(e) {
+    toast('Erreur nettoyage : ' + e.message, 'error');
   }
 }
 

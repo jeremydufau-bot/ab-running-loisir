@@ -1,4 +1,4 @@
-﻿// MAJ 18/05/26
+﻿// MAJ 19/05/26
 const AB_RUNNING_WORKOUTS = [
   {
     "id_original": "S001",

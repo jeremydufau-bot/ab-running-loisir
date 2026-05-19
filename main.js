@@ -1,4 +1,4 @@
-﻿// MAJ 18/05/26
+﻿// MAJ 19/05/26
 // ══════════════════════════════════════════════════
 // AB Running — main.js
 // All app logic, loaded after data.js
@@ -377,6 +377,7 @@ function openDetail(sn){
     `;
   }
 
+  const uaModal = w.ua !== undefined ? w.ua : getUAReel(w, curWE === 1);
   document.getElementById('mTitle').textContent = `${semRange(sn)} · ${w.p}`;
   const weR = sd(w.wr), weT = sd(w.wt);
 
@@ -418,7 +419,7 @@ function openDetail(sn){
     <div style="display:flex;justify-content:space-between;align-items:center">
       <h4>📅 Mardi — ${mData?mData.l:'Repos'}</h4>
       <div style="display:flex;gap:.5rem;align-items:center">
-        <span class="ua-badge" style="color:#1A2540;font-weight:700">UA semaine : ${w.ua}</span>
+        <span class="ua-badge" style="color:#1A2540;font-weight:700">UA semaine : ${uaModal}</span>
       </div>
     </div>
     <div style="background:rgba(27,58,107,.04);border-radius:6px;padding:.4rem .6rem;margin-bottom:.6rem;font-size:.68rem;color:#6B7A9A">
@@ -433,7 +434,7 @@ function openDetail(sn){
         <div style="font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:.2rem">🛣️ Route / Halage</div>
         <div style="font-size:.78rem;font-weight:600">${wrDesc}</div>
         ${wrSub?`<div style="font-size:.64rem;color:var(--muted);margin-top:.2rem">${wrSub}</div>`:''}
-        ${weR&&weR.desc&&!wrDur?`<div style="font-size:.62rem;color:var(--muted);margin-top:.2rem">${weR.desc.slice(0,80)}${weR.desc.length>80?'…':''}</div>`:''}
+        ${weR&&weR.desc?`<div style="font-size:.62rem;color:var(--muted);margin-top:.2rem">${weR.desc.slice(0,80)}${weR.desc.length>80?'…':''}</div>`:''}
       </div>
       ${wtHtml}
     </div>
