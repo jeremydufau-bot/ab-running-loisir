@@ -197,7 +197,7 @@
   <div class="admin-page" id="tab-infos">
     <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Messages Info Club</h2>
     <div id="infos-list" style="margin-bottom:1rem"></div>
-    <div class="block-sep">Ajouter un message</div>
+    <div class="block-sep" id="infos-form-sep">Ajouter un message</div>
     <div style="max-width:500px">
       <div class="field-group"><label class="field-label">Titre</label><input class="field-input" id="new-info-titre" placeholder="🎉 Bienvenue…"></div>
       <div class="field-group">
@@ -225,7 +225,8 @@
         <div class="field-group"><label class="field-label">Date fin (optionnel)</label><input type="date" class="field-input" id="new-info-fin"></div>
       </div>
       <div style="display:flex;gap:.5rem;align-items:center;margin-top:.3rem">
-        <button class="btn-sm" onclick="addInfo()">Ajouter</button>
+        <button class="btn-sm" id="btn-add-info" onclick="addInfo()">Ajouter</button>
+        <button class="btn-sm" id="btn-cancel-edit-info" style="display:none" onclick="cancelEditInfo()">Annuler</button>
         <span style="font-size:.65rem;color:var(--muted)">Les emojis s'insèrent dans le texte</span>
       </div>
     </div>
@@ -976,6 +977,8 @@ function addCalEvent(){
   document.getElementById('new-cal-titre').value=''; document.getElementById('new-cal-desc').value='';
 }
 
+let _editingInfoIdx = -1;
+
 function buildInfosList(){
   const el = document.getElementById('infos-list');
   if(!el) return;
@@ -983,8 +986,34 @@ function buildInfosList(){
     <div style="display:flex;gap:.6rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
       <span style="font-size:.6rem;padding:.15rem .4rem;border-radius:3px;background:${m.type==='urgent'?'rgba(192,64,64,.1)':'rgba(42,93,160,.1)'};color:${m.type==='urgent'?'var(--rouge)':'var(--blue)'};font-weight:700">${m.type}</span>
       <div style="flex:1"><div style="font-size:.78rem;font-weight:700">${m.titre||''}</div><div style="font-size:.7rem;color:var(--muted)">${m.texte||''}</div></div>
+      <button class="btn-sm" onclick="editInfo(${i})" title="Modifier">✏️</button>
       <button class="btn-sm danger" onclick="deleteInfo(${i})">✕</button>
     </div>`).join('');
+}
+
+function editInfo(i){
+  const m = L.infosClub[i];
+  _editingInfoIdx = i;
+  document.getElementById('new-info-titre').value  = m.titre   || '';
+  document.getElementById('new-info-texte').value  = m.texte   || '';
+  document.getElementById('new-info-type').value   = m.type    || 'info';
+  document.getElementById('new-info-fin').value    = m.dateFin || '';
+  document.getElementById('infos-form-sep').textContent     = 'Modifier le message';
+  document.getElementById('btn-add-info').textContent       = 'Enregistrer';
+  document.getElementById('btn-cancel-edit-info').style.display = '';
+  document.getElementById('new-info-titre').scrollIntoView({behavior:'smooth', block:'center'});
+  document.getElementById('new-info-titre').focus();
+}
+
+function cancelEditInfo(){
+  _editingInfoIdx = -1;
+  document.getElementById('new-info-titre').value  = '';
+  document.getElementById('new-info-texte').value  = '';
+  document.getElementById('new-info-type').value   = 'info';
+  document.getElementById('new-info-fin').value    = '';
+  document.getElementById('infos-form-sep').textContent     = 'Ajouter un message';
+  document.getElementById('btn-add-info').textContent       = 'Ajouter';
+  document.getElementById('btn-cancel-edit-info').style.display = 'none';
 }
 // ── EMOJI PICKER ──
 const EMOJI_CATS = {
@@ -1044,16 +1073,30 @@ async function deleteInfo(i){
   } catch(e){ toast('Erreur suppression : '+e.message,'error'); }
 }
 async function addInfo(){
-  const t=document.getElementById('new-info-titre').value.trim();
+  const t = document.getElementById('new-info-titre').value.trim();
   if(!t){toast('Titre requis','error');return;}
-  L.infosClub.push({id:'msg_'+Date.now(),titre:t,texte:document.getElementById('new-info-texte').value.trim(),type:document.getElementById('new-info-type').value,dateFin:document.getElementById('new-info-fin').value||''});
+  const msg = {
+    id:      _editingInfoIdx >= 0 ? (L.infosClub[_editingInfoIdx].id || 'msg_'+Date.now()) : 'msg_'+Date.now(),
+    titre:   t,
+    texte:   document.getElementById('new-info-texte').value.trim(),
+    type:    document.getElementById('new-info-type').value,
+    dateFin: document.getElementById('new-info-fin').value || ''
+  };
+  const isEdit = _editingInfoIdx >= 0;
+  if(isEdit){
+    L.infosClub[_editingInfoIdx] = msg;
+    cancelEditInfo();
+  } else {
+    L.infosClub.push(msg);
+    document.getElementById('new-info-titre').value = '';
+    document.getElementById('new-info-texte').value = '';
+  }
   buildInfosList();
-  document.getElementById('new-info-titre').value=''; document.getElementById('new-info-texte').value='';
   try {
     await fbSaveInfosClub(L.infosClub);
     FB_ORIGIN.infosClub = JSON.parse(JSON.stringify(L.infosClub));
     updateStatus();
-    toast('Message sauvegardé','success');
+    toast(isEdit ? 'Message modifié et publié' : 'Message sauvegardé', 'success');
   } catch(e){ toast('Erreur sauvegarde : '+e.message,'error'); }
 }
 // ══════════════════════════════════════════════════
