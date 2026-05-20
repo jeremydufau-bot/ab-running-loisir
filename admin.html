@@ -481,18 +481,22 @@ function doLogout(){
   auth.signOut().then(() => location.reload());
 }
 
-auth.onAuthStateChanged(user => {
-  if(user){
-    document.getElementById('login').style.display='none';
-    document.getElementById('app').style.display='block';
-    const cfgEmail = document.getElementById('cfg-user-email');
-    if(cfgEmail) cfgEmail.textContent = user.email;
-    initApp();
-  } else {
-    document.getElementById('login').style.display='flex';
-    document.getElementById('app').style.display='none';
-  }
-});
+// AUTH TEMPORAIREMENT DÉSACTIVÉE — remettre le bloc ci-dessous pour réactiver
+// auth.onAuthStateChanged(user => {
+//   if(user){
+//     document.getElementById('login').style.display='none';
+//     document.getElementById('app').style.display='block';
+//     const cfgEmail = document.getElementById('cfg-user-email');
+//     if(cfgEmail) cfgEmail.textContent = user.email;
+//     initApp();
+//   } else {
+//     document.getElementById('login').style.display='flex';
+//     document.getElementById('app').style.display='none';
+//   }
+// });
+document.getElementById('login').style.display='none';
+document.getElementById('app').style.display='block';
+initApp();
 
 // ══════════════════════════════════════════════════
 // DATE HELPERS
