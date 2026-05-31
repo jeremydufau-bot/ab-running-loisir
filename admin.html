@@ -239,8 +239,11 @@
   <div id="obj-list" style="margin-bottom:1rem"></div>
   <div class="block-sep">Ajouter un objectif</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;max-width:500px">
-    <div class="field-group"><label class="field-label">Semaine (S1 à S52)</label><input type="number" class="field-input" id="new-obj-s" min="1" max="52"></div>
-    <div class="field-group"><label class="field-label">Date de la course</label><input type="date" class="field-input" id="new-obj-date"></div>
+    <div class="field-group">
+      <label class="field-label">Semaine <span id="obj-s-auto-lbl" style="display:none;font-size:.58rem;font-weight:700;color:var(--blue)">auto ✓</span></label>
+      <input type="number" class="field-input" id="new-obj-s" min="1" max="52" placeholder="auto">
+    </div>
+    <div class="field-group"><label class="field-label">Date de la course</label><input type="date" class="field-input" id="new-obj-date" oninput="autoSemFromDate()"></div>
     <div class="field-group" style="grid-column:1/-1"><label class="field-label">Nom de la course</label><input class="field-input" id="new-obj-nom" placeholder="Ex: Marathon de Paris..."></div>
     <div class="field-group" style="grid-column:1/-1"><label class="field-label">Type</label>
       <select class="field-select" id="new-obj-type"><option value="route">Route</option><option value="trail">Trail</option><option value="cross">Cross</option></select>
@@ -1138,15 +1141,49 @@ function buildObjList(){
     </div>`).join('');
 }
 
+function autoSemFromDate(){
+  const dateVal = document.getElementById('new-obj-date').value;
+  const sInput  = document.getElementById('new-obj-s');
+  const lbl     = document.getElementById('obj-s-auto-lbl');
+  if(!dateVal){
+    sInput.readOnly = false;
+    sInput.style.cssText = '';
+    if(lbl) lbl.style.display = 'none';
+    return;
+  }
+  const d = new Date(dateVal + 'T12:00:00');
+  const s = Math.round((d - S1_saison) / (7 * 864e5)) + 1;
+  if(s >= 1 && s <= 52){
+    sInput.value    = s;
+    sInput.readOnly = true;
+    sInput.style.cssText = 'background:rgba(27,58,107,.06);color:var(--blue);font-weight:700';
+    if(lbl) lbl.style.display = 'inline';
+  } else {
+    sInput.value    = '';
+    sInput.readOnly = false;
+    sInput.style.cssText = '';
+    if(lbl) lbl.style.display = 'none';
+  }
+}
+
 function addObj(){
-  const s = parseInt(document.getElementById('new-obj-s').value);
   const d = document.getElementById('new-obj-date').value;
   const n = document.getElementById('new-obj-nom').value.trim();
-  if(!s || !d || !n){ toast('Semaine, date et nom requis','error'); return; }
-  L.objectifs.push({s:s, nom:n, date:d, type:document.getElementById('new-obj-type').value});
-  L.objectifs.sort((a,b) => new Date(a.date) - new Date(b.date)); // Trie par date chrono
+  if(!d || !n){ toast('Date et nom requis','error'); return; }
+  let s = parseInt(document.getElementById('new-obj-s').value) || 0;
+  if(!s){
+    s = Math.round((new Date(d + 'T12:00:00') - S1_saison) / (7 * 864e5)) + 1;
+    if(s < 1 || s > 52) s = 0;
+  }
+  L.objectifs.push({s, nom:n, date:d, type:document.getElementById('new-obj-type').value});
+  L.objectifs.sort((a,b) => new Date(a.date) - new Date(b.date));
   saveLocal(); buildObjList(); toast('Objectif ajouté','success');
-  document.getElementById('new-obj-nom').value='';
+  document.getElementById('new-obj-nom').value = '';
+  document.getElementById('new-obj-date').value = '';
+  const sInput = document.getElementById('new-obj-s');
+  sInput.value = ''; sInput.readOnly = false; sInput.style.cssText = '';
+  const lbl = document.getElementById('obj-s-auto-lbl');
+  if(lbl) lbl.style.display = 'none';
 }
   
 // ══════════════════════════════════════════════════
