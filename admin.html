@@ -237,7 +237,7 @@
 <div class="admin-page" id="tab-obj">
   <h2 style="font-size:1rem;color:var(--navy);margin-bottom:1rem">Objectifs de la saison</h2>
   <div id="obj-list" style="margin-bottom:1rem"></div>
-  <div class="block-sep">Ajouter un objectif</div>
+  <div class="block-sep" id="obj-form-sep">Ajouter un objectif</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;max-width:500px">
     <div class="field-group">
       <label class="field-label">Semaine <span id="obj-s-auto-lbl" style="display:none;font-size:.58rem;font-weight:700;color:var(--blue)">auto ✓</span></label>
@@ -249,7 +249,10 @@
       <select class="field-select" id="new-obj-type"><option value="route">Route</option><option value="trail">Trail</option><option value="cross">Cross</option></select>
     </div>
   </div>
-  <button class="btn-sm" onclick="addObj()" style="margin-top:.5rem">Ajouter</button>
+  <div style="display:flex;gap:.5rem;align-items:center;margin-top:.5rem">
+    <button class="btn-sm" id="btn-add-obj" onclick="addObj()">Ajouter</button>
+    <button class="btn-sm" id="btn-cancel-edit-obj" style="display:none" onclick="cancelEditObj()">Annuler</button>
+  </div>
 </div>
   
   <!-- TAB CONFIG -->
@@ -1006,6 +1009,7 @@ function addCalEvent(){
 }
 
 let _editingInfoIdx = -1;
+let _editingObjIdx  = -1;
 
 function buildInfosList(){
   const el = document.getElementById('infos-list');
@@ -1137,8 +1141,38 @@ function buildObjList(){
       <span style="font-size:.75rem;min-width:80px;color:var(--muted)">${o.date||''}</span>
       <span style="font-size:.75rem;flex:1;font-weight:700">${o.nom||''}</span>
       <span style="font-size:.65rem;text-transform:uppercase;color:var(--blue);min-width:50px">${o.type||''}</span>
+      <button class="btn-sm" onclick="editObj(${i})" title="Modifier">✏️</button>
       <button class="btn-sm danger" onclick="L.objectifs.splice(${i},1);saveLocal();buildObjList()">✕</button>
     </div>`).join('');
+}
+
+function editObj(i){
+  const o = L.objectifs[i];
+  _editingObjIdx = i;
+  document.getElementById('new-obj-date').value = o.date || '';
+  document.getElementById('new-obj-nom').value  = o.nom  || '';
+  document.getElementById('new-obj-type').value = o.type || 'route';
+  autoSemFromDate();
+  if(o.s){ document.getElementById('new-obj-s').value = o.s; }
+  document.getElementById('obj-form-sep').textContent            = 'Modifier l\'objectif';
+  document.getElementById('btn-add-obj').textContent             = 'Enregistrer';
+  document.getElementById('btn-cancel-edit-obj').style.display   = '';
+  document.getElementById('new-obj-nom').scrollIntoView({behavior:'smooth', block:'center'});
+  document.getElementById('new-obj-nom').focus();
+}
+
+function cancelEditObj(){
+  _editingObjIdx = -1;
+  document.getElementById('new-obj-date').value = '';
+  document.getElementById('new-obj-nom').value  = '';
+  document.getElementById('new-obj-type').value = 'route';
+  const sInput = document.getElementById('new-obj-s');
+  sInput.value = ''; sInput.readOnly = false; sInput.style.cssText = '';
+  const lbl = document.getElementById('obj-s-auto-lbl');
+  if(lbl) lbl.style.display = 'none';
+  document.getElementById('obj-form-sep').textContent            = 'Ajouter un objectif';
+  document.getElementById('btn-add-obj').textContent             = 'Ajouter';
+  document.getElementById('btn-cancel-edit-obj').style.display   = 'none';
 }
 
 function autoSemFromDate(){
@@ -1175,15 +1209,22 @@ function addObj(){
     s = Math.round((new Date(d + 'T12:00:00') - S1_saison) / (7 * 864e5)) + 1;
     if(s < 1 || s > 52) s = 0;
   }
-  L.objectifs.push({s, nom:n, date:d, type:document.getElementById('new-obj-type').value});
+  const obj = { s, nom:n, date:d, type:document.getElementById('new-obj-type').value };
+  const isEdit = _editingObjIdx >= 0;
+  if(isEdit){
+    L.objectifs[_editingObjIdx] = obj;
+    cancelEditObj();
+  } else {
+    L.objectifs.push(obj);
+    document.getElementById('new-obj-nom').value  = '';
+    document.getElementById('new-obj-date').value = '';
+    const sInput = document.getElementById('new-obj-s');
+    sInput.value = ''; sInput.readOnly = false; sInput.style.cssText = '';
+    const lbl = document.getElementById('obj-s-auto-lbl');
+    if(lbl) lbl.style.display = 'none';
+  }
   L.objectifs.sort((a,b) => new Date(a.date) - new Date(b.date));
-  saveLocal(); buildObjList(); toast('Objectif ajouté','success');
-  document.getElementById('new-obj-nom').value = '';
-  document.getElementById('new-obj-date').value = '';
-  const sInput = document.getElementById('new-obj-s');
-  sInput.value = ''; sInput.readOnly = false; sInput.style.cssText = '';
-  const lbl = document.getElementById('obj-s-auto-lbl');
-  if(lbl) lbl.style.display = 'none';
+  saveLocal(); buildObjList(); toast(isEdit ? 'Objectif modifié' : 'Objectif ajouté', 'success');
 }
   
 // ══════════════════════════════════════════════════
