@@ -29,8 +29,13 @@ const auth = firebase.auth();
 // ══════════════════════════════════════════════════
 
 async function fbLoadProgramme() {
-  const doc = await db.collection('config').doc('programme').get();
-  return doc.exists ? (doc.data().weeks || []) : [];
+  try {
+    const doc = await db.collection('config').doc('programme').get();
+    return doc.exists ? (doc.data().weeks || []) : [];
+  } catch(e) {
+    console.error('fbLoadProgramme :', e);
+    return [];
+  }
 }
 
 async function fbLoadSeances() {
@@ -65,18 +70,28 @@ async function fbLoadSeances() {
 }
 
 async function fbLoadSocle() {
-  const doc = await db.collection('config').doc('socle').get();
-  return doc.exists ? doc.data() : {
-    lundi:    { label: 'Renforcement musculaire', dur: 60,  rpe: 4 },
-    mercredi: { label: 'Footing récupération',    dur: 50,  rpe: 3 },
-    weRoute:  { label: 'Sortie longue route',     dur: 60,  rpe: 4 },
-    weTrail:  { label: 'Sortie longue trail',     dur: 90,  rpe: 4 }
-  };
+  try {
+    const doc = await db.collection('config').doc('socle').get();
+    return doc.exists ? doc.data() : {
+      lundi:    { label: 'Renforcement musculaire', dur: 60,  rpe: 4 },
+      mercredi: { label: 'Footing récupération',    dur: 50,  rpe: 3 },
+      weRoute:  { label: 'Sortie longue route',     dur: 60,  rpe: 4 },
+      weTrail:  { label: 'Sortie longue trail',     dur: 90,  rpe: 4 }
+    };
+  } catch(e) {
+    console.error('fbLoadSocle :', e);
+    return { lundi:{dur:60,rpe:4}, mercredi:{dur:50,rpe:3}, weRoute:{dur:60,rpe:4}, weTrail:{dur:90,rpe:4} };
+  }
 }
 
 async function fbLoadInfosClub() {
-  const snap = await db.collection('infosClub').get();
-  return snap.docs.map(d => d.data());
+  try {
+    const snap = await db.collection('infosClub').get();
+    return snap.docs.map(d => d.data());
+  } catch(e) {
+    console.error('fbLoadInfosClub :', e);
+    return [];
+  }
 }
 
 async function fbLoadObjectifs() {
@@ -84,8 +99,13 @@ async function fbLoadObjectifs() {
     const snap = await db.collection('objectifs').orderBy('date').get();
     return snap.docs.map(d => d.data());
   } catch(e) {
-    const snap = await db.collection('objectifs').get();
-    return snap.docs.map(d => d.data()).sort((a, b) => (a.date < b.date ? -1 : 1));
+    try {
+      const snap = await db.collection('objectifs').get();
+      return snap.docs.map(d => d.data()).sort((a, b) => (a.date < b.date ? -1 : 1));
+    } catch(e2) {
+      console.error('fbLoadObjectifs :', e2);
+      return [];
+    }
   }
 }
 
@@ -94,19 +114,34 @@ async function fbLoadCalFixed() {
     const snap = await db.collection('calFixed').orderBy('date').get();
     return snap.docs.map(d => d.data());
   } catch(e) {
-    const snap = await db.collection('calFixed').get();
-    return snap.docs.map(d => d.data()).sort((a, b) => (a.date < b.date ? -1 : 1));
+    try {
+      const snap = await db.collection('calFixed').get();
+      return snap.docs.map(d => d.data()).sort((a, b) => (a.date < b.date ? -1 : 1));
+    } catch(e2) {
+      console.error('fbLoadCalFixed :', e2);
+      return [];
+    }
   }
 }
 
 async function fbLoadCalculateur() {
-  const doc = await db.collection('config').doc('calculateur').get();
-  return doc.exists ? doc.data() : {};
+  try {
+    const doc = await db.collection('config').doc('calculateur').get();
+    return doc.exists ? doc.data() : {};
+  } catch(e) {
+    console.error('fbLoadCalculateur :', e);
+    return {};
+  }
 }
 
 async function fbLoadSeuils() {
-  const doc = await db.collection('config').doc('seuils').get();
-  return doc.exists ? (doc.data().seuils || []) : [];
+  try {
+    const doc = await db.collection('config').doc('seuils').get();
+    return doc.exists ? (doc.data().seuils || []) : [];
+  } catch(e) {
+    console.error('fbLoadSeuils :', e);
+    return [];
+  }
 }
 
 // Chargement groupé (pages publiques)
