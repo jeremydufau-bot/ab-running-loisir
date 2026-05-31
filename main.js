@@ -1,8 +1,91 @@
-﻿// MAJ 19/05/26
+﻿// MAJ 31/05/26
 // ══════════════════════════════════════════════════
 // AB Running — main.js
 // All app logic, loaded after data.js
 // ══════════════════════════════════════════════════
+
+// ── GLOBALS VIDÉOS EXERCICES ──
+let currentExoId = null;
+let isCoach = false;
+let exoVideosOverride = {};
+
+function escHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderExoVideoZone(id){
+  const zone = document.getElementById('exo-video-zone');
+  if(!zone) return;
+  const ex = typeof exos!=='undefined' ? exos[id] : null;
+  if(!ex || !ex.hasOwnProperty('video')){ zone.innerHTML=''; return; }
+  const url = (exoVideosOverride[id]!==undefined ? exoVideosOverride[id] : ex.video) || '';
+  if(url){
+    zone.innerHTML = `
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
+        <a href="${escHtml(url)}" target="_blank" rel="noopener noreferrer"
+           style="display:inline-flex;align-items:center;gap:6px;background:#FF0000;color:#fff;font-family:'Lora',serif;font-size:.72rem;font-weight:700;padding:.4rem .9rem;border-radius:6px;text-decoration:none;">
+          ▶ Voir la vidéo explicative
+        </a>
+        ${isCoach?`<button onclick="showExoVideoEdit()"
+          style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.72rem;font-weight:600;padding:.35rem .65rem;border-radius:6px;cursor:pointer;font-family:'Lora',serif">
+          ✏️ Modifier
+        </button>`:''}
+      </div>`;
+  } else {
+    zone.innerHTML = isCoach
+      ? `<button onclick="showExoVideoEdit()"
+           style="display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px dashed var(--border);color:var(--muted);font-family:'Lora',serif;font-size:.72rem;font-weight:700;padding:.4rem .9rem;border-radius:6px;cursor:pointer;margin-bottom:1rem;">
+           ▶ Ajouter une vidéo
+         </button>`
+      : `<span style="display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px dashed var(--border);color:var(--muted);font-family:'Lora',serif;font-size:.72rem;font-weight:700;padding:.4rem .9rem;border-radius:6px;margin-bottom:1rem;">
+           ▶ Pas encore de vidéo
+         </span>`;
+  }
+}
+
+function showExoVideoEdit(){
+  const zone = document.getElementById('exo-video-zone');
+  if(!zone || !currentExoId) return;
+  const ex = typeof exos!=='undefined' ? exos[currentExoId] : null;
+  const cur = escHtml((exoVideosOverride[currentExoId]!==undefined ? exoVideosOverride[currentExoId] : (ex?ex.video||'':''))||'');
+  zone.innerHTML = `
+    <div style="margin-bottom:1rem">
+      <div style="font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:.35rem">Lien vidéo YouTube</div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <input id="exo-video-input" type="url" value="${cur}"
+               placeholder="https://www.youtube.com/watch?v=..."
+               style="flex:1;min-width:200px;padding:.45rem .7rem;border:1px solid var(--border);border-radius:6px;font-family:'Lora',serif;font-size:.78rem;background:var(--surface);color:var(--text)">
+        <button onclick="saveExoVideo()"
+                style="background:var(--navy);color:#fff;border:none;padding:.45rem .9rem;border-radius:6px;font-family:'Lora',serif;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">
+          💾 Sauvegarder
+        </button>
+        <button onclick="renderExoVideoZone('${currentExoId}')"
+                style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:.45rem .6rem;border-radius:6px;font-family:'Lora',serif;font-size:.78rem;cursor:pointer">
+          ✕
+        </button>
+      </div>
+      <div id="exo-video-status" style="font-size:.72rem;margin-top:.35rem"></div>
+    </div>`;
+  const inp = document.getElementById('exo-video-input');
+  if(inp) inp.focus();
+}
+
+async function saveExoVideo(){
+  if(!currentExoId) return;
+  const input = document.getElementById('exo-video-input');
+  const url = input ? input.value.trim() : '';
+  const status = document.getElementById('exo-video-status');
+  if(status){ status.style.color='var(--muted)'; status.textContent='Sauvegarde en cours...'; }
+  try {
+    if(typeof fbSaveExoVideo==='function') await fbSaveExoVideo(currentExoId, url);
+    exoVideosOverride[currentExoId] = url;
+    if(typeof exos!=='undefined' && exos[currentExoId]) exos[currentExoId].video = url;
+    renderExoVideoZone(currentExoId);
+    renderExoLibrary();
+  } catch(e){
+    if(status){ status.style.color='var(--rouge)'; status.textContent='Erreur : '+e.message; }
+  }
+}
 
 // ── HELPERS ──
 const S1 = new Date(2026,7,31); // lundi 31 août 2026
@@ -508,18 +591,20 @@ function renderExoLibrary(){
   grid.innerHTML = filtered.map(([id,ex])=>`
     <div class="lib-card" onclick="openExoModal('${id}')">
       <div class="lib-card-cat" style="background:${catBg[ex.cat]||'var(--border)'};color:${catCol[ex.cat]||'var(--muted)'}">${catLbl[ex.cat]||ex.cat}</div>
-      <div class="lib-card-name">${ex.emoji} ${ex.nom}</div>
+      <div class="lib-card-name">${ex.emoji} ${ex.nom}${ex.video?` <span style="display:inline-block;background:#FF0000;color:#fff;font-size:.5rem;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px;">▶ VIDEO</span>`:ex.hasOwnProperty('video')?` <span style="display:inline-block;background:var(--border);color:var(--muted);font-size:.5rem;font-weight:700;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px;">▶ vidéo à ajouter</span>`:''}</div>
       <div class="lib-card-desc">${ex.muscles}</div>
       <div class="lib-card-equips">${ex.equips.map(e=>`<span class="eq-tag eq-${e}">${eqIcons[e]||''} ${e==='corpo'?'Corps':e==='elastiques'?'Élastiques':'Salle'}</span>`).join('')}</div>
     </div>`).join('');
 }
 
 function openExoModal(id){
+  currentExoId = id;
   const ex = typeof exos!=='undefined' ? exos[id] : null;
   if(!ex) return;
   const eqFull = {corpo:'🤸 Poids du corps',elastiques:'🔴 Élastiques / kettlebell',salle:'🏋️ Salle avec barres'};
   document.getElementById('mTitle').textContent = `${ex.emoji} ${ex.nom}`;
   document.getElementById('mBody').innerHTML = `
+    <div id="exo-video-zone"></div>
     <h4>Muscles ciblés</h4><p>${ex.muscles}</p>
     <h4>Équipement</h4><p>${ex.equips.map(e=>eqFull[e]||e).join('<br>')}</p>
     <h4>Description technique</h4><p style="line-height:1.7">${ex.description}</p>
@@ -527,6 +612,7 @@ function openExoModal(id){
     <h4>Progression</h4><ul style="padding-left:1.2rem">${ex.progressions.map(p=>`<li style="margin-bottom:.2rem">${p}</li>`).join('')}</ul>`;
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
+  renderExoVideoZone(id);
 }
 
 // ══════════════════════════════════════════════════
@@ -742,7 +828,23 @@ document.addEventListener('DOMContentLoaded', async function(){
   if(document.getElementById('infosClubZone')) renderInfosClub();
   if(document.getElementById('acc-grid')) renderAccueil();
   if(document.getElementById('progBody')) buildProg();
-  if(document.getElementById('phaseMusculaire')){ renderMuscu(); renderExoLibrary(); }
+  if(document.getElementById('phaseMusculaire')){
+    if(typeof fbLoadExoVideos==='function'){
+      try {
+        const videoMap = await fbLoadExoVideos();
+        exoVideosOverride = videoMap;
+        Object.entries(videoMap).forEach(([id,url])=>{ if(typeof exos!=='undefined'&&exos[id]&&url) exos[id].video=url; });
+      } catch(e){ console.warn('fbLoadExoVideos:',e); }
+    }
+    if(typeof auth!=='undefined'){
+      auth.onAuthStateChanged(user=>{
+        isCoach = !!user;
+        if(currentExoId && document.getElementById('exo-video-zone')) renderExoVideoZone(currentExoId);
+      });
+    }
+    renderMuscu();
+    renderExoLibrary();
+  }
   if(document.getElementById('routinesGrid')) renderRoutines();
   if(document.getElementById('f-week-display')) fosterWeek('normal');
   if(document.getElementById('f-acwr-marker')) fosterACWR();

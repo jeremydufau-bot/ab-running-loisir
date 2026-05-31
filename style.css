@@ -1,4 +1,4 @@
-﻿/* MAJ 19/05/26 */
+﻿/* MAJ 31/05/26 */
 /* ══════════════════════════════════════════════════
    AB Running — Shared Stylesheet
    ══════════════════════════════════════════════════ */
@@ -256,12 +256,15 @@ nav a.nav-coach:hover{background:rgba(123,195,229,.15);color:#fff;border-color:v
 
 /* ── RESPONSIVE ── */
 @media(max-width:700px){
-  header{flex-wrap:wrap;gap:.5rem}
+  header{flex-wrap:wrap;gap:.5rem;padding:.6rem 1rem}
+  .site-name{font-size:1rem}
   nav{width:100%;justify-content:center}
+  nav a{font-size:.73rem;padding:.45rem .75rem}
   .acc-body{grid-template-columns:1fr}
   .acc-day+.acc-day{border-left:none;border-top:1px solid var(--border)}
   .page{padding:1.2rem 1rem 3rem}
   .sec-title{font-size:1.4rem}
+  .sec-intro{font-size:.9rem}
   .foster-formula-main{font-size:1.6rem}
   .foster-equiv-grid{grid-template-columns:1fr}
   .foster-week{grid-template-columns:40px repeat(7,1fr) 50px;gap:2px}

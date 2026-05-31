@@ -1,4 +1,4 @@
-﻿// MAJ 19/05/26
+﻿// MAJ 31/05/26
 // data.js — AB Running Loisir (configuration statique)
 // Les données dynamiques (programme, séances, infosClub, objectifs,
 // calFixed, socleConfig) sont stockées dans Firebase Firestore.
@@ -270,6 +270,7 @@ const exos = {
     description:'Pieds à largeur d\'épaules, orteils légèrement ouverts. Descente en poussant les genoux dans l\'axe des orteils, dos droit, regard devant. Descendre jusqu\'à ce que les cuisses soient parallèles au sol. Remonter en poussant dans le sol.',
     erreurs:'Genoux qui rentrent vers l\'intérieur. Talons qui décollent. Dos qui s\'arrondit.',
     progressions:['Corps : 3×15 lent', 'Corps : 3×12 avec pause 2s en bas', 'Corps : 4×10 lent excentrique (4s descente)', 'KB : goblet squat 3×10 avec kettlebell', 'Barre : back squat 4×8'],
+    video:'https://www.youtube.com/watch?v=EMfbjJWIllU',
   },
   squat_unipodal: {
     nom:'Squat unipodal (pistol)', cat:'jambes', emoji:'🦵',
@@ -278,6 +279,7 @@ const exos = {
     description:'Debout sur une jambe, l\'autre tendue devant. Descendre en contrôle en fléchissant la jambe d\'appui. Dos droit, genou dans l\'axe. Remonter en poussant dans le sol. Commencer avec aide d\'un mur ou TRX.',
     erreurs:'Genou qui s\'effondre vers l\'intérieur. Trop grande inclinaison du tronc. Descente trop rapide.',
     progressions:['Squat assisté avec chaise', 'Box squat unipodal (s\'asseoir sur banc)', 'Pistol partiel', 'Pistol complet poids corps', 'Pistol avec KB ou gilet lesté'],
+    video:'https://www.youtube.com/watch?v=Mwjk7bgFUbA',
   },
   fentes: {
     nom:'Fentes avant', cat:'jambes', emoji:'🦵',
@@ -286,6 +288,7 @@ const exos = {
     description:'Grand pas en avant, genou arrière qui s\'approche du sol sans le toucher. Genou avant dans l\'axe du pied. Remonter en poussant avec la jambe avant. Variante : fentes marchées, fentes bulgares (pied arrière surélevé).',
     erreurs:'Genou avant qui dépasse largement les orteils. Tronc qui s\'incline trop en avant. Manque d\'amplitude.',
     progressions:['Corps : 3×10 chaque', 'Fentes bulgares poids corps', 'Fentes avec haltères ou KB', 'Fentes bulgares avec KB ou barre', 'Fentes marchées avec barre'],
+    video:'https://www.youtube.com/watch?v=9KgPYFNC0yI',
   },
   step_up: {
     nom:'Step-up sur marche', cat:'jambes', emoji:'🦵',
@@ -294,6 +297,7 @@ const exos = {
     description:'Poser un pied sur une marche ou un banc (40-50 cm). Monter en poussant uniquement avec cette jambe. La jambe d\'appui au sol ne pousse pas. Contrôler la descente. Excellent pour la proprioception et la force unilatérale.',
     erreurs:'La jambe au sol aide à la montée. Genou qui s\'effondre en descente. Hauteur de marche trop importante au début.',
     progressions:['Marche basse 20cm', 'Marche 40cm', 'Avec haltères ou KB', 'Avec gilet lesté', 'Avec barre'],
+    video:'https://www.youtube.com/watch?v=sSOz4NMosWA',
   },
   step_down: {
     nom:'Step-down excentrique', cat:'jambes', emoji:'🦵',
@@ -302,6 +306,7 @@ const exos = {
     description:'Debout sur une marche sur une jambe. Descendre l\'autre jambe vers le sol EN CONTRÔLE sur 4 secondes. Genoux dans l\'axe. Ne pas poser le pied — remonter dès qu\'il effleure le sol. C\'est LA séance préparation descente trail.',
     erreurs:'Descente trop rapide. Genou qui s\'effondre. Tronc qui bascule excessivement.',
     progressions:['Marche basse 15cm · 3s descente', 'Marche 30cm · 4s descente', 'Marche 40cm · 5s descente', 'Poids cheville · 4s descente', 'KB tenu devant · 4s'],
+    video:'https://www.youtube.com/watch?v=H58uXgE-0SY',
   },
   rdl_unipodal: {
     nom:'RDL unipodal (soulevé de terre jambe tendue)', cat:'jambes', emoji:'🦵',
@@ -310,6 +315,7 @@ const exos = {
     description:'Debout sur une jambe. Pencher le tronc en avant en levant la jambe libre en arrière, dos parfaitement droit (colonne neutre). Descendre jusqu\'à sentir l\'étirement des ischios. Remonter lentement. Idéal pour la chaîne postérieure et la proprioception.',
     erreurs:'Dos qui s\'arrondit. Rotation du bassin. Amplitude insuffisante.',
     progressions:['Poids corps · toucher cheville', 'Avec haltère ou KB léger', 'KB moyen chaque main', 'KB lourd unilatéral', 'Barre 2 mains'],
+    video:'https://www.youtube.com/watch?v=A6MYR61mLTo',
   },
   leg_press: {
     nom:'Leg press', cat:'jambes', emoji:'🦵',
@@ -318,6 +324,7 @@ const exos = {
     description:'Machine leg press. Pieds à largeur d\'épaules sur la plateforme. Descente contrôlée jusqu\'à 90°, remontée puissante sans verrouiller les genoux. Variante unilatérale très efficace pour les traileurs.',
     erreurs:'Genoux qui s\'effondrent. Dos qui décolle du siège. Amplitude insuffisante.',
     progressions:['Bilatéral · 4×12', 'Bilatéral lourd · 4×8', 'Unilatéral · 3×10', 'Unilatéral lourd · 4×8'],
+    video:'https://www.youtube.com/watch?v=vp5UYo-kN8w',
   },
 
   // ─── FESSIERS / HANCHES ───
@@ -328,6 +335,7 @@ const exos = {
     description:'Allongé sur le dos, un pied à plat sur le sol, l\'autre jambe tendue. Pousser le bassin vers le haut en serrant les fessiers. Tenir 1 seconde en haut. Descendre sans poser le bassin. La jambe tendue reste dans l\'axe.',
     erreurs:'Bassin qui penche d\'un côté. Lombaires qui s\'arquent excessivement. Fessier pas contracté en haut.',
     progressions:['Corps : 3×15', 'Corps : pied sur banc', 'Poids sur bassin', 'Hip thrust avec barre et banc', 'Hip thrust lourd'],
+    video:'https://www.youtube.com/watch?v=I-ItIvUvD0E',
   },
   clamshell: {
     nom:'Clamshell (palourde)', cat:'fessiers', emoji:'🍑',
@@ -336,6 +344,7 @@ const exos = {
     description:'Allongé sur le côté, hanches et genoux fléchis à 45°. Ouvrir le genou du dessus comme une palourde en gardant les pieds joints. Tenir 1s en haut, descendre en contrôle. Muscle clé pour la stabilité en course et la prévention des douleurs de genou.',
     erreurs:'Bassin qui bascule en arrière. Amplitude trop faible. Mouvement trop rapide.',
     progressions:['Corps : 3×15', 'Élastique léger aux genoux : 3×12', 'Élastique moyen : 3×12', 'Élastique fort : 3×10'],
+    video:'https://www.youtube.com/watch?v=0e4oPtPbqvQ',
   },
   abducteurs_debout: {
     nom:'Abduction debout', cat:'fessiers', emoji:'🍑',
@@ -344,6 +353,7 @@ const exos = {
     description:'Debout, élastique autour des chevilles ou machine. Lever la jambe sur le côté en gardant le tronc droit. Contrôle du mouvement dans les deux sens. Fondamental pour la stabilité latérale en descente trail.',
     erreurs:'Tronc qui bascule en compensation. Jambe d\'appui qui se fléchit. Amplitude trop faible.',
     progressions:['Élastique cheville · 3×15', 'Élastique moyen · 3×12', 'Machine abducteurs', 'Machine avec charge'],
+    video:'https://www.youtube.com/watch?v=Lez2-kI3og8',
   },
   monster_walk: {
     nom:'Monster walk (marche latérale)', cat:'fessiers', emoji:'🍑',
@@ -352,6 +362,7 @@ const exos = {
     description:'Élastique autour des chevilles ou juste au-dessus des genoux. Semi-squat maintenu tout au long du mouvement. Pas latéraux en gardant la tension dans l\'élastique. 10 pas d\'un côté, 10 de l\'autre. Excellent pour l\'activation avant séance.',
     erreurs:'Élastique qui se relâche. Dos qui se redresse. Amplitude de pas trop faible.',
     progressions:['Élastique léger au-dessus genoux', 'Élastique moyen aux chevilles', 'Combinaison : élastique genoux + chevilles', 'Avec poids cheville'],
+    video:'https://www.youtube.com/watch?v=s_W3Gk0wEoQ',
   },
   hip_thrust: {
     nom:'Hip thrust avec barre', cat:'fessiers', emoji:'🍑',
@@ -360,6 +371,7 @@ const exos = {
     description:'Épaules appuyées sur un banc, barre posée sur le bassin (avec pad). Pieds à plat, largeur d\'épaules. Poussée vers le haut jusqu\'à alignement épaules-hanches-genoux. Serrer les fessiers en haut. Un des meilleurs exercices fessiers qui existe.',
     erreurs:'Lombaires qui s\'arquent. Genoux qui s\'effondrent. Ne pas tenir la contraction en haut.',
     progressions:['Poids corps sur banc', 'Barre vide : 4×12', 'Chargé modéré : 4×10', 'Lourd : 4×8', 'Max : 5×5'],
+    video:'https://www.youtube.com/watch?v=S_uZP4UH6J0',
   },
 
   // ─── GAINAGE ───
@@ -370,6 +382,7 @@ const exos = {
     description:'Avant-bras au sol, corps en ligne droite des talons aux épaules. Serrer les abdos, les fessiers. Ne pas laisser les hanches s\'affaisser ni monter. Respiration lente et contrôlée. La qualité prime sur la durée.',
     erreurs:'Hanches qui s\'affaissent. Fessiers trop hauts. Apnée. Regard trop relevé (cervicales).',
     progressions:['20 sec', '40 sec', '60 sec', 'Planche avec déplacement de bras', 'Planche sur bosu ou instabilité'],
+    video:'https://www.youtube.com/watch?v=GQE8ASRA7t0',
   },
   planche_lat: {
     nom:'Planche latérale', cat:'gainage', emoji:'🧱',
@@ -378,6 +391,7 @@ const exos = {
     description:'Sur l\'avant-bras et le côté du pied, corps en ligne droite. Hanches levées, pas d\'affaissement. Regard droit devant. Variante évoluée : soulever la hanche en mouvement (dips latéraux).',
     erreurs:'Hanches qui tombent. Rotation du bassin vers l\'avant. Corps non aligné.',
     progressions:['Genoux au sol · 25 sec', 'Pieds · 35 sec', 'Pieds · 50 sec', 'Avec dips latéraux · 10 reps', 'Avec poids cheville sur le côté'],
+    video:'https://www.youtube.com/watch?v=rCxF2nG9vQ0',
   },
   dead_bug: {
     nom:'Dead bug', cat:'gainage', emoji:'🧱',
@@ -386,6 +400,7 @@ const exos = {
     description:'Allongé sur le dos, bras tendus au plafond, hanches et genoux à 90°. Allonger simultanément le bras gauche et la jambe droite sans que le bas du dos se décolle. Revenir. Alterner. Garder les lombaires collées au sol en permanence.',
     erreurs:'Bas du dos qui se soulève. Mouvement trop rapide. Apnée.',
     progressions:['Jambe seule · 3×10', 'Bras + jambe · 3×8', 'Avec KB tenu par la jambe opposée', 'Élastique en résistance'],
+    video:'https://www.youtube.com/watch?v=bxn9FBrt4-A',
   },
   bird_dog: {
     nom:'Bird dog', cat:'gainage', emoji:'🧱',
@@ -394,6 +409,7 @@ const exos = {
     description:'À quatre pattes, dos plat (colonne neutre). Allonger simultanément le bras droit et la jambe gauche en maintenant la stabilité du bassin. Tenir 2s. Revenir sans poser, alterner. Le bassin ne doit PAS bouger.',
     erreurs:'Bassin qui bascule d\'un côté. Dos qui s\'arrondit ou se creuse. Montée de la jambe trop haute.',
     progressions:['3×8 alternés lents', '3×10 avec pause 2s', 'Avec poids cheville', 'Avec haltère dans la main'],
+    video:'https://www.youtube.com/watch?v=wcpHuv5DMWg',
   },
   pallof_press: {
     nom:'Pallof press', cat:'gainage', emoji:'🧱',
@@ -402,6 +418,7 @@ const exos = {
     description:'Élastique ou câble fixé sur le côté à hauteur de poitrine. Debout de profil, tenir l\'élastique à 2 mains devant le sternum. Pousser les bras en avant (résistance à la rotation), maintenir 2s, revenir. L\'enjeu est de NE PAS tourner.',
     erreurs:'Rotation du tronc pendant l\'extension. Corps qui penche vers la source de résistance. Mouvement trop rapide.',
     progressions:['Élastique léger · 3×10', 'Élastique moyen · 3×10', 'Câble · 3×10', 'Câble avec rotation ajoutée'],
+    video:'https://www.youtube.com/watch?v=dBAmQ9bx3JA',
   },
   gainage_dynamique: {
     nom:'Gainage dynamique (mountain climbers)', cat:'gainage', emoji:'🧱',
@@ -410,6 +427,7 @@ const exos = {
     description:'Position de pompe. Ramener alternativement les genoux vers la poitrine. Version lente : proprioception et gainage pur. Version rapide : cardio. Pour les traileurs : version lente contrôlée, pas sprint.',
     erreurs:'Hanches qui montent. Dos qui s\'arrondit. Perte d\'alignement.',
     progressions:['Lent : 3×20 sec', 'Modéré : 3×30 sec', 'Avec glissière sous les pieds', 'Avec bosu'],
+    video:'https://www.youtube.com/watch?v=ixxk9Qfn61o',
   },
 
   // ─── MOLLETS / CHEVILLES ───
@@ -420,6 +438,7 @@ const exos = {
     description:'Sur le bord d\'une marche sur une jambe. Descendre le talon le plus bas possible (étirement), puis monter sur la pointe de pied le plus haut possible. Mouvement lent et complet. Essentiel pour prévenir les tendinites achilléennes et les blessures de pied.',
     erreurs:'Mouvement trop rapide. Amplitude incomplète. Ne pas utiliser de marche (amplitude réduite).',
     progressions:['Sol plat · 3×20', 'Marche poids corps · 3×15', 'Marche avec poids cheville', 'Marche avec KB · 3×12', 'Machine debout chargée · 4×12'],
+    video:'https://www.youtube.com/watch?v=ElcvJ0kjt6c',
   },
   tibialis: {
     nom:'Renforcement tibial (tibia raises)', cat:'mollets', emoji:'👟',
@@ -428,6 +447,7 @@ const exos = {
     description:'Dos au mur, pieds à 30cm du mur. Soulever les avant-pieds le plus haut possible en gardant les talons au sol. Mouvement complet. Souvent négligé, crucial pour prévenir les périostites et les douleurs de shin splints.',
     erreurs:'Amplitude insuffisante. Mouvement trop rapide. Oublier cet exercice.',
     progressions:['3×20 poids corps', 'Élastique sur le dessus du pied · 3×15', 'Machine assis', 'Avec disque sur le pied'],
+    video:'https://www.youtube.com/watch?v=pz70FwVRDJE',
   },
   cheville_proprio: {
     nom:'Proprioception cheville', cat:'mollets', emoji:'👟',
@@ -436,6 +456,7 @@ const exos = {
     description:'Debout sur une jambe. Fermer les yeux. Tenir 30 secondes. Variante : dessin de l\'alphabet avec la cheville de la jambe libre. Sur surface instable (coussin, bosu) si disponible. La prévention d\'entorse numéro un.',
     erreurs:'Yeux ouverts au début (progression trop rapide). Ne pas faire cet exercice.',
     progressions:['Yeux ouverts · 20s', 'Yeux fermés · 30s', 'Sur coussin yeux ouverts', 'Sur coussin yeux fermés', 'Sur bosu yeux fermés'],
+    video:'https://www.youtube.com/watch?v=59cpbpOgjnI',
   },
 
   // ─── PLIOMÉTRIE ───
@@ -446,6 +467,7 @@ const exos = {
     description:'Squat normal, puis explosion vers le haut en sautant le plus haut possible. Réception souple et silencieuse, absorber le choc en fléchissant les genoux. Immédiatement enchaîner le suivant. Simule les appuis en montée.',
     erreurs:'Réception rigide (genoux tendus). Pas d\'amplitude en descente. Bruit à la réception.',
     progressions:['3×8 bas', '4×10 puissant', 'Avec gilet lesté léger', 'Depth jump depuis box'],
+    video:'https://www.youtube.com/watch?v=qv3hoZqSk3c',
   },
   box_jump: {
     nom:'Box jump', cat:'pliometrie', emoji:'⚡',
@@ -454,6 +476,7 @@ const exos = {
     description:'Debout devant une box (30-60cm). Flexion rapide puis saut explosif sur la box. Réception souple à deux pieds, genoux fléchis. Redescendre en marchant, pas en sautant (protection genou). Variante unilatérale : single-leg box jump.',
     erreurs:'Box trop haute au départ. Redescente en saut. Réception rigide.',
     progressions:['Box 30cm · 3×8', 'Box 40cm · 3×8', 'Box 50cm · 4×6', 'Unilatéral · 3×6'],
+    video:'https://www.youtube.com/watch?v=Bc_ycZFCEvQ',
   },
   bounding: {
     nom:'Bounding latéral', cat:'pliometrie', emoji:'⚡',
@@ -462,6 +485,7 @@ const exos = {
     description:'Saut latéral sur une jambe. Pousser sur la jambe gauche pour sauter vers la droite. Réception sur la jambe droite en absorbant. Tenir 1 seconde stable. Puis repartir. Simule les changements de direction et les traversées de pente.',
     erreurs:'Réception instable. Genou qui s\'effondre à la réception. Amplitude trop faible.',
     progressions:['Amplitude courte · 3×8', 'Amplitude plus grande · 3×10', 'Avec maintien 2s réception', 'En série rapide'],
+    video:'https://www.youtube.com/watch?v=q_U53bdjPvc',
   },
   drop_jump: {
     nom:'Drop jump (atterrissage depuis hauteur)', cat:'pliometrie', emoji:'⚡',
@@ -470,6 +494,7 @@ const exos = {
     description:'Se laisser tomber d\'une box (pas sauter, juste lâcher). Atterrissage souple et silencieux, absorber sur 4-5cm de flexion de cheville/genou/hanche. Variante évoluée : enchaîner avec un saut vertical immédiatement après l\'atterrissage (depth jump).',
     erreurs:'Box trop haute. Rigidité à l\'atterrissage. Flexion excessive.',
     progressions:['Box 20cm · 3×8', 'Box 30cm · 3×8', 'Depth jump · 3×6'],
+    video:'https://www.youtube.com/watch?v=eA9ngSle-SY',
   },
 
   // ─── ÉTIREMENTS ───
@@ -480,6 +505,7 @@ const exos = {
     description:'En fente basse, genou arrière au sol. Pousser le bassin en avant et légèrement vers le bas. Bras levés ou mains sur le genou avant. Tenir 60 secondes minimum. Un des muscles les plus raccourcis chez les coureurs.',
     erreurs:'Durée trop courte. Dos qui s\'arrondit. Bassin qui ne descend pas.',
     progressions:['60 sec · chaque côté', '90 sec · avec bras levés', 'Sur élévation (pied arrière surélevé)'],
+    video:'https://www.youtube.com/watch?v=3SVJvstoBR0',
   },
   ischios: {
     nom:'Ischio-jambiers allongé', cat:'etirements', emoji:'🌿',
@@ -488,6 +514,7 @@ const exos = {
     description:'Allongé sur le dos. Ramener une jambe vers soi en tenant derrière la cuisse (pas le pied). Jambe au sol restant à plat. Tenir 60-90 secondes. Très lent. Respiration profonde pour relâcher la tension.',
     erreurs:'Tenir derrière le mollet ou le pied (trop de tension). Jambe d\'appui qui se lève. Durée trop courte.',
     progressions:['Tenu derrière cuisse', 'Avec élastique au pied', 'Jambe sur mur (legs up the wall)'],
+    video:'https://www.youtube.com/watch?v=a4eIlTTpsYY',
   },
   piriforme: {
     nom:'Piriforme (figure 4)', cat:'etirements', emoji:'🌿',
@@ -496,6 +523,7 @@ const exos = {
     description:'Allongé. Croiser la cheville droite sur le genou gauche. Tirer la jambe gauche vers la poitrine. Tenir 60 secondes. Le piriforme est souvent à l\'origine des douleurs fessières et sciatiques chez les coureurs.',
     erreurs:'Ne pas maintenir la flexion de hanche. Durée insuffisante. Sauter cet exercice.',
     progressions:['Allongé · 60s', 'Assis au sol', 'Assis sur chaise (facilement faisable au bureau)'],
+    video:'https://www.youtube.com/watch?v=-g0nuyTHMrI',
   },
   mollets_etirement: {
     nom:'Étirement mollets et Achille', cat:'etirements', emoji:'🌿',
@@ -504,6 +532,7 @@ const exos = {
     description:'Au mur, jambe arrière tendue (gastrocnémien) ou légèrement fléchie (soléaire + Achille). Les deux variantes sont nécessaires. Tenir 60 secondes chacune. Après chaque séance trail/course.',
     erreurs:'Ne faire qu\'une des deux variantes. Talon qui décolle. Durée trop courte.',
     progressions:['Jambe tendue · 60s', 'Jambe fléchie · 60s', 'Sur marche avec talon qui descend (excentrique + étirement)'],
+    video:'https://www.youtube.com/watch?v=JSzCfi0wbcA',
   },
   bandelette: {
     nom:'Bandelette ilio-tibiale (rouleau)', cat:'etirements', emoji:'🌿',
@@ -512,6 +541,7 @@ const exos = {
     description:'Allongé sur le côté avec un foam roller sous la cuisse (entre le genou et la hanche latérale). Rouler doucement sur les zones tendues. Pas sur les os. 60-90 secondes par jambe. Douloureux si tendu — c\'est normal et bénéfique.',
     erreurs:'Rouler trop vite. Passer sur le genou directement. Arrêter trop tôt.',
     progressions:['Foam roller · 60s', 'Lacrosse ball sur zones précises', 'Avec plus de poids du corps'],
+    video:'https://www.youtube.com/watch?v=i9DvJa0mZQA',
   },
 };
 

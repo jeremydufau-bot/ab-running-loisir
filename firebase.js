@@ -1,4 +1,4 @@
-﻿// MAJ 19/05/26
+﻿// MAJ 31/05/26
 // ══════════════════════════════════════════════════
 // firebase.js — Configuration et accès Firestore
 // ══════════════════════════════════════════════════
@@ -235,6 +235,19 @@ async function fbDeleteSeanceV3(id) {
 }
 
 // Import séances_v3 depuis un tableau JSON (utilise id_original comme doc ID)
+// ══════════════════════════════════════════════════
+// VIDÉOS EXERCICES — Renforcement
+// ══════════════════════════════════════════════════
+
+async function fbLoadExoVideos() {
+  const doc = await db.collection('config').doc('exo_videos').get();
+  return doc.exists ? doc.data() : {};
+}
+
+async function fbSaveExoVideo(exoId, url) {
+  await db.collection('config').doc('exo_videos').set({ [exoId]: url }, { merge: true });
+}
+
 async function fbImportSeancesV3(workouts, onProgress) {
   const CHUNK = 490; // limite batch Firestore = 500
   let done = 0;

@@ -1,0 +1,518 @@
+<!-- MAJ 31/05/26 -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AB Running & Trail — Boutique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .boutique-intro { max-width: 620px; margin-bottom: 2rem; }
+
+  /* Grille produits */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow .15s, transform .15s;
+    position: relative;
+  }
+  .product-card:hover {
+    box-shadow: 0 6px 20px rgba(27,58,107,.12);
+    transform: translateY(-2px);
+  }
+
+  .product-photo {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: var(--surface2);
+    display: block;
+  }
+  .product-photo-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--border);
+  }
+
+  .product-body {
+    padding: 1rem;
+  }
+  .product-name {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: .35rem;
+  }
+  .product-desc {
+    font-size: .78rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: .75rem;
+  }
+  .product-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .product-price {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--navy);
+  }
+  .btn-order {
+    font-family: 'Lora', serif;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .35rem .8rem;
+    border-radius: 7px;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: .12s;
+    display: inline-block;
+  }
+  .btn-order:hover {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  /* Bouton supprimer sur carte */
+  .btn-delete-card {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(192,64,64,.25);
+    color: var(--rouge);
+    border-radius: 6px;
+    font-size: .65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    cursor: pointer;
+    display: none;
+    transition: .12s;
+    font-family: 'Lora', serif;
+  }
+  .product-card:hover .btn-delete-card { display: block; }
+  .btn-delete-card:hover { background: var(--rouge); color: #fff; }
+
+  /* État vide */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: .5rem; }
+  .empty-state p { font-size: .88rem; }
+
+  /* Panneau admin */
+  .admin-toggle {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: 1.5rem;
+  }
+  .admin-toggle button {
+    font-family: 'Lora', serif;
+    font-size: .7rem;
+    font-weight: 600;
+    padding: .35rem .85rem;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: .12s;
+  }
+  .admin-toggle button:hover { border-color: var(--light); color: var(--navy); }
+  .admin-toggle button.open { background: rgba(27,58,107,.07); border-color: var(--blue); color: var(--navy); }
+
+  .admin-panel {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 2px 10px rgba(27,58,107,.06);
+  }
+  .admin-panel.open { display: block; }
+
+  .admin-panel h3 {
+    font-size: .6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--muted);
+    border-left: 3px solid var(--blue);
+    padding-left: 8px;
+    margin-bottom: 1.2rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+
+  .f-group { display: flex; flex-direction: column; gap: 5px; }
+  .f-group label {
+    font-size: .58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+  }
+  .f-control {
+    font-family: 'Lora', serif;
+    font-size: .85rem;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: .5rem .75rem;
+    transition: .12s;
+    width: 100%;
+  }
+  .f-control:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(42,93,160,.12);
+  }
+  textarea.f-control { resize: vertical; min-height: 80px; }
+
+  /* Prévisualisation photo */
+  .photo-preview-wrap {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface2);
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6px;
+  }
+  .photo-preview-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .photo-preview-placeholder { font-size: 2rem; color: var(--border); }
+
+  .form-actions { margin-top: 1.2rem; display: flex; gap: .6rem; align-items: center; }
+  .btn-add {
+    font-family: 'Lora', serif;
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .5rem 1.2rem;
+    border-radius: 7px;
+    border: none;
+    background: var(--navy);
+    color: #fff;
+    cursor: pointer;
+    transition: .12s;
+  }
+  .btn-add:hover { background: var(--blue); }
+  .btn-reset {
+    font-family: 'Lora', serif;
+    font-size: .7rem;
+    font-weight: 600;
+    padding: .5rem .9rem;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: .12s;
+  }
+  .btn-reset:hover { color: var(--navy); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-family: 'Lora', serif;
+    font-size: .82rem;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(27,58,107,.3);
+    transition: transform .3s cubic-bezier(.175,.885,.32,1.275);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .products-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  }
+  @media (max-width: 400px) {
+    .products-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo_ab.avif" alt="AB" class="logo">
+  <span class="site-name">AB Running & Trail</span>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="programme.html">Programme</a>
+    <a href="philosophie.html">Méthode</a>
+    <a href="renforcement.html">Renforcement</a>
+    <a href="routines.html">Routines Matin</a>
+    <a class="active" href="boutique.html">🛍️ Boutique</a>
+    <a href="admin.html" class="nav-coach">Entraîneur</a>
+  </nav>
+</header>
+
+<div class="page">
+  <div class="sec-eye">Club Aviron Bayonnais</div>
+  <div class="sec-title">Boutique <em>du club</em></div>
+  <p class="sec-intro boutique-intro">
+    Retrouvez ici les articles disponibles au sein du club. Les commandes se font directement par e-mail — cliquez sur "Commander" pour ouvrir votre messagerie.
+  </p>
+
+  <!-- Bouton admin -->
+  <div class="admin-toggle">
+    <button id="btnToggleAdmin" onclick="toggleAdmin()">⚙️ Gérer les articles</button>
+  </div>
+
+  <!-- Panneau admin -->
+  <div class="admin-panel" id="adminPanel">
+    <h3>Ajouter un article</h3>
+    <div class="form-grid">
+      <div class="f-group">
+        <label for="artName">Nom de l'article *</label>
+        <input type="text" id="artName" class="f-control" placeholder="ex: Maillot AB Running 2026">
+      </div>
+      <div class="f-group">
+        <label for="artPrice">Prix (€) *</label>
+        <input type="number" id="artPrice" class="f-control" placeholder="ex: 25" min="0" step="0.01">
+      </div>
+      <div class="f-group full">
+        <label for="artDesc">Description</label>
+        <textarea id="artDesc" class="f-control" placeholder="Tailles disponibles, matière, couleurs..."></textarea>
+      </div>
+      <div class="f-group full">
+        <label>Photo</label>
+        <div style="display:grid; grid-template-columns:1fr auto; gap:.75rem; align-items:start;">
+          <div>
+            <input type="url" id="artPhotoUrl" class="f-control" placeholder="URL d'une image (https://...)" oninput="previewFromUrl(this.value)" style="margin-bottom:.5rem;">
+            <div style="text-align:center; font-size:.65rem; color:var(--muted); margin:.3rem 0;">— ou —</div>
+            <label style="display:block; text-align:center; padding:.4rem; border:1px dashed var(--border); border-radius:7px; cursor:pointer; font-size:.75rem; color:var(--muted);">
+              📁 Choisir un fichier
+              <input type="file" id="artPhotoFile" accept="image/*" style="display:none" onchange="previewFromFile(this)">
+            </label>
+          </div>
+          <div class="photo-preview-wrap" id="photoPreview" style="width:120px;">
+            <span class="photo-preview-placeholder">🖼️</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-add" onclick="addArticle()">Ajouter l'article</button>
+      <button class="btn-reset" onclick="resetForm()">Réinitialiser</button>
+    </div>
+  </div>
+
+  <!-- Grille produits -->
+  <div class="products-grid" id="productsGrid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Données embarquées -->
+<script id="boutique-data" type="application/json">
+[]
+</script>
+
+<script>
+  const MAIL = 'contact@ab-running.fr';
+  let articles = [];
+  let pendingPhoto = '';
+
+  // ── Init ──────────────────────────────────────────
+  window.onload = function () {
+    const local = localStorage.getItem('ab_boutique_articles');
+    const embedded = document.getElementById('boutique-data').textContent.trim();
+
+    let parsed = [];
+    try { parsed = JSON.parse(embedded || '[]'); } catch(e) {}
+
+    if (local) {
+      try { articles = JSON.parse(local); } catch(e) { articles = parsed; }
+    } else {
+      articles = parsed;
+    }
+    render();
+  };
+
+  // ── Rendu ─────────────────────────────────────────
+  function render() {
+    const grid = document.getElementById('productsGrid');
+    grid.innerHTML = '';
+
+    if (articles.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🛍️</div>
+          <p>Aucun article pour l'instant.<br>Utilisez le panneau <strong>Gérer les articles</strong> pour en ajouter.</p>
+        </div>`;
+      return;
+    }
+
+    articles.forEach((art, idx) => {
+      const photoHtml = art.photo
+        ? `<img src="${art.photo}" alt="${art.name}" class="product-photo" onerror="this.outerHTML='<div class=\\'product-photo-placeholder\\'>🛍️</div>'">`
+        : `<div class="product-photo-placeholder">🛍️</div>`;
+
+      const priceStr = parseFloat(art.price).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      const subject = encodeURIComponent('Commande — ' + art.name);
+      const body = encodeURIComponent('Bonjour,\n\nJe souhaite commander l\'article suivant :\n\n' + art.name + ' — ' + priceStr + '\n\nMerci de me recontacter pour confirmer la commande.\n\nCordialement,');
+      const mailHref = `mailto:${MAIL}?subject=${subject}&body=${body}`;
+
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        ${photoHtml}
+        <button class="btn-delete-card" onclick="deleteArticle(${idx})" title="Supprimer cet article">✕ Supprimer</button>
+        <div class="product-body">
+          <div class="product-name">${art.name}</div>
+          ${art.desc ? `<div class="product-desc">${art.desc}</div>` : ''}
+        </div>
+        <div class="product-footer">
+          <span class="product-price">${priceStr}</span>
+          <a class="btn-order" href="${mailHref}">Commander</a>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Admin toggle ──────────────────────────────────
+  function toggleAdmin() {
+    const panel = document.getElementById('adminPanel');
+    const btn = document.getElementById('btnToggleAdmin');
+    const isOpen = panel.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.textContent = isOpen ? '✕ Fermer' : '⚙️ Gérer les articles';
+  }
+
+  // ── Photo preview ─────────────────────────────────
+  function previewFromUrl(url) {
+    pendingPhoto = url;
+    updatePreview(url);
+  }
+
+  function previewFromFile(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      pendingPhoto = e.target.result;
+      updatePreview(e.target.result);
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+
+  function updatePreview(src) {
+    const wrap = document.getElementById('photoPreview');
+    if (src) {
+      wrap.innerHTML = `<img src="${src}" alt="preview" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+      wrap.innerHTML = '<span class="photo-preview-placeholder">🖼️</span>';
+    }
+  }
+
+  // ── Ajouter ───────────────────────────────────────
+  function addArticle() {
+    const name = document.getElementById('artName').value.trim();
+    const price = document.getElementById('artPrice').value.trim();
+
+    if (!name || !price) {
+      showToast('Le nom et le prix sont obligatoires.');
+      return;
+    }
+
+    articles.push({
+      name,
+      desc: document.getElementById('artDesc').value.trim(),
+      price: parseFloat(price),
+      photo: pendingPhoto || ''
+    });
+
+    save();
+    render();
+    resetForm();
+    showToast('Article ajouté !');
+  }
+
+  // ── Supprimer ─────────────────────────────────────
+  function deleteArticle(idx) {
+    if (!confirm('Supprimer cet article ?')) return;
+    articles.splice(idx, 1);
+    save();
+    render();
+    showToast('Article supprimé.');
+  }
+
+  // ── Reset form ────────────────────────────────────
+  function resetForm() {
+    document.getElementById('artName').value = '';
+    document.getElementById('artDesc').value = '';
+    document.getElementById('artPrice').value = '';
+    document.getElementById('artPhotoUrl').value = '';
+    document.getElementById('artPhotoFile').value = '';
+    pendingPhoto = '';
+    updatePreview('');
+  }
+
+  // ── Persistance ───────────────────────────────────
+  function save() {
+    localStorage.setItem('ab_boutique_articles', JSON.stringify(articles));
+    // Met aussi à jour le tag embarqué pour l'export éventuel
+    const tag = document.getElementById('boutique-data');
+    tag.textContent = '\n' + JSON.stringify(articles, null, 2) + '\n';
+  }
+
+  // ── Toast ─────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
