@@ -1,4 +1,4 @@
-﻿// MAJ 31/05/26
+﻿// MAJ 31/05/26 14:31
 // ══════════════════════════════════════════════════
 // AB Running — main.js
 // All app logic, loaded after data.js
@@ -88,7 +88,7 @@ async function saveExoVideo(){
 }
 
 // ── HELPERS ──
-const S1 = new Date(2026,7,31); // lundi 31 août 2026
+const S1 = new Date(2027,7,30); // lundi 30 août 2027
 const MOIS = ['Janv','Févr','Mars','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'];
 
 function semDate(n){ return new Date(+S1 + (n-1)*7*864e5); }

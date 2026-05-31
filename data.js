@@ -1,100 +1,99 @@
-﻿// MAJ 31/05/26
+﻿// MAJ 31/05/26 14:31 — programme saison 2027-2028
 // data.js — AB Running Loisir (configuration statique)
 // Les données dynamiques (programme, séances, infosClub, objectifs,
 // calFixed, socleConfig) sont stockées dans Firebase Firestore.
 
 // ── Variables globales (remplies par Firebase + main.js) ──
 let programme = [
-  // ── REPRISE (S1–S4, fin août–sept. 2026) ─────────────────────────────────
-  // Méthode Foster. UA cible : 1450 → 1770 → 1975 → 1150 (décharge)
+  // ── REPRISE (S1–S4, fin août–sept. 2027) ─────────────────────────────────
+  // Méthode Foster. UA cible : ~1500 → 1720 → 2000 → 1120 (décharge)
   // Mardi: VC→VC→VL  |  Jeudi: Côtes→Côtes→VL  |  Sam S2 opt, S3 obligatoire
   {s:1,  p:'Reprise',          m:'S107', j:'S043',                                    wr:'SR090', wt:'TM090'},
-  {s:2,  p:'Reprise',          m:'S108', j:'S046',            sam:'M04',              wr:'SR090', wt:'TM120'},
-  {s:3,  p:'Reprise',          m:'S116', j:'S020',            sam:'trail_montagne_decouverte', wr:'SR090', wt:'TM120'},
+  {s:2,  p:'Reprise',          m:'S108', j:'S046',            sam:'M04',              wr:'SR105', wt:'TM120'},
+  {s:3,  p:'Reprise',          m:'S116', j:'S020',            sam:'trail_montagne_decouverte', wr:'SR105', wt:'TM150'},
   {s:4,  p:'Reprise',          m:'S107', j:'S043',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── BASE ROUTE (S5–S8, oct. 2026) ────────────────────────────────────────
-  // UA cible : 1770 → 2040 → 2345 → 1240 (décharge)
+  // ── BASE ROUTE (S5–S8, oct. 2027) ────────────────────────────────────────
+  // UA cible : ~1900 → 2180 → 2500 → 1260 (décharge)
   // Mardi: VC→VC→VL  |  Jeudi: VL→VL→Seuil  |  Sam S2 opt, S3 obligatoire
-  {s:5,  p:'Base route',       m:'S101', j:'S117',                                    wr:'SR090', wt:'TM120'},
-  {s:6,  p:'Base route',       m:'S102', j:'S021',            sam:'M02',              wr:'SR120', wt:'TM150'},
-  {s:7,  p:'Base route',       m:'S021', j:'S134',            sam:'sortie_trail_col', wr:'SR090', wt:'TM120'},
+  {s:5,  p:'Base route',       m:'S101', j:'S117',                                    wr:'SR120', wt:'TM150'},
+  {s:6,  p:'Base route',       m:'S102', j:'S021',            sam:'M02',              wr:'SR120', wt:'TM180'},
+  {s:7,  p:'Base route',       m:'S021', j:'S134',            sam:'sortie_trail_col', wr:'SR120', wt:'TM150'},
   {s:8,  p:'Base route',       m:'S108', j:'S020',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── BASE (S9–S12, oct.–nov. 2026) ────────────────────────────────────────
-  // UA cible : 1985 → 2298 → 2620 → 1310 (décharge)
+  // ── BASE (S9–S12, oct.–nov. 2027) ────────────────────────────────────────
+  // UA cible : ~2100 → 2420 → 2760 → 1320 (décharge)
   // Mardi: VC→VC→VL  |  Jeudi: VL→VL→Seuil  |  Sam S2 opt, S3 obligatoire
-  {s:9,  p:'Base',             m:'S005', j:'S117',                                    wr:'SR120', wt:'TM150'},
-  {s:10, p:'Base',             m:'S012', j:'S021',            sam:'M03',              wr:'SR120', wt:'TM180'},
+  {s:9,  p:'Base',             m:'S005', j:'S117',                                    wr:'SR150', wt:'TM180'},
+  {s:10, p:'Base',             m:'S012', j:'S021',            sam:'M03',              wr:'SR150', wt:'TM210'},
   {s:11, p:'Base',             m:'S027', j:'S134',            sam:'seuil_montagne_bloc', wr:'SR150', wt:'TM240'},
   {s:12, p:'Base',             m:'S102', j:'S116',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── BASE (S13–S16, nov.–déc. 2026) ───────────────────────────────────────
-  // UA cible : 2444 → 2760 → 2975 → 1280 (décharge)
-  // Mardi: VC→VC→Seuil  |  Jeudi: Seuil→VL→VL→Côtes  |  Sam S2 opt, S3 obligatoire
+  // ── BASE (S13–S16, nov.–déc. 2027) ───────────────────────────────────────
+  // UA cible : ~2550 → 2880 → 3100 → 1300 (décharge)
+  // Mardi: VC→VC→Seuil  |  Jeudi: Seuil→VL→VL  |  Sam S2 opt, S3 obligatoire
   {s:13, p:'Base',             m:'S001', j:'S135',                                    wr:'SR150', wt:'TM210'},
-  {s:14, p:'Base',             m:'S012', j:'S022',            sam:'M01',              wr:'SR150', wt:'TM270'},
-  {s:15, p:'Base',             m:'S035', j:'S023',            sam:'seuil_montagne_bloc', wr:'SR150', wt:'TM300'},
+  {s:14, p:'Base',             m:'S012', j:'S022',            sam:'M01',              wr:'SR165', wt:'TM270'},
+  {s:15, p:'Base',             m:'S035', j:'S023',            sam:'seuil_montagne_bloc', wr:'SR165', wt:'TM300'},
   {s:16, p:'Base',             m:'S101', j:'S046',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── TRÊVE NOËL (S17, déc. 2026) ──────────────────────────────────────────
+  // ── TRÊVE NOËL (S17, déc. 2027) ──────────────────────────────────────────
   {s:17, p:'Trêve Noël',       m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true, n:'Trêve de Noël — entraînement libre'},
-  // ── BASE HIVER (S18–S20, jan. 2027) ──────────────────────────────────────
-  // UA cible : 2210 → 2600 → 2865 — bloc 3 semaines, reprise progressive post-trêve
+  // ── BASE HIVER (S18–S20, jan. 2028) ──────────────────────────────────────
+  // UA cible : ~2350 → 2730 → 3020 — bloc 3 semaines, reprise post-trêve
   // Mardi: VC→VC→Seuil  |  Jeudi: VL→VL→Seuil  |  Sam S2 opt, S3 obligatoire
-  {s:18, p:'Base',             m:'S011', j:'S020',                                    wr:'SR150', wt:'TM210'},
-  {s:19, p:'Base',             m:'S002', j:'S117',            sam:'M02',              wr:'SR150', wt:'TM240'},
-  {s:20, p:'Base',             m:'S036', j:'S135',            sam:'X03',              wr:'SR180', wt:'TM270'},
-  // ── BLOC CROSS (S21–S24, jan.–fév. 2027) ──────────────────────────────────
-  // UA cible : 2385 → 2760 → 3035 → 1270 (décharge)
+  {s:18, p:'Base',             m:'S011', j:'S020',                                    wr:'SR150', wt:'TM240'},
+  {s:19, p:'Base',             m:'S002', j:'S117',            sam:'M02',              wr:'SR165', wt:'TM270'},
+  {s:20, p:'Base',             m:'S036', j:'S135',            sam:'X03',              wr:'SR180', wt:'TM300'},
+  // ── BLOC CROSS (S21–S24, jan.–fév. 2028) ──────────────────────────────────
+  // UA cible : ~2520 → 2910 → 3200 → 1270 (décharge)
   // Mardi: Côtes→Côtes→VL(pyramide)  |  Jeudi: Côtes→Côtes→Seuil
   // S22 sam opt: Descente Technique  |  S23 sam obligatoire: KV Simulation
-  {s:21, p:'Bloc cross',       m:'S044', j:'S047',                                    wr:'SR150', wt:'TM210'},
-  {s:22, p:'Bloc cross',       m:'S045', j:'S048',            sam:'D01',              wr:'SR150', wt:'TM240'},
-  {s:23, p:'Bloc cross',       m:'S026', j:'S134',            sam:'kv_simulation',    wr:'SR150', wt:'TM330'},
+  {s:21, p:'Bloc cross',       m:'S044', j:'S047',                                    wr:'SR150', wt:'TM270'},
+  {s:22, p:'Bloc cross',       m:'S045', j:'S048',            sam:'D01',              wr:'SR165', wt:'TM300'},
+  {s:23, p:'Bloc cross',       m:'S026', j:'S134',            sam:'kv_simulation',    wr:'SR180', wt:'TM330'},
   {s:24, p:'Bloc cross',       m:'S043', j:'S046',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── SPÉCIFIQUE 1 (S25–S28, fév.–mars 2027) ───────────────────────────────
-  // UA cible : 2764 → 3015 → 3275 → 1425 (décharge)
+  // ── SPÉCIFIQUE 1 (S25–S28, fév.–mars 2028) ───────────────────────────────
+  // UA cible : ~2900 → 3160 → 3440 → 1440 (décharge)
   // Mardi: VC→VC→VL(pyramide)  |  Jeudi: Seuil→Seuil→AM
   // S26 sam opt: Descente Technique  |  S27 sam obligatoire: Seuil Montagne
-  {s:25, p:'Spécifique',       m:'S001', j:'S035',                                    wr:'SR150', wt:'TM270'},
-  {s:26, p:'Spécifique',       m:'S003', j:'S036',            sam:'D01',              wr:'SR150', wt:'TM300'},
+  {s:25, p:'Spécifique',       m:'S001', j:'S035',                                    wr:'SR165', wt:'TM300'},
+  {s:26, p:'Spécifique',       m:'S003', j:'S036',            sam:'D01',              wr:'SR180', wt:'TM330'},
   {s:27, p:'Spécifique',       m:'S026', j:'S038',            sam:'seuil_montagne_bloc', wr:'SR180', wt:'TM360'},
   {s:28, p:'Spécifique',       m:'S001', j:'S034',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── SPÉCIFIQUE 2 (S29–S32, mars–avr. 2027) ───────────────────────────────
-  // UA cible : 3115 → 3400 → 3695 → 1370 (décharge)
+  // ── SPÉCIFIQUE 2 (S29–S32, mars–avr. 2028) ───────────────────────────────
+  // UA cible : ~3260 → 3560 → 3870 → 1380 (décharge)
   // Mardi: VC→VL→VC(vol+)  |  Jeudi: AM→AM→Seuil
   // S30 sam opt: Relance Crête  |  S31 sam obligatoire: Descente Engagée
-  {s:29, p:'Spécifique',       m:'S008', j:'S039',                                    wr:'SR180', wt:'TM300'},
-  {s:30, p:'Spécifique',       m:'S026', j:'S040',            sam:'X01',              wr:'SR180', wt:'TM330'},
+  {s:29, p:'Spécifique',       m:'S008', j:'S039',                                    wr:'SR180', wt:'TM330'},
+  {s:30, p:'Spécifique',       m:'S026', j:'S040',            sam:'X01',              wr:'SR180', wt:'TM360'},
   {s:31, p:'Spécifique',       m:'S013', j:'S036',            sam:'D02',              wr:'SR180', wt:'TM420'},
   {s:32, p:'Spécifique',       m:'S005', j:'S029',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── AFFÛTAGE (S33–S34, avr. 2027) ────────────────────────────────────────
-  {s:33, p:'Affûtage',         m:'S035', j:'S041',                                    wr:'SR180', wt:'TM300'},
-  {s:34, p:'Affûtage',         m:'vitesse_5x100_veille', j:'S034',                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── COMPÉTITION (S35–S40, avr.–mai 2027) ─────────────────────────────────
-  {s:35, p:'Compétition',      m:'S005', j:'S041',                                    wr:'SR120', wt:'TM240'},
-  {s:36, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'—', d:true, n:'Course le weekend'},
-  {s:37, p:'Compétition',      m:'S012', j:'S029',                                    wr:'SR150', wt:'TM270'},
-  {s:38, p:'Compétition',      m:'S107', j:'sortie_recup',                            wr:'sortie_recup', wt:'sortie_recup', d:true},
-  {s:39, p:'Compétition',      m:'S005', j:'S034',                                    wr:'SR150', wt:'TM300'},
-  {s:40, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'—', d:true, n:'Course le weekend'},
-  // ── DÉVELOPPEMENT (S41–S44, mai–juin 2027) ───────────────────────────────
-  // UA cible : 3194 → 3530 → 3995 → 1310 (décharge)
+  // ── DÉVELOPPEMENT TRAIL (S33–S35, avr.–mai 2028) ─────────────────────────
+  // UA cible : ~3350 → 3700 → 4200 — PIC SAISON (trail 60km/4000D+ en juin)
   // Mardi: VC→VC→Côtes  |  Jeudi: Seuil→Seuil→Côtes
-  // S42 sam opt: Relance Crête  |  S43 sam obligatoire: Descente Engagée (CHOC)
-  {s:41, p:'Développement',    m:'S001', j:'S135',                                    wr:'SR180', wt:'TM360'},
-  {s:42, p:'Développement',    m:'S002', j:'S033',            sam:'X01',              wr:'SR180', wt:'TM420'},
-  {s:43, p:'Développement',    m:'S047', j:'S050',            sam:'D02',              wr:'SR180', wt:'TM480'},
-  {s:44, p:'Développement',    m:'S011', j:'S020',                                    wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── SPÉCIFIQUE TRAIL (S45–S48, juin–juil. 2027) ──────────────────────────
-  // UA cible : 3322 → 3635 → 3950 → 1360 (décharge) — PIC SAISON juillet
-  // Mardi: Côtes→Côtes→Seuil  |  Jeudi: Trail→Trail→Côtes
-  // S46 sam opt: Terrain Vallonn  |  S47 sam obligatoire: Descente Engagée (PEAK)
-  {s:45, p:'Spécifique trail', m:'S050', j:'circuit_douves',                          wr:'SR180', wt:'TM390'},
-  {s:46, p:'Spécifique trail', m:'S049', j:'fartlek_pyramid_girouettes', sam:'X02',   wr:'SR180', wt:'TM420'},
-  {s:47, p:'Spécifique trail', m:'S035', j:'S050',            sam:'D03',              wr:'SR180', wt:'TM480'},
-  {s:48, p:'Spécifique trail', m:'S043', j:'circuit_douves',                          wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── AFFÛTAGE TRAIL (S49–S50, juil. 2027) ─────────────────────────────────
-  {s:49, p:'Affûtage',         m:'S044', j:'cote_1min30',                             wr:'SR120', wt:'TM240'},
-  {s:50, p:'Affûtage',         m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'sortie_recup', wt:'sortie_recup', d:true},
-  // ── COUPURE (S51–S52, août 2027) ─────────────────────────────────────────
+  // S34 sam opt: Relance Crête  |  S35 sam obligatoire: Descente Engagée (CHOC MAX)
+  {s:33, p:'Développement',    m:'S001', j:'S135',                                    wr:'SR180', wt:'TM390'},
+  {s:34, p:'Développement',    m:'S002', j:'S033',            sam:'X01',              wr:'SR180', wt:'TM420'},
+  {s:35, p:'Développement',    m:'S047', j:'S050',            sam:'D02',              wr:'SR180', wt:'TM480'},
+  // ── COMPÉTITION ROUTE (S36–S40, mai–juin 2028) ───────────────────────────
+  // Semi-marathon → Corrida → 10km  |  Trail: décharge puis affûtage 60km
+  {s:36, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'sortie_recup', d:true, n:'Semi-marathon de Bayonne'},
+  {s:37, p:'Compétition',      m:'S005', j:'S041',                                    wr:'SR120', wt:'TM240'},
+  {s:38, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'sortie_recup', d:true, n:'Corrida de Biarritz'},
+  {s:39, p:'Compétition',      m:'S005', j:'S034',                                    wr:'SR090', wt:'TM210'},
+  {s:40, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'sortie_recup', d:true, n:'10km du Pays Basque'},
+  // ── AFFÛTAGE TRAIL 60km (S41–S42, juin 2028) ─────────────────────────────
+  {s:41, p:'Affûtage',         m:'S101', j:'sortie_recup',                            wr:'SR060', wt:'TM150'},
+  {s:42, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'—', d:true, n:'🎯 Trail 60km / 4000D+'},
+  // ── RÉCUPÉRATION POST-TRAIL (S43–S44, juin–juil. 2028) ───────────────────
+  {s:43, p:'Récupération',     m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true},
+  {s:44, p:'Récupération',     m:'S107', j:'S046',                                    wr:'SR090', wt:'TM120'},
+  // ── SPÉCIFIQUE TRAIL ÉTÉ (S45–S46, juil. 2028) — Trail des Contrebandiers
+  {s:45, p:'Spécifique trail', m:'S050', j:'circuit_douves',                          wr:'SR120', wt:'TM240'},
+  {s:46, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'—', d:true, n:'Trail des Contrebandiers'},
+  // ── RÉCUPÉRATION + KROSS (S47–S49, juil.–août 2028) ─────────────────────
+  {s:47, p:'Récupération',     m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true},
+  {s:48, p:'Récupération',     m:'S107', j:'S043',                                    wr:'SR090', wt:'TM120'},
+  {s:49, p:'Compétition',      m:'vitesse_5x100_veille', j:'sortie_recup',            wr:'—', wt:'—', d:true, n:'Kross de Chiberta'},
+  // ── COUPURE (S50–S52, août 2028) ─────────────────────────────────────────
+  {s:50, p:'Coupure',          m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true},
   {s:51, p:'Coupure',          m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true},
   {s:52, p:'Coupure',          m:'sortie_recup', j:'sortie_recup',                    wr:'SR060', wt:'TM090', d:true},
 ];
@@ -107,60 +106,66 @@ let socleConfig = { lundi:{dur:60,rpe:4}, mercredi:{dur:50,rpe:3}, weRoute:{dur:
 // Semaines de décharge (d:true) n'ont pas d'entrée → elles utilisent sortie_recup.
 // dur_r = durée route (min), dur_t = durée trail (min), dplus_t = D+ trail (m)
 const slProgression = {
-  // ── REPRISE (S1–S3, sept. 2026) ── 1h30 route · 2h→2h30 trail ──────────────────
-  1:  { dur_r:  90, dur_t: 120, dplus_t:  200, note: 'Reprise — 1h30 route · 2h trail' },
-  2:  { dur_r:  90, dur_t: 150, dplus_t:  300, note: '1h30 route · 2h30 trail' },
-  3:  { dur_r:  90, dur_t: 150, dplus_t:  400, note: '1h30 route · 2h30 trail' },
-  // ── BASE ROUTE (S5–S6, oct. 2026) ── 1h45 route · 2h30→3h trail ─────────────────
-  5:  { dur_r: 105, dur_t: 150, dplus_t:  400, note: '1h45 route · 2h30 trail' },
-  6:  { dur_r: 105, dur_t: 180, dplus_t:  500, note: '1h45 route · 3h trail' },
-  // ── DÉVELOPPEMENT AUTOMNE (S9–S11, nov. 2026) ── 2h route · 3h→3h30 trail ───────
-  9:  { dur_r: 105, dur_t: 180, dplus_t:  500, note: 'Reprise — 1h45 route · 3h trail' },
-  10: { dur_r: 120, dur_t: 180, dplus_t:  600, note: '2h route · 3h trail' },
-  11: { dur_r: 120, dur_t: 210, dplus_t:  700, note: 'Choc — 2h route · 3h30 trail' },
-  // ── TRANSITION HIVER (S13–S14, déc. 2026) ── 2h route · 3h→3h30 trail ──────────
-  13: { dur_r: 105, dur_t: 180, dplus_t:  600, note: 'Retour post-décharge — 1h45 route · 3h trail' },
-  14: { dur_r: 120, dur_t: 210, dplus_t:  700, note: '2h route · 3h30 trail' },
-  // ── CONSTRUCTION HIVER (S17–S18, janv. 2027) ── 2h route · 3h30→4h trail ────────
-  17: { dur_r: 120, dur_t: 210, dplus_t:  700, note: 'Reprise janvier — 2h route · 3h30 trail' },
-  18: { dur_r: 120, dur_t: 240, dplus_t:  800, note: '2h route · 4h trail' },
-  // ── PRÉPA PRINTEMPS (S21–S23, fév. 2027) ── 2h→2h30 route · 3h30→4h30 trail ────
-  21: { dur_r: 120, dur_t: 210, dplus_t:  800, note: 'Prépa printemps — 2h route · 3h30 trail' },
-  22: { dur_r: 135, dur_t: 240, dplus_t:  900, note: '2h15 route · 4h trail' },
-  23: { dur_r: 150, dur_t: 270, dplus_t: 1000, note: 'Choc — 2h30 route · 4h30 trail' },
-  // ── PRÉPA TRAIL PRINTEMPS (S25–S26, mars 2027) ── 2h30 route · 4h30→5h trail ────
-  25: { dur_r: 150, dur_t: 270, dplus_t: 1000, note: '2h30 route · 4h30 trail' },
-  26: { dur_r: 150, dur_t: 300, dplus_t: 1200, note: '2h30 route · 5h trail' },
-  // ── DÉVELOPPEMENT TRAIL (S29–S30, avr. 2027) ── 2h30→2h45 route · 5h→5h30 trail ─
-  29: { dur_r: 150, dur_t: 300, dplus_t: 1200, note: '2h30 route · 5h trail' },
-  30: { dur_r: 165, dur_t: 330, dplus_t: 1400, note: '2h45 route · 5h30 trail' },
-  // ── MONTÉE EN PUISSANCE (S33–S34, mai 2027) ── 2h45 route · 5h30→6h trail ───────
-  33: { dur_r: 165, dur_t: 330, dplus_t: 1500, note: 'Montée en puissance — 2h45 route · 5h30 trail' },
-  34: { dur_r: 165, dur_t: 360, dplus_t: 1800, note: 'CHOC — 2h45 route · 6h trail, 1800m D+' },
-  // ── PRÉ-PEAK (S37–S38, juin 2027) ── 2h45→3h route · 6h30→7h trail, 2000m+ D+ ───
-  37: { dur_r: 165, dur_t: 390, dplus_t: 2000, note: 'Pré-peak — 2h45 route · 6h30 trail, 2000m D+' },
-  38: { dur_r: 180, dur_t: 420, dplus_t: 2200, note: 'CHOC — 3h route · 7h trail, 2200m D+' },
-  // ── PEAK TRAIL (S41–S42, juil. 2027) ── 3h route · 7h→8h trail — MAXIMUM ─────────
-  41: { dur_r: 180, dur_t: 420, dplus_t: 2200, note: 'Peak — 3h route · 7h trail, 2200m D+' },
-  42: { dur_r: 180, dur_t: 480, dplus_t: 2500, note: '🏆 CHOC MAXIMUM — 3h route · 8h trail, 2500m D+' },
-  // ── POST-PEAK / RELÂCHE (S45–S47, août 2027) ── descente progressive ──────────────
-  45: { dur_r: 150, dur_t: 330, dplus_t: 1500, note: 'Post-peak — 2h30 route · 5h30 trail' },
-  46: { dur_r: 120, dur_t: 240, dplus_t: 1000, note: 'Récupération — 2h route · 4h trail' },
-  47: { dur_r:  90, dur_t: 180, dplus_t:  600, note: 'Allègement — 1h30 route · 3h trail' },
-  // ── FIN DE SAISON (S49–S51, août–sept. 2027) ── coupure progressive ───────────────
-  49: { dur_r:  90, dur_t: 150, dplus_t:  500, note: 'Relâche — 1h30 route · 2h30 trail' },
-  50: { dur_r:  90, dur_t: 120, dplus_t:  400, note: 'Récupération active' },
-  51: { dur_r:  90, dur_t:  90, dplus_t:  200, note: 'Coupure fin de saison — 1h30 route · 1h30 trail' },
+  // ── REPRISE (S1–S3, sept. 2027) ── 1h30 route · 1h30→2h30 trail ─────────────────
+  1:  { dur_r:  90, dur_t:  90, dplus_t:  200, note: 'Reprise — 1h30 route · 1h30 trail' },
+  2:  { dur_r: 105, dur_t: 120, dplus_t:  300, note: '1h45 route · 2h trail' },
+  3:  { dur_r: 105, dur_t: 150, dplus_t:  400, note: '1h45 route · 2h30 trail' },
+  // ── BASE ROUTE (S5–S7, oct. 2027) ── 2h route · 2h30→3h trail ───────────────────
+  5:  { dur_r: 120, dur_t: 150, dplus_t:  500, note: '2h route · 2h30 trail' },
+  6:  { dur_r: 120, dur_t: 180, dplus_t:  600, note: '2h route · 3h trail' },
+  7:  { dur_r: 120, dur_t: 150, dplus_t:  400, note: '2h route · 2h30 trail (récup VW)' },
+  // ── BASE (S9–S11, nov. 2027) ── 2h30 route · 3h→4h trail ───────────────────────
+  9:  { dur_r: 150, dur_t: 180, dplus_t:  600, note: '2h30 route · 3h trail' },
+  10: { dur_r: 150, dur_t: 210, dplus_t:  700, note: '2h30 route · 3h30 trail' },
+  11: { dur_r: 150, dur_t: 240, dplus_t:  800, note: 'Choc — 2h30 route · 4h trail' },
+  // ── BASE (S13–S15, déc. 2027) ── 2h30→2h45 route · 3h30→5h trail ───────────────
+  13: { dur_r: 150, dur_t: 210, dplus_t:  700, note: 'Retour post-décharge — 2h30 route · 3h30 trail' },
+  14: { dur_r: 165, dur_t: 270, dplus_t: 1000, note: '2h45 route · 4h30 trail' },
+  15: { dur_r: 165, dur_t: 300, dplus_t: 1200, note: 'Choc — 2h45 route · 5h trail, 1200m D+' },
+  // ── BASE HIVER (S17–S20, jan. 2028) ── 2h→3h route · 3h30→5h trail ─────────────
+  17: { dur_r:  60, dur_t:  90, dplus_t:  200, note: 'Trêve de Noël — 1h route · 1h30 trail' },
+  18: { dur_r: 150, dur_t: 240, dplus_t:  900, note: 'Reprise janvier — 2h30 route · 4h trail' },
+  19: { dur_r: 165, dur_t: 270, dplus_t: 1000, note: '2h45 route · 4h30 trail' },
+  20: { dur_r: 180, dur_t: 300, dplus_t: 1200, note: 'Choc — 3h route · 5h trail, 1200m D+' },
+  // ── BLOC CROSS (S21–S23, jan.–fév. 2028) ── 2h30→3h route · 4h30→5h30 trail ────
+  21: { dur_r: 150, dur_t: 270, dplus_t: 1000, note: 'Bloc cross — 2h30 route · 4h30 trail' },
+  22: { dur_r: 165, dur_t: 300, dplus_t: 1200, note: '2h45 route · 5h trail, 1200m D+' },
+  23: { dur_r: 180, dur_t: 330, dplus_t: 1500, note: 'Choc — 3h route · 5h30 trail, 1500m D+' },
+  // ── SPÉCIFIQUE 1 (S25–S27, fév.–mars 2028) ── 2h45→3h route · 5h→6h trail ──────
+  25: { dur_r: 165, dur_t: 300, dplus_t: 1200, note: '2h45 route · 5h trail' },
+  26: { dur_r: 180, dur_t: 330, dplus_t: 1500, note: '3h route · 5h30 trail, 1500m D+' },
+  27: { dur_r: 180, dur_t: 360, dplus_t: 1800, note: 'Choc — 3h route · 6h trail, 1800m D+' },
+  // ── SPÉCIFIQUE 2 (S29–S31, mars–avr. 2028) ── 3h route · 5h30→7h trail ─────────
+  29: { dur_r: 180, dur_t: 330, dplus_t: 1500, note: '3h route · 5h30 trail' },
+  30: { dur_r: 180, dur_t: 360, dplus_t: 1800, note: '3h route · 6h trail, 1800m D+' },
+  31: { dur_r: 180, dur_t: 420, dplus_t: 2200, note: 'CHOC — 3h route · 7h trail, 2200m D+' },
+  // ── DÉVELOPPEMENT TRAIL / PIC (S33–S35, avr.–mai 2028) ── PIC SAISON ───────────
+  33: { dur_r: 180, dur_t: 390, dplus_t: 2000, note: 'Montée en puissance — 3h route · 6h30 trail, 2000m D+' },
+  34: { dur_r: 180, dur_t: 420, dplus_t: 2200, note: 'CHOC — 3h route · 7h trail, 2200m D+' },
+  35: { dur_r: 180, dur_t: 480, dplus_t: 2500, note: '🏆 CHOC MAXIMUM — 3h route · 8h trail, 2500m D+' },
+  // ── COMPÉTITION ROUTE / AFFÛTAGE TRAIL (S37–S41, mai–juin 2028) ─────────────────
+  37: { dur_r: 120, dur_t: 240, dplus_t: 1000, note: 'Post-semi — 2h route · 4h trail' },
+  39: { dur_r:  90, dur_t: 210, dplus_t:  800, note: 'Pré-10km — 1h30 route · 3h30 trail' },
+  41: { dur_r:  60, dur_t: 150, dplus_t:  500, note: 'Affûtage J-7 trail — 1h route · 2h30 trail' },
+  // ── RÉCUPÉRATION / TRANSITION ÉTÉ (S44–S45, juil. 2028) ─────────────────────────
+  44: { dur_r:  90, dur_t: 120, dplus_t:  300, note: 'Reprise légère — 1h30 route · 2h trail' },
+  45: { dur_r: 120, dur_t: 240, dplus_t: 1000, note: 'Reprise été — 2h route · 4h trail' },
+  // ── RÉCUPÉRATION POST-CONTREBANDIERS (S48, juil. 2028) ───────────────────────────
+  48: { dur_r:  90, dur_t: 120, dplus_t:  300, note: 'Récup post-Contrebandiers — 1h30 route · 2h trail' },
+  // ── COUPURE (S50–S51, août 2028) ─────────────────────────────────────────────────
+  50: { dur_r:  60, dur_t:  90, dplus_t:  200, note: 'Coupure — 1h route · 1h30 trail' },
+  51: { dur_r:  60, dur_t:  90, dplus_t:  200, note: 'Coupure fin de saison' },
 };
 let infosClub = [
-  { id:'msg_default_1', titre:'Bienvenue saison 2025-2026 !', texte:'Entraînements mardi et jeudi à 18h30 au halage. Bonne saison à tous !', type:'info', dateFin:'' }
+  { id:'msg_default_1', titre:'Bienvenue saison 2027-2028 !', texte:'Entraînements mardi et jeudi à 18h30 au halage. Objectif trail 60km/4000D+ en juin 2028. Bonne saison à tous !', type:'info', dateFin:'' }
 ];
 let objectifs = [
-  { s:36, nom:'Semi-marathon de Bayonne',       date:'2026-05-10', type:'route' },
-  { s:38, nom:'Corrida de Biarritz',             date:'2026-05-24', type:'route' },
-  { s:40, nom:'10km du Pays Basque',             date:'2026-06-07', type:'route' },
-  { s:46, nom:'Trail des Contrebandiers',        date:'2026-07-19', type:'trail' },
-  { s:48, nom:'Kross de Chiberta',               date:'2026-08-02', type:'cross' },
+  { s:36, nom:'Semi-marathon de Bayonne',       date:'2028-05-05', type:'route' },
+  { s:38, nom:'Corrida de Biarritz',             date:'2028-05-19', type:'route' },
+  { s:40, nom:'10km du Pays Basque',             date:'2028-06-02', type:'route' },
+  { s:42, nom:'Trail 60km / 4000D+',             date:'2028-06-16', type:'trail' },
+  { s:46, nom:'Trail des Contrebandiers',        date:'2028-07-13', type:'trail' },
+  { s:49, nom:'Kross de Chiberta',               date:'2028-08-03', type:'cross' },
 ];
 let calFixed = [];
 let calculateurTextes = {};
